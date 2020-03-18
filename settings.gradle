@@ -1,0 +1,2 @@
+include ':connect-sdk'
+rootProject.name='Connect'
