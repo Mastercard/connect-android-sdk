@@ -17,6 +17,8 @@ _Releases_: https://repo.finicity.com/artifactory/libs-release-local
 ##### Public Maven Repository  
 _TODO_
 
+_*If you are using androidx, make sure that `android.enableJetifier` is set to `true` in `gradle.properties`.  It will probably already be set, but is required for this library to work.  This library is designed to support either namespace strategy (i.e. `android.support` or `androidx`).  For more info on `androidx` and Jetifier, see [official documentation](https://developer.android.com/jetpack/androidx/migrate)._
+
 ### 2. Update your Android app project settings
 - Add ```<uses-permission android:name="android.permission.INTERNET" />``` to AndroidManifest.xml
 - Add the Connect Activity ```<activity android:name="com.finicity.connect.sdk.Connect"></activity>``` to AndroidManifest.xml in the `application` section.
