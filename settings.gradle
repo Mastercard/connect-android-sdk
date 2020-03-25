@@ -1,2 +1,2 @@
-include ':connect-sdk'
+include ':connect-sdk', ':demo-app'
 rootProject.name='Connect'
