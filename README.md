@@ -1,5 +1,8 @@
 # Connect Android SDK
 
+## Compatibility
+This SDK is built with minSdkVersion 17, and will work with Android >=4.2 (Jelly Bean) or higher.
+
 ## How to use add SDK in your project
 ### 1. Add the SDK dependency to the project
 _Currently, the SDK is built and deployed to Finicity's Artifactory service, but will eventually be deployed to a public Maven repository._
