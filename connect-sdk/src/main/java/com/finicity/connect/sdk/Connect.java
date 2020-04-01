@@ -2,20 +2,24 @@ package com.finicity.connect.sdk;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 public class Connect extends Activity {
 
@@ -56,6 +60,10 @@ public class Connect extends Activity {
     private RelativeLayout mPopupViewContainer;
     private WebView mPopupView;
 
+    // Upload
+    private static final int SELECT_FILE_RESULT_CODE = 100;
+    private ValueCallback<Uri[]> mFilePathCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if(Connect.CONNECT_INSTANCE != null) {
@@ -79,6 +87,7 @@ public class Connect extends Activity {
         mMainWebView.getSettings().setSupportMultipleWindows(true);
         mMainWebView.getSettings().setJavaScriptEnabled(true);
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mMainWebView.getSettings().setAllowFileAccess(true);
 
         this.mPopupLayout = findViewById(R.id.popupLayout);
         this.mPopupCloseImgButton = findViewById(R.id.popupCloseImgButton);
@@ -105,6 +114,29 @@ public class Connect extends Activity {
 
                 return true;
             }
+
+            @Override
+            public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback,
+                                             WebChromeClient.FileChooserParams fileChooserParams) {
+                 if(mFilePathCallback != null) {
+                     mFilePathCallback.onReceiveValue(null);
+                 }
+
+                 mFilePathCallback = filePathCallback;
+
+                 Intent intent = fileChooserParams.createIntent();
+
+                 try {
+                     startActivityForResult(intent, SELECT_FILE_RESULT_CODE);
+                 } catch(ActivityNotFoundException e) {
+                    mFilePathCallback = null;
+
+                    Toast.makeText(Connect.CONNECT_INSTANCE, "Cannot open file chooser", Toast.LENGTH_LONG).show();
+                    return false;
+                 }
+
+                 return true;
+            }
         });
 
         // JS Interface and event listener for main WebView
@@ -113,6 +145,21 @@ public class Connect extends Activity {
 
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if(requestCode == SELECT_FILE_RESULT_CODE) {
+            if(resultCode != RESULT_CANCELED) {
+                if (mFilePathCallback != null) {
+                    mFilePathCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
+                    mFilePathCallback = null;
+                }
+            } else {
+                mFilePathCallback.onReceiveValue(null);
+                mFilePathCallback = null;
+            }
+        }
     }
 
     private WebView createPopupView() {
