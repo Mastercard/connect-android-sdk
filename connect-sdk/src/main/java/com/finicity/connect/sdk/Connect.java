@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.ValueCallback;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -20,6 +21,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 public class Connect extends Activity {
 
@@ -244,7 +247,14 @@ public class Connect extends Activity {
             if(mMainWebView.canGoBack()) {
                 mMainWebView.goBack();
             } else {
-                finish();
+                try {
+                    // Send cancel event and finish
+                    Connect.EVENT_LISTENER.onCancel(new JSONObject("{\"type\":\"cancel\"}"));
+
+                    finish();
+                } catch(Exception e) {
+                    finish();
+                }
             }
         }
     }
