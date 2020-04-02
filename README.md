@@ -33,7 +33,13 @@ The main component of the Connect SDK is the `Connect` class.  It contains a sta
 
 _*The SDK only allows a single Connect Activity to run at a time.  If you try to launch Connect while a Connect Activity is currently running, a RuntimeException will be thrown._
 
+_Java:_
+
 ```public static void start(Context context, String connectUrl, EventListener eventListener)```
+
+_Kotlin:_
+
+```fun start(context: Context, connectUrl: String?, eventListener: EventListener?)```
 
 | Argument | Description | Note |
 | -------- | ----------- | ---- |
@@ -44,7 +50,7 @@ _*The SDK only allows a single Connect Activity to run at a time.  If you try to
 ### EventListener interface
 The Connect SDK embeds the Connect Web Application in a WebView.  During the Connect flow, the web application sends events about its state to the SDK.  These events are received as JSONObjects by the EventListener methods.
 
-_EventListener code_
+_EventListener interface, Java_
 ```
 public interface EventListener {
     void onDone(JSONObject doneEvent);
@@ -53,6 +59,17 @@ public interface EventListener {
     void onRoute(JSONObject routeEvent);
 }
 ```
+
+_EventListener interface, Kotlin_
+```
+interface EventListener {
+    fun onDone(doneEvent: JSONObject?)
+    fun onCancel(cancelEvent: JSONObject?)
+    fun onError(errorEvent: JSONObject?)
+    fun onRoute(routeEvent: JSONObject?)
+}
+```
+
 | Event | Description |
 | ----- | ----------- |
 | done | Sent when the user successfully completes the Connect flow |
