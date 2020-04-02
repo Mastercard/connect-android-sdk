@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Connect SDK</string>
+    <string name="file_access_error_msg">Unable to access files on this device</string>
+    <string name="exit_confirmation_title">Are you sure you want to exit?</string>
+    <string name="exit_confirmation_msg">Progress will be lost and your information will be removed for your security.</string>
+    <string name="exit_confirmation_yes">Yes</string>
+    <string name="exit_confirmation_no">No</string>
 </resources>

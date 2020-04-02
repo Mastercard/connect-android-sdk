@@ -134,7 +134,7 @@ public class Connect extends Activity {
                  } catch(ActivityNotFoundException e) {
                     mFilePathCallback = null;
 
-                    Toast.makeText(Connect.CONNECT_INSTANCE, "Cannot open file chooser", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Connect.CONNECT_INSTANCE, getString(R.string.file_access_error_msg), Toast.LENGTH_LONG).show();
                     return false;
                  }
 
@@ -238,10 +238,10 @@ public class Connect extends Activity {
             } else {
                 DialogInterface.OnClickListener listener = getDialogClickListener();
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Are you sure you want to exit?")
-                        .setMessage("Progress will be lost and your information will be removed for your security.")
-                        .setPositiveButton("Yes", listener)
-                        .setNegativeButton("No", listener).show();
+                builder.setTitle(getString(R.string.exit_confirmation_title))
+                        .setMessage(getString(R.string.exit_confirmation_msg))
+                        .setPositiveButton(getString(R.string.exit_confirmation_yes), listener)
+                        .setNegativeButton(getString(R.string.exit_confirmation_no), listener).show();
             }
         } else {
             if(mMainWebView.canGoBack()) {
