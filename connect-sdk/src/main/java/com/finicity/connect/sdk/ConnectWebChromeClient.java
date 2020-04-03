@@ -19,18 +19,15 @@ class ConnectWebChromeClient extends WebChromeClient {
 
     private RelativeLayout mPopupViewContainer;
     private RelativeLayout mPopupLayout;
-//    private ValueCallback<Uri[]> mFilePathCallback;
     private WebView mPopupView;
     private ImageButton mPopupCloseImgButton;
     private Button mPopupCloseTextButton;
 
     public ConnectWebChromeClient(RelativeLayout popupViewContainer, RelativeLayout popupLayout,
-//                                  ValueCallback<Uri[]> filePathCallback,
-                                  WebView popupView,
-                                  ImageButton popupCloseImgButton, Button popupCloseTextButton) {
+                                  WebView popupView, ImageButton popupCloseImgButton,
+                                  Button popupCloseTextButton) {
         this.mPopupViewContainer = popupViewContainer;
         this.mPopupLayout = popupLayout;
-//        this.mFilePathCallback = filePathCallback;
         this.mPopupView = popupView;
         this.mPopupCloseImgButton = popupCloseImgButton;
         this.mPopupCloseTextButton = popupCloseTextButton;
