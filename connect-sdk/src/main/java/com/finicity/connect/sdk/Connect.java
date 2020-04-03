@@ -29,7 +29,7 @@ public class Connect extends Activity {
     private static final String CONNECT_URL_INTENT_KEY = "com.finicity.connect.sdk.CONNECT_URL_INTENT_KEY";
 
     private static EventListener EVENT_LISTENER;
-    protected static Connect CONNECT_INSTANCE;
+    private static Connect CONNECT_INSTANCE;
 
     public static void start(Context context, String connectUrl, EventListener eventListener) {
         if(Connect.CONNECT_INSTANCE != null) {
@@ -90,8 +90,9 @@ public class Connect extends Activity {
         this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
         this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(mPopupViewContainer,
-                mPopupLayout, mPopupView, mPopupCloseImgButton, mPopupCloseTextButton));
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
+                mPopupViewContainer, mPopupLayout, mPopupView, mPopupCloseImgButton,
+                mPopupCloseTextButton));
 
         // JS Interface and event listener for main WebView
         ConnectJsInterface jsInterface = new ConnectJsInterface(this, Connect.EVENT_LISTENER);

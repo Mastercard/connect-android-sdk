@@ -17,15 +17,17 @@ import android.widget.Toast;
 
 class ConnectWebChromeClient extends WebChromeClient {
 
+    private Connect mConnect;
     private RelativeLayout mPopupViewContainer;
     private RelativeLayout mPopupLayout;
     private WebView mPopupView;
     private ImageButton mPopupCloseImgButton;
     private Button mPopupCloseTextButton;
 
-    public ConnectWebChromeClient(RelativeLayout popupViewContainer, RelativeLayout popupLayout,
-                                  WebView popupView, ImageButton popupCloseImgButton,
-                                  Button popupCloseTextButton) {
+    public ConnectWebChromeClient(Connect connect, RelativeLayout popupViewContainer,
+                                  RelativeLayout popupLayout, WebView popupView,
+                                  ImageButton popupCloseImgButton, Button popupCloseTextButton) {
+        this.mConnect = connect;
         this.mPopupViewContainer = popupViewContainer;
         this.mPopupLayout = popupLayout;
         this.mPopupView = popupView;
@@ -56,21 +58,21 @@ class ConnectWebChromeClient extends WebChromeClient {
     @Override
     public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback,
                                      WebChromeClient.FileChooserParams fileChooserParams) {
-        if(Connect.CONNECT_INSTANCE.mFilePathCallback != null) {
-            Connect.CONNECT_INSTANCE.mFilePathCallback.onReceiveValue(null);
+        if(mConnect.mFilePathCallback != null) {
+            mConnect.mFilePathCallback.onReceiveValue(null);
         }
 
-        Connect.CONNECT_INSTANCE.mFilePathCallback = filePathCallback;
+        mConnect.mFilePathCallback = filePathCallback;
 
         Intent intent = fileChooserParams.createIntent();
 
         try {
-            Connect.CONNECT_INSTANCE.startActivityForResult(intent, Connect.SELECT_FILE_RESULT_CODE);
+            mConnect.startActivityForResult(intent, Connect.SELECT_FILE_RESULT_CODE);
         } catch(ActivityNotFoundException e) {
-            Connect.CONNECT_INSTANCE.mFilePathCallback = null;
+            mConnect.mFilePathCallback = null;
 
-            Toast.makeText(Connect.CONNECT_INSTANCE,
-                    Connect.CONNECT_INSTANCE.getString(R.string.file_access_error_msg),
+            Toast.makeText(mConnect,
+                    mConnect.getString(R.string.file_access_error_msg),
                     Toast.LENGTH_LONG).show();
 
             return false;
@@ -80,7 +82,7 @@ class ConnectWebChromeClient extends WebChromeClient {
     }
 
     private WebView createPopupView() {
-        this.mPopupView = new WebView(Connect.CONNECT_INSTANCE);
+        this.mPopupView = new WebView(mConnect);
 
         mPopupView.getSettings().setJavaScriptEnabled(true);
         mPopupView.setWebChromeClient(new WebChromeClient() {
@@ -104,7 +106,7 @@ class ConnectWebChromeClient extends WebChromeClient {
         View.OnClickListener closePopupListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Connect.CONNECT_INSTANCE.closePopup();
+                mConnect.closePopup();
             }
         };
 
