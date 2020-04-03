@@ -1,7 +1,7 @@
 # Connect Android SDK
 
 ## Compatibility
-This SDK is built with minSdkVersion 17, and will work with Android >=4.2 (Jelly Bean) or higher.
+This SDK is built with minSdkVersion 21, and will work with Android >=5.0 (Lollipop) or higher.
 
 ## How to use add SDK in your project
 ### 1. Add the SDK dependency to the project
