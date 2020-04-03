@@ -24,7 +24,6 @@ _*If you are using androidx, make sure that `android.enableJetifier` is set to `
 
 ### 2. Update your Android app project settings
 - Add ```<uses-permission android:name="android.permission.INTERNET" />``` to AndroidManifest.xml
-- Add the Connect Activity ```<activity android:name="com.finicity.connect.sdk.Connect"></activity>``` to AndroidManifest.xml in the `application` section.
 
 ### 3. Add code to launch the Connect SDK
 
