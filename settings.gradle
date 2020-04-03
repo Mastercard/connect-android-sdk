@@ -1,2 +1,2 @@
 include ':connect-sdk', ':demo-app'
-rootProject.name='Connect'
+rootProject.name='Connect SDK for Android'
