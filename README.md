@@ -52,20 +52,20 @@ The Connect SDK embeds the Connect Web Application in a WebView.  During the Con
 _EventListener interface, Java_
 ```
 public interface EventListener {
+    void onLoaded();
     void onDone(JSONObject doneEvent);
-    void onCancel(JSONObject cancelEvent);
+    void onCancel();
     void onError(JSONObject errorEvent);
-    void onRoute(JSONObject routeEvent);
 }
 ```
 
 _EventListener interface, Kotlin_
 ```
 interface EventListener {
+    fun onLoaded();
     fun onDone(doneEvent: JSONObject?)
-    fun onCancel(cancelEvent: JSONObject?)
+    fun onCancel()
     fun onError(errorEvent: JSONObject?)
-    fun onRoute(routeEvent: JSONObject?)
 }
 ```
 

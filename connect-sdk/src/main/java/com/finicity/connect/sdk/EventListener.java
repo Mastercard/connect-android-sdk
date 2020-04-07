@@ -3,7 +3,8 @@ package com.finicity.connect.sdk;
 import org.json.JSONObject;
 
 public interface EventListener {
+    void onLoaded();
     void onDone(JSONObject doneEvent);
-    void onCancel(JSONObject cancelEvent);
+    void onCancel();
     void onError(JSONObject errorEvent);
 }

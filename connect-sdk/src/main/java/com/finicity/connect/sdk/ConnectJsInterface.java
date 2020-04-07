@@ -31,7 +31,7 @@ class ConnectJsInterface {
 
         // Invoke appropriate event listener method
         if(eventType.equals("cancel")) {
-            eventListener.onCancel(jsonMessage);
+            eventListener.onCancel();
             this.finishActivity();
         } else if(eventType.equals("done")) {
             eventListener.onDone(jsonMessage);

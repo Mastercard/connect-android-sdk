@@ -16,8 +16,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import org.json.JSONObject;
-
 public class Connect extends Activity {
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
@@ -94,6 +92,8 @@ public class Connect extends Activity {
                 mPopupViewContainer, mPopupLayout, mPopupView, mPopupCloseImgButton,
                 mPopupCloseTextButton));
 
+        mMainWebView.setWebViewClient(new ConnectWebViewClient(Connect.EVENT_LISTENER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
+
         // JS Interface and event listener for main WebView
         ConnectJsInterface jsInterface = new ConnectJsInterface(this, Connect.EVENT_LISTENER);
         mMainWebView.addJavascriptInterface(jsInterface, "Android");
@@ -154,7 +154,7 @@ public class Connect extends Activity {
             } else {
                 try {
                     // Send cancel event and finish
-                    Connect.EVENT_LISTENER.onCancel(new JSONObject("{\"type\":\"cancel\"}"));
+                    Connect.EVENT_LISTENER.onCancel();
 
                     finish();
                 } catch(Exception e) {
