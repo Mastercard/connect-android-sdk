@@ -39,8 +39,6 @@ class ConnectJsInterface {
         } else if(eventType.equals("error")) {
             eventListener.onError(jsonMessage);
             this.finishActivity();
-        } else if(eventType.equals("route")) {
-            eventListener.onRoute(jsonMessage);
         }
     }
 

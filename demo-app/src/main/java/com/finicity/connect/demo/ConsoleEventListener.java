@@ -19,9 +19,4 @@ public class ConsoleEventListener implements EventListener {
     public void onError(JSONObject errorEvent) {
         System.out.println(">>> Received Error event\n>>> " + errorEvent.toString());
     }
-
-    @Override
-    public void onRoute(JSONObject routeEvent) {
-        System.out.println(">>> Received Route event\n>>> " + routeEvent.toString());
-    }
 }
