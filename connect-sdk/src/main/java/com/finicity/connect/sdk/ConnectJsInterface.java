@@ -1,7 +1,6 @@
 package com.finicity.connect.sdk;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.webkit.JavascriptInterface;
@@ -9,11 +8,11 @@ import android.webkit.JavascriptInterface;
 import org.json.JSONObject;
 
 class ConnectJsInterface {
-    private Context context;
+    private Activity activity;
     private EventListener eventListener;
 
-    public ConnectJsInterface(Context context, EventListener eventListener) {
-        this.context = context;
+    public ConnectJsInterface(Activity activity, EventListener eventListener) {
+        this.activity = activity;
         this.eventListener = eventListener;
     }
 
@@ -43,12 +42,12 @@ class ConnectJsInterface {
     }
 
     private void finishActivity() {
-        ((Activity) context).finish();
+        activity.finish();
     }
 
     @JavascriptInterface
     public void openLinkInBrowser(String url) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        context.startActivity(browserIntent);
+        activity.startActivity(browserIntent);
     }
 }
