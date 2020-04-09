@@ -20,17 +20,17 @@ class ConnectWebChromeClient extends WebChromeClient {
     private Connect mConnect;
     private RelativeLayout mPopupViewContainer;
     private RelativeLayout mPopupLayout;
-    private WebView mPopupView;
     private ImageButton mPopupCloseImgButton;
     private Button mPopupCloseTextButton;
 
-    public ConnectWebChromeClient(Connect connect, RelativeLayout popupViewContainer,
-                                  RelativeLayout popupLayout, WebView popupView,
-                                  ImageButton popupCloseImgButton, Button popupCloseTextButton) {
+    public ConnectWebChromeClient(Connect connect,
+                                  RelativeLayout popupViewContainer,
+                                  RelativeLayout popupLayout,
+                                  ImageButton popupCloseImgButton,
+                                  Button popupCloseTextButton) {
         this.mConnect = connect;
         this.mPopupViewContainer = popupViewContainer;
         this.mPopupLayout = popupLayout;
-        this.mPopupView = popupView;
         this.mPopupCloseImgButton = popupCloseImgButton;
         this.mPopupCloseTextButton = popupCloseTextButton;
     }
@@ -44,6 +44,9 @@ class ConnectWebChromeClient extends WebChromeClient {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT)
         );
+
+        // Also update Connect with new popupView
+        mConnect.updatePopupView(popupView);
 
         // Set popup layout to visible
         mPopupLayout.setVisibility(View.VISIBLE);
@@ -82,20 +85,20 @@ class ConnectWebChromeClient extends WebChromeClient {
     }
 
     private WebView createPopupView() {
-        this.mPopupView = new WebView(mConnect);
+        final WebView popupView = new WebView(mConnect);
 
-        mPopupView.getSettings().setJavaScriptEnabled(true);
-        mPopupView.setWebChromeClient(new WebChromeClient() {
+        popupView.getSettings().setJavaScriptEnabled(true);
+        popupView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onCloseWindow(WebView window) {
                 super.onCloseWindow(window);
 
                 mPopupLayout.setVisibility(View.GONE);
-                mPopupViewContainer.removeView(mPopupView);
+                mPopupViewContainer.removeView(popupView);
             }
         });
 
-        mPopupView.setWebViewClient(new WebViewClient() {
+        popupView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return false;
@@ -114,7 +117,7 @@ class ConnectWebChromeClient extends WebChromeClient {
         mPopupCloseImgButton.setOnClickListener(closePopupListener);
         mPopupCloseTextButton.setOnClickListener(closePopupListener);
 
-        return mPopupView;
+        return popupView;
     }
 
 }

@@ -89,7 +89,7 @@ public class Connect extends Activity {
         this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
 
         mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
-                mPopupViewContainer, mPopupLayout, mPopupView, mPopupCloseImgButton,
+                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
                 mPopupCloseTextButton));
 
         mMainWebView.setWebViewClient(new ConnectWebViewClient(Connect.EVENT_LISTENER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
@@ -173,6 +173,10 @@ public class Connect extends Activity {
                 }
             }
         };
+    }
+
+    protected void updatePopupView(WebView newPopupView) {
+        this.mPopupView = newPopupView;
     }
 
     protected void closePopup() {
