@@ -34,8 +34,6 @@ public class Connect extends Activity {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
-        Connect.EVENT_LISTENER = eventListener;
-
         Intent connectIntent = new Intent(context, Connect.class);
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
 
