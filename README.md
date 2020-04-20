@@ -5,20 +5,9 @@ This SDK is built with minSdkVersion 21, and will work with Android >=5.0 (Lolli
 
 ## How to use add SDK in your project
 ### 1. Add the SDK dependency to the project
-_Currently, the SDK is built and deployed to Finicity's Artifactory service, but will eventually be deployed to a public Maven repository._
 
-##### Maven Coordinates
-| status | groupId | artifactId | version |
-| ------ | ------- | ---------- | ------- |
-| snapshots | com.finicity.connect | connect-sdk | 0.0.1-SNAPSHOT |
-| releases | com.finicity.connect | connect-sdk | _TODO_ |
-
-##### Finicity Artifactory Repositories
-_Snapshots_: https://repo.finicity.com/artifactory/libs-snapshot-local  
-_Releases_: https://repo.finicity.com/artifactory/libs-release-local
-
-##### Public Maven Repository  
-_TODO_
+- Download the SDK [connect-sdk-v1.0.aar](https://prod-fcconnect-public.s3-us-west-2.amazonaws.com/sdk/connect-sdk-v1.0.aar) ([sha256](https://prod-fcconnect-public.s3-us-west-2.amazonaws.com/sdk/connect-sdk-v1.0.aar.sha256))
+- Follow the instructions [here](https://developer.android.com/studio/projects/android-library#AddDependency) to add the library to your project.
 
 _*If you are using androidx, make sure that `android.enableJetifier` is set to `true` in `gradle.properties`.  It will probably already be set, but is required for this library to work.  This library is designed to support either namespace strategy (i.e. `android.support` or `androidx`).  For more info on `androidx` and Jetifier, see [official documentation](https://developer.android.com/jetpack/androidx/migrate)._
 
