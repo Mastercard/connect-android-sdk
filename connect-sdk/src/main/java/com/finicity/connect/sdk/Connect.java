@@ -120,6 +120,7 @@ public class Connect extends Activity {
         super.onDestroy();
 
         Connect.CONNECT_INSTANCE = null;
+        Connect.EVENT_LISTENER = null;
         this.mPopupView = null;
     }
 
