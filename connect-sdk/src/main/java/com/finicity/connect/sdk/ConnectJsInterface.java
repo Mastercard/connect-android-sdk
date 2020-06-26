@@ -33,16 +33,33 @@ class ConnectJsInterface {
             eventListener.onCancel();
             this.finishActivity();
         } else if(eventType.equals("done")) {
-            eventListener.onDone(jsonMessage);
+            eventListener.onDone(getEventData(jsonMessage));
             this.finishActivity();
         } else if(eventType.equals("error")) {
-            eventListener.onError(jsonMessage);
+            eventListener.onError(getEventData(jsonMessage));
             this.finishActivity();
         }
     }
 
     private void finishActivity() {
         activity.finish();
+    }
+
+
+    private JSONObject getEventData(JSONObject rootEvent) {
+        // Parse out data field, or query field if data does not exist
+        // This is for backwards compatibility with future updates to Connect.
+        JSONObject eventData = new JSONObject();
+
+        try {
+            eventData = rootEvent.getJSONObject("data");
+        } catch(Exception e) {
+            try {
+                eventData = rootEvent.getJSONObject("query");
+            } catch(Exception e2) { }
+        }
+
+        return eventData;
     }
 
     @JavascriptInterface
