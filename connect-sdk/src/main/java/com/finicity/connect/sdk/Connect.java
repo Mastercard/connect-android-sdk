@@ -66,6 +66,7 @@ public class Connect extends Activity {
          * Connect.
          */
         if(Connect.EVENT_LISTENER == null) {
+            Connect.CONNECT_INSTANCE = null;
             this.finish();
             return;
         }
