@@ -59,6 +59,8 @@ public class Connect extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         /**
          * If the application process has been killed and resumed, onCreate is called
          * but Connect.EVENT_LISTENER is now null. Therefore this activity should be finished
@@ -71,11 +73,10 @@ public class Connect extends Activity {
             return;
         }
 
+        // Prevent calls to start when Connect is already running
         if(Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
-
-        super.onCreate(savedInstanceState);
 
         // Save reference to this activity as static singleton
         Connect.CONNECT_INSTANCE = this;
