@@ -72,16 +72,9 @@ The activity launched by the SDK will automatically finish on the `done`, `cance
 
 Alternatively, the static `Connect.finishCurrentActivity()` method can be invoked to manually finish the Connect Activity.  If there is no Connect Activity currently running, calling this method will throw a RuntimeException.
 
-## How to build and deploy the SDK to a Finicity Artifactory repository
+## How to build the SDK .aar file and generate a sha256 checksum file
 
-1. Clone this repo.
-2. Install Android Studio (available at https://developer.android.com/studio).
-3. Update the `JAVA_HOME` environment variable to point to the JDK embedded in Android Studio.
-    - Open the project, click `File -> Project Structure` and the look at `JDK Location` to find this value. _*This works on Android Studio 3.5.3 but could change._
-4. Set `MAVEN_REPO_USER` and `MAVEN_REPO_PASS` environment variables. _These are not listed here for security purposes but can be provided on request._
-5. (optional) Update the sdk version if needed.  This is specified on line 6 of the SDK's `build.gradle` file ([link](https://gitlab.fini.city/connect/android-sdk/blob/master/connect-sdk/build.gradle#L6)).
-6. In a terminal, from the root of the project, run either of the following commands
-    - To push to the libs-snapshot-local repository, run `./gradlew publishLibraryPublicationToLibs-snapshot-localRepository`
-    - To push to the libs-release-local repository, run `./gradlew publishLibraryPublicationToLibs-release-localRepository`
-
-
+- Run the `build` targetin Gradle, you can find it by clicking the Gradle section on the right side of the the IDE.
+- The built file is located at `[project root]/connect-sdk/build/outputs/aar/connect-sdk-release.aar`
+- Append the appropriate version number to the file name
+- Generate a checksum using (v1.2.3 shown in example) `shasum -a 256 connect-sdk-v1.2.3.aar > connect-sdk-v1.2.3.aar.sha256`
