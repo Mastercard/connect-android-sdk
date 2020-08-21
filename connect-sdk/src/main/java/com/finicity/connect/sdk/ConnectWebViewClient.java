@@ -5,11 +5,11 @@ import android.webkit.WebViewClient;
 
 class ConnectWebViewClient extends WebViewClient {
 
-    private EventListener eventListener;
+    private EventHandler eventHandler;
     private String connectUrl;
 
-    public ConnectWebViewClient(EventListener eventListener, String connectUrl) {
-        this.eventListener = eventListener;
+    public ConnectWebViewClient(EventHandler eventHandler, String connectUrl) {
+        this.eventHandler = eventHandler;
         this.connectUrl = connectUrl;
     }
 
@@ -18,7 +18,7 @@ class ConnectWebViewClient extends WebViewClient {
         // Compare finished URL to Connect link. For some reason an extra '/' is getting added
         // before the query string by the time it gets here.
         if(url.equals(connectUrl.replace("?", "/?"))) {
-            eventListener.onLoaded();
+            eventHandler.onLoaded();
         }
     }
 }

@@ -54,11 +54,20 @@ public class MainActivity extends AppCompatActivity {
 
             System.out.println(">>> Launching Connect activity");
 
-            if(listener instanceof EventHandler) {
-                Connect.start(this, url, (EventHandler) listener);
-            } else {
-                Connect.start(this, url, listener);
-            }
+            Connect.start(this, url, listener);
+        }
+    }
+
+    private void launchActivity(EventHandler eventHandler) {
+        String url = getEditConnectUrl();
+
+        if(url.length() > 0) {
+            // Null out text so we can repeat with new link after Connect Activity closes.
+            mEditConnectUrl.setText("");
+
+            System.out.println(">>> Launching Connect activity");
+
+            Connect.start(this, url, eventHandler);
         }
     }
 
