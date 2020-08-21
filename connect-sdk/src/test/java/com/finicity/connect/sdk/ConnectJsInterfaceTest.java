@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class ConnectJsInterfaceTest {
 
     private Activity activity;
-    private EventListener eventListener;
+    private EventHandler eventHandler;
 
     private ConnectJsInterface jsInterface;
 
@@ -27,9 +27,9 @@ public class ConnectJsInterfaceTest {
     public void setup() {
         // Mock activity and eventlistener
         activity = mock(Activity.class);
-        eventListener = mock(EventListener.class);
+        eventHandler = mock(EventHandler.class);
 
-        jsInterface = new ConnectJsInterface(activity, eventListener);
+        jsInterface = new ConnectJsInterface(activity, eventHandler);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(junkMessage);
 
-        verifyZeroInteractions(eventListener);
+        verifyZeroInteractions(eventHandler);
         verifyZeroInteractions(activity);
     }
 
@@ -48,7 +48,7 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(junkMessage);
 
-        verifyZeroInteractions(eventListener);
+        verifyZeroInteractions(eventHandler);
         verifyZeroInteractions(activity);
     }
 
@@ -58,7 +58,7 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(invalidTypeMsg);
 
-        verifyZeroInteractions(eventListener);
+        verifyZeroInteractions(eventHandler);
         verifyZeroInteractions(activity);
     }
 
@@ -68,10 +68,10 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(message);
 
-        verify(eventListener).onCancel();
-        verify(eventListener, never()).onDone(any(JSONObject.class));
-        verify(eventListener, never()).onError(any(JSONObject.class));
-        verify(eventListener, never()).onLoaded();
+        verify(eventHandler).onCancel();
+        verify(eventHandler, never()).onDone(any(JSONObject.class));
+        verify(eventHandler, never()).onError(any(JSONObject.class));
+        verify(eventHandler, never()).onLoaded();
 
         verify(activity).finish();
     }
@@ -82,10 +82,10 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(message);
 
-        verify(eventListener).onDone(any(JSONObject.class));
-        verify(eventListener, never()).onCancel();
-        verify(eventListener, never()).onError(any(JSONObject.class));
-        verify(eventListener, never()).onLoaded();
+        verify(eventHandler).onDone(any(JSONObject.class));
+        verify(eventHandler, never()).onCancel();
+        verify(eventHandler, never()).onError(any(JSONObject.class));
+        verify(eventHandler, never()).onLoaded();
 
         verify(activity).finish();
     }
@@ -96,12 +96,30 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(message);
 
-        verify(eventListener).onError(any(JSONObject.class));
-        verify(eventListener, never()).onDone(any(JSONObject.class));
-        verify(eventListener, never()).onCancel();
-        verify(eventListener, never()).onLoaded();
+        verify(eventHandler).onError(any(JSONObject.class));
+        verify(eventHandler, never()).onDone(any(JSONObject.class));
+        verify(eventHandler, never()).onCancel();
+        verify(eventHandler, never()).onLoaded();
 
         verify(activity).finish();
+    }
+
+    @Test
+    public void testPostMessage_routeEvent() {
+        String message = "{ \"type\": \"route\" }";
+
+        jsInterface.postMessage(message);
+
+        verify(eventHandler).onRouteEvent(any(JSONObject.class));
+    }
+
+    @Test
+    public void testPostMessage_userEvent() {
+        String message = "{ \"type\": \"user\" }";
+
+        jsInterface.postMessage(message);
+
+        verify(eventHandler).onUserEvent(any(JSONObject.class));
     }
 
     @Test
