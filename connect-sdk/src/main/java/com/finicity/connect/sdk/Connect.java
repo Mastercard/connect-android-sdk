@@ -37,7 +37,7 @@ public class Connect extends Activity {
         Connect.start(context, connectUrl, wrapper);
     }
 
-    public static void start(Context context, String connectUrl, EventHandler eventListener) {
+    public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if(Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
@@ -46,7 +46,7 @@ public class Connect extends Activity {
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
 
         // Set EventListener
-        Connect.EVENT_HANDLER = eventListener;
+        Connect.EVENT_HANDLER = eventHandler;
 
         context.startActivity(connectIntent);
     }
