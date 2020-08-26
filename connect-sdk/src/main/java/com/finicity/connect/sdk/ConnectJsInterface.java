@@ -9,11 +9,11 @@ import org.json.JSONObject;
 
 class ConnectJsInterface {
     private Activity activity;
-    private EventListener eventListener;
+    private EventHandler eventHandler;
 
-    public ConnectJsInterface(Activity activity, EventListener eventListener) {
+    public ConnectJsInterface(Activity activity, EventHandler eventHandler) {
         this.activity = activity;
-        this.eventListener = eventListener;
+        this.eventHandler = eventHandler;
     }
 
     @JavascriptInterface
@@ -30,14 +30,18 @@ class ConnectJsInterface {
 
         // Invoke appropriate event listener method
         if(eventType.equals("cancel")) {
-            eventListener.onCancel();
+            eventHandler.onCancel();
             this.finishActivity();
         } else if(eventType.equals("done")) {
-            eventListener.onDone(getEventData(jsonMessage));
+            eventHandler.onDone(getEventData(jsonMessage));
             this.finishActivity();
         } else if(eventType.equals("error")) {
-            eventListener.onError(getEventData(jsonMessage));
+            eventHandler.onError(getEventData(jsonMessage));
             this.finishActivity();
+        } else if(eventType.equals("route")) {
+            eventHandler.onRouteEvent(getEventData(jsonMessage));
+        } else if(eventType.equals("user")) {
+            eventHandler.onUserEvent(getEventData(jsonMessage));
         }
     }
 

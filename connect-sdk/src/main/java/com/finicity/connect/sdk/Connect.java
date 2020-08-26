@@ -26,10 +26,18 @@ public class Connect extends Activity {
     // Static stuff
     private static final String CONNECT_URL_INTENT_KEY = "com.finicity.connect.sdk.CONNECT_URL_INTENT_KEY";
 
-    private static EventListener EVENT_LISTENER;
+    private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
 
+    @Deprecated
     public static void start(Context context, String connectUrl, EventListener eventListener) {
+        // Create EventHandler and call other start method
+        EventListenerWrapper wrapper = new EventListenerWrapper(eventListener);
+
+        Connect.start(context, connectUrl, wrapper);
+    }
+
+    public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if(Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
@@ -38,7 +46,7 @@ public class Connect extends Activity {
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
 
         // Set EventListener
-        Connect.EVENT_LISTENER = eventListener;
+        Connect.EVENT_HANDLER = eventHandler;
 
         context.startActivity(connectIntent);
     }
@@ -63,11 +71,11 @@ public class Connect extends Activity {
 
         /**
          * If the application process has been killed and resumed, onCreate is called
-         * but Connect.EVENT_LISTENER is now null. Therefore this activity should be finished
+         * but Connect.EVENT_HANDLER is now null. Therefore this activity should be finished
          * to prevent errors. The application utilizing this framework should then restart
          * Connect.
          */
-        if(Connect.EVENT_LISTENER == null) {
+        if(Connect.EVENT_HANDLER == null) {
             Connect.CONNECT_INSTANCE = null;
             this.finish();
             return;
@@ -103,10 +111,10 @@ public class Connect extends Activity {
                 mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
                 mPopupCloseTextButton));
 
-        mMainWebView.setWebViewClient(new ConnectWebViewClient(Connect.EVENT_LISTENER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
+        mMainWebView.setWebViewClient(new ConnectWebViewClient(Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
         // JS Interface and event listener for main WebView
-        ConnectJsInterface jsInterface = new ConnectJsInterface(this, Connect.EVENT_LISTENER);
+        ConnectJsInterface jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
         mMainWebView.addJavascriptInterface(jsInterface, "Android");
 
         // Load configured URL
@@ -133,7 +141,7 @@ public class Connect extends Activity {
         super.onDestroy();
 
         Connect.CONNECT_INSTANCE = null;
-        Connect.EVENT_LISTENER = null;
+        Connect.EVENT_HANDLER = null;
         this.mPopupView = null;
     }
 
@@ -166,7 +174,7 @@ public class Connect extends Activity {
             } else {
                 try {
                     // Send cancel event and finish
-                    Connect.EVENT_LISTENER.onCancel();
+                    Connect.EVENT_HANDLER.onCancel();
 
                     finish();
                 } catch(Exception e) {

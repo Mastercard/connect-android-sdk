@@ -9,10 +9,13 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.finicity.connect.sdk.Connect;
+import com.finicity.connect.sdk.EventHandler;
+import com.finicity.connect.sdk.EventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mStartButton;
+    private Button mStartButtonEventListener;
+    private Button mStartButtonEventHandler;
     private EditText mEditConnectUrl;
 
     @Override
@@ -20,20 +23,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Add click listener to start button which starts Connect activity
-        this.mStartButton = findViewById(R.id.startButton);
+        // Add click listeners for EventListener and EventHandler buttons
+        this.mStartButtonEventListener = findViewById(R.id.startButtonEventListener);
 
-        mStartButton.setOnClickListener(new View.OnClickListener() {
+        mStartButtonEventListener.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchConnectActivity();
+                launchActivity(new ConsoleEventListener());
+            }
+        });
+
+        this.mStartButtonEventHandler = findViewById(R.id.startButtonEventHandler);
+
+        mStartButtonEventHandler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchActivity(new ConsoleEventHandler());
             }
         });
 
         this.mEditConnectUrl = findViewById(R.id.editConnectUrl);
     }
 
-    private void launchConnectActivity() {
+    private void launchActivity(EventListener listener) {
         String url = getEditConnectUrl();
 
         if(url.length() > 0) {
@@ -41,7 +53,21 @@ public class MainActivity extends AppCompatActivity {
             mEditConnectUrl.setText("");
 
             System.out.println(">>> Launching Connect activity");
-            Connect.start(this, url, new ConsoleEventListener());
+
+            Connect.start(this, url, listener);
+        }
+    }
+
+    private void launchActivity(EventHandler eventHandler) {
+        String url = getEditConnectUrl();
+
+        if(url.length() > 0) {
+            // Null out text so we can repeat with new link after Connect Activity closes.
+            mEditConnectUrl.setText("");
+
+            System.out.println(">>> Launching Connect activity");
+
+            Connect.start(this, url, eventHandler);
         }
     }
 

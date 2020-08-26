@@ -14,16 +14,16 @@ import static org.mockito.Mockito.verify;
 @RunWith(RobolectricTestRunner.class)
 public class ConnectWebViewClientTest {
 
-    private EventListener eventListener;
+    private EventHandler eventHandler;
     private static String CONNECT_URL = "http://host?param=val";
 
     private ConnectWebViewClient client;
 
     @Before
     public void setup() {
-        eventListener = mock(EventListener.class);
+        eventHandler = mock(EventHandler.class);
 
-        client = new ConnectWebViewClient(eventListener, CONNECT_URL);
+        client = new ConnectWebViewClient(eventHandler, CONNECT_URL);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class ConnectWebViewClientTest {
 
         client.onPageFinished(mock(WebView.class), url);
 
-        verify(eventListener).onLoaded();
+        verify(eventHandler).onLoaded();
     }
 
     @Test
@@ -42,6 +42,6 @@ public class ConnectWebViewClientTest {
 
         client.onPageFinished(mock(WebView.class), url);
 
-        verify(eventListener, never()).onLoaded();
+        verify(eventHandler, never()).onLoaded();
     }
 }
