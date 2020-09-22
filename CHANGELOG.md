@@ -14,3 +14,4 @@ Patch:
 
 Patch:
 - Updated user agent for Oauth popup to prevent webview from being blocked.
+- Set versionCode to 104 and versionName to "1.0.4" in Android manifest.
