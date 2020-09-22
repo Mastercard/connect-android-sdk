@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 public class Connect extends Activity {
+    private static final String SDK_VERSION = "1.0.4";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -197,6 +198,13 @@ public class Connect extends Activity {
 
     protected void updatePopupView(WebView newPopupView) {
         this.mPopupView = newPopupView;
+
+        // Fix user agent
+        String defaultUserAgent = newPopupView.getSettings().getUserAgentString();
+        String finUserAgent = defaultUserAgent.replace("; wv", "") + " Finicity-Connect-Mobile-SDK/" + SDK_VERSION;
+
+        this.mPopupView.getSettings().setUserAgentString(finUserAgent);
+
     }
 
     protected void closePopup() {

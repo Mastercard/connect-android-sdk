@@ -9,3 +9,9 @@ Patch:
 
 Patch:
 - Updated Connect.onCreate() to first call super.onCreate() before doing the EventListener / process restart check (see last change).  Turns out finishing an activity before calling super.onCreate() causes an exception.
+
+### 1.0.4 (September 22, 2020)
+
+Patch:
+- Updated user agent for Oauth popup to prevent webview from being blocked.
+- Set versionCode to 104 and versionName to "1.0.4" in Android manifest.
