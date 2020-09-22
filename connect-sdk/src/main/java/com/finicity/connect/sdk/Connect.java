@@ -200,10 +200,10 @@ public class Connect extends Activity {
         this.mPopupView = newPopupView;
 
         // Fix user agent
-        String oldUserAgent = newPopupView.getSettings().getUserAgentString();
-        String newUserAgent = oldUserAgent.replace("; wv", "") + " Finicity-Connect-Mobile-SDK/" + SDK_VERSION;
+        String defaultUserAgent = newPopupView.getSettings().getUserAgentString();
+        String finUserAgent = defaultUserAgent.replace("; wv", "") + " Finicity-Connect-Mobile-SDK/" + SDK_VERSION;
 
-        this.mPopupView.getSettings().setUserAgentString(newUserAgent);
+        this.mPopupView.getSettings().setUserAgentString(finUserAgent);
 
     }
 
