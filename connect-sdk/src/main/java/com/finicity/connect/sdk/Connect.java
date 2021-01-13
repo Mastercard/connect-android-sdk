@@ -44,6 +44,7 @@ public class Connect extends Activity {
         }
 
         Intent connectIntent = new Intent(context, Connect.class);
+        connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
 
         // Set EventListener

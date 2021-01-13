@@ -68,7 +68,9 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.3'
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'
 }
 
 project.afterEvaluate {
