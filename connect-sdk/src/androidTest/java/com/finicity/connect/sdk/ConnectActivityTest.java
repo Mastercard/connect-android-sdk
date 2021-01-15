@@ -8,8 +8,10 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -21,7 +23,9 @@ import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webScrollIntoView;
+import static org.junit.Assert.fail;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class ConnectActivityTest {
 
@@ -30,7 +34,7 @@ public class ConnectActivityTest {
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
 
     @Test
-    public void connectWithExpiredUrl() throws InterruptedException {
+    public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
 
         Thread.sleep(5000);
@@ -38,7 +42,12 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void connectWithGoodUrlThenCancel() throws InterruptedException {
+    public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
         Thread.sleep(5000);
@@ -49,7 +58,12 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void connectWithGoodUrlThenBackButton() throws InterruptedException {
+    public void test03ConnectWithGoodUrlThenBackButton() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
         Thread.sleep(5000);
@@ -76,7 +90,12 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void connectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
+    public void test04ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
         Thread.sleep(5000);
@@ -110,7 +129,12 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void connectWithGoodUrlThenPrivacyPolicyThenBackButton() throws InterruptedException {
+    public void test05ConnectWithGoodUrlThenPrivacyPolicyThenBackButton() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
         Thread.sleep(5000);
@@ -148,8 +172,114 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void connectWithGoodUrlThenAddBankAccount() throws InterruptedException {
+    public void test06ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
+
+        Thread.sleep(5000);
+        // Search for FinBank
+        onWebView()
+                .withElement(findElement(Locator.NAME, "Search for your bank"))
+                .perform(DriverAtoms.clearElement())
+                .perform(DriverAtoms.webKeys("FinBank"))
+                .perform(webClick());
+
+        // Select FinBank from search list using XPATH
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
+
+        // Click Continue using XPATH
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"financial-sign-in\"]/div[2]/app-button/a/div")).perform(webClick());
+
+        // Fill out UserId and Password
+        Thread.sleep(5000);
+        onWebView()
+                .withElement(findElement(Locator.NAME, "Banking Userid"))
+                .perform(DriverAtoms.clearElement())
+                .perform(DriverAtoms.webKeys("demo"));
+
+        onWebView()
+                .withElement(findElement(Locator.NAME, "Banking Password"))
+                .perform(DriverAtoms.clearElement())
+                .perform(DriverAtoms.webKeys("go"));
+
+        // Click Sign In using XPATH
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-login\"]/form/app-button/a")).perform(webClick());
+
+        // Select 1st account in list using XPATH
+        Thread.sleep(10000);
+        //*[@id="institution-select-accounts"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
+
+        // Scroll down to save button and click
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webScrollIntoView()).perform(webClick());
+
+        // Click Submit button
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
+    }
+
+     @Test
+    public void test07ConnectWithExpiredUrlThenFinishActivity() throws InterruptedException {
+
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+
+        Thread.sleep(5000);
+        Connect.finishCurrentActivity();
+    }
+
+    @Test
+    public void test08FinishActivity() {
+
+        // Try and finish a Activity that was never started
+        try {
+            Connect.finishCurrentActivity();
+            fail("Should have thrown runtime exception");
+        } catch(RuntimeException e) {
+            //success
+        }
+    }
+
+    // Tests 09, 10, 11 use deprecated TestEventListener
+    @Test
+    public void test09ConnectWithExpiredUrl() throws InterruptedException {
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventListener());
+
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+    }
+
+    @Test
+    public void test10onnectWithGoodUrlThenCancel() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
+        Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventListener());
+
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
+    }
+
+    @Test
+    public void test11ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
+
+        if (goodUrl.length() == 0) {
+            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
+        }
+
+        Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventListener());
 
         Thread.sleep(5000);
         // Search for FinBank
@@ -227,6 +357,28 @@ public class ConnectActivityTest {
         public void onUserEvent(JSONObject userEvent) {
             System.out.println(">>> TestEventHandler: Received User event\n>>>>>> " + userEvent.toString());
 
+        }
+    }
+
+    public class TestEventListener implements EventListener {
+        @Override
+        public void onLoaded() {
+            System.out.println(">>> TestEventListener: Received loaded event");
+        }
+
+        @Override
+        public void onDone(JSONObject doneEvent) {
+            System.out.println(">>> TestEventListener: Received done event\n>>>>>> " + doneEvent.toString());
+        }
+
+        @Override
+        public void onCancel() {
+            System.out.println(">>> TestEventListener: Received Cancel event");
+        }
+
+        @Override
+        public void onError(JSONObject errorEvent) {
+            System.out.println(">>> TestEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
         }
     }
 
