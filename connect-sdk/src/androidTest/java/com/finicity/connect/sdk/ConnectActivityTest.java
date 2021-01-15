@@ -8,6 +8,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,16 @@ public class ConnectActivityTest {
     // Generate a 2.0 Connect url using Postman and set goodUrl to it before running UI unit tests.
     private static final String goodUrl = "";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
+
+    @Before
+    public void initTest() {
+        Connect.runningUnitTest = true;
+    }
+
+    @After
+    public void teardown() {
+        Connect.runningUnitTest = false;
+    }
 
     @Test
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
