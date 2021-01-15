@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -29,6 +30,7 @@ public class Connect extends Activity {
 
     private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
+    public static Boolean runningUnitTest = false;
 
     @Deprecated
     public static void start(Context context, String connectUrl, EventListener eventListener) {
@@ -44,6 +46,7 @@ public class Connect extends Activity {
         }
 
         Intent connectIntent = new Intent(context, Connect.class);
+        if (runningUnitTest) { connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); }
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
 
         // Set EventListener
