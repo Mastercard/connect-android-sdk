@@ -8,7 +8,7 @@ def groupId = 'com.finicity.connect'
 def version = '0.0.1-SNAPSHOT'
  */
 
-def libraryGroupId = 'com.cowasoft.connect'
+def libraryGroupId = 'com.finicity.connect'
 def libraryArtifactId = 'connect-sdk'
 def libraryVersion = '1.0.4'
 
@@ -118,15 +118,14 @@ project.afterEvaluate {
 // or gradle.properties that is not in source code control
 
 ext {
-    bintrayUser = "jimjrhino"
-    bintrayApiKey = "c913efad41a59ebfbaa4a05b7a855dd3a49fc6ba"
-    bintrayOrg = "cowasoft"
-    bintrayRepo = "connect-android"
-    bintrayPackage = "com.cowasoft.connect"
+    bintrayUser = "finicity-jwright"
+    bintrayApiKey = "efb6e940d8e4ffa3f244b876462412259bb299e0"
+    bintrayOrg = "finicity"
+    bintrayRepo = "connect-android-sdk"
+    bintrayPackage = "com.finicity.connect"
     bintrayPackageDesc = "Connect Android SDK"
-    bintrayPackageVcsUrl = "https://github.com/pick4pro/connect-sdk.git"
+    bintrayPackageVcsUrl = "https://github.com/Finicity/connect-android-sdk.git"
 }
-
 
 bintray {
     user = bintrayUser
