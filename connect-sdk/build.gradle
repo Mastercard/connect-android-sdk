@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
-def artifactId = 'connect-sdk'
-def groupId = 'com.finicity.connect'
-def version = '0.0.1-SNAPSHOT'
+def libraryGroupId = 'com.finicity.connect'
+def libraryArtifactId = 'connect-sdk'
+def libraryVersion = '1.0.4'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
-
 
     defaultConfig {
         minSdkVersion 21
@@ -38,29 +38,6 @@ android {
 
 }
 
-publishing {
-    repositories {
-        mavenLocal()
-        maven {
-            name "libs-release-local"
-            url "https://repo.finicity.com/artifactory/libs-release-local"
-            credentials {
-                username System.getenv("MAVEN_REPO_USER")
-                password System.getenv("MAVEN_REPO_PASS")
-            }
-        }
-
-        maven {
-            name "libs-snapshot-local"
-            url "https://repo.finicity.com/artifactory/libs-snapshot-local"
-            credentials {
-                username System.getenv("MAVEN_REPO_USER")
-                password System.getenv("MAVEN_REPO_PASS")
-            }
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -76,16 +53,73 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'
 }
 
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from android.sourceSets.main.java.srcDirs
+}
+
 project.afterEvaluate {
     publishing {
         publications {
             library(MavenPublication) {
-                setGroupId groupId
-                setArtifactId artifactId
-                setVersion version
-
+                groupId libraryGroupId
+                artifactId libraryArtifactId
+                version libraryVersion
+                artifact androidSourcesJar
                 artifact bundleReleaseAar
+
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.implementation.allDependencies.each {
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+/*
+    To clean, build aar, generate pom, and to upload aar/pom to bintray issue the following command from terminal.
+    ./gradlew connect-sdk:clean connect-sdk:assembleRelease connect-sdk:generatePomFileForLibraryPublication connect-sdk:bintrayUpload
+ */
+
+// Bintray properties for accessing bintray.  If we open source then move to local.properties
+// or gradle.properties that is not in source code control
+
+ext {
+    bintrayOrg = "finicity"
+    bintrayRepo = "connect-android-sdk"
+    bintrayPackage = "com.finicity.connect"
+    bintrayPackageDesc = "Connect Android SDK"
+    bintrayPackageVcsUrl = "https://github.com/Finicity/connect-android-sdk.git"
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty('bintrayUser')
+    key = properties.getProperty('bintrayApiKey')
+    publications = ['library']
+    publish = true
+    override = true
+    pkg {
+        userOrg = bintrayOrg
+        repo = bintrayRepo
+        name = bintrayPackage
+        desc = bintrayPackageDesc
+        licenses = ['MIT']
+        vcsUrl = bintrayPackageVcsUrl
+        publicDownloadNumbers = true
+        version {
+            name = libraryVersion
+            released = new Date()
         }
     }
 }
