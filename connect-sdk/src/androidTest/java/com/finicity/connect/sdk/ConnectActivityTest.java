@@ -51,7 +51,7 @@ public class ConnectActivityTest {
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
@@ -64,7 +64,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
         Thread.sleep(5000);
@@ -114,7 +114,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         // Search for FinBank
         onWebView()
             .withElement(findElement(Locator.NAME, "Search for your bank"))
@@ -153,7 +153,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         // Search for FinBank
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
@@ -196,7 +196,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         // Search for FinBank
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
@@ -247,7 +247,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         Connect.finishCurrentActivity();
     }
 
@@ -268,7 +268,7 @@ public class ConnectActivityTest {
     public void test09ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventListener());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
@@ -281,7 +281,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventListener());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
         Thread.sleep(5000);
@@ -297,7 +297,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventListener());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         // Search for FinBank
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
