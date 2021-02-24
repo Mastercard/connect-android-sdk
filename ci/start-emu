@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+emulator -avd Pixel_2_API_29 -no-audio &
+adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'

@@ -5,6 +5,7 @@ import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.web.webdriver.DriverAtoms;
 import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBackUnconditionally;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isJavascriptEnabled;
@@ -69,6 +71,7 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
     }
 
+    /*
     @Test
     public void test03ConnectWithGoodUrlThenBackButton() throws InterruptedException {
 
@@ -100,6 +103,7 @@ public class ConnectActivityTest {
         Thread.sleep(5000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
     }
+    */
 
     @Test
     public void test04ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
@@ -340,57 +344,60 @@ public class ConnectActivityTest {
     }
 
     public class TestEventHandler implements EventHandler {
+        private static final String TAG = "TestEventHandler";
+
         @Override
         public void onLoaded() {
-            System.out.println(">>> TestEventHandler: Received loaded event");
+            Log.i(TAG, ">>> TestEventHandler: Received Loaded event");
         }
 
         @Override
         public void onDone(JSONObject doneEvent) {
-            System.out.println(">>> TestEventHandler: Received done event\n>>>>>> " + doneEvent.toString());
+            Log.i(TAG, ">>> TestEventHandler: Received Done event\n>>>>>> " + doneEvent.toString());
         }
 
         @Override
         public void onCancel() {
-            System.out.println(">>> TestEventHandler: Received Cancel event");
-        }
+            Log.i(TAG, ">>> TestEventHandler: Received Cancel event");
+         }
 
         @Override
         public void onError(JSONObject errorEvent) {
-            System.out.println(">>> TestEventHandler: Received Error event\n>>>>>> " + errorEvent.toString());
+            Log.i(TAG, ">>> TestEventHandler: Received Error event\n>>>>>> " + errorEvent.toString());
         }
 
         @Override
         public void onRouteEvent(JSONObject routeEvent) {
-            System.out.println(">>> TestEventHandler: Received Route event\n>>>>>> " + routeEvent.toString());
+            Log.i(TAG, ">>> TestEventHandler: Received Route event\n>>>>>> " + routeEvent.toString());
         }
 
         @Override
         public void onUserEvent(JSONObject userEvent) {
-            System.out.println(">>> TestEventHandler: Received User event\n>>>>>> " + userEvent.toString());
-
+            Log.i(TAG, ">>> TestEventHandler: Received User event\n>>>>>> " + userEvent.toString());
         }
     }
 
     public class TestEventListener implements EventListener {
+        private static final String TAG = "TestEventListener";
+
         @Override
         public void onLoaded() {
-            System.out.println(">>> TestEventListener: Received loaded event");
+            Log.i(TAG, ">>> TestEventListener: Received Loaded event");
         }
 
         @Override
         public void onDone(JSONObject doneEvent) {
-            System.out.println(">>> TestEventListener: Received done event\n>>>>>> " + doneEvent.toString());
+            Log.i(TAG, ">>> TestEventListener: Received Done event\n>>>>>> " + doneEvent.toString());
         }
 
         @Override
         public void onCancel() {
-            System.out.println(">>> TestEventListener: Received Cancel event");
+            Log.i(TAG, ">>> TestEventListener: Received Cancel event");
         }
 
         @Override
         public void onError(JSONObject errorEvent) {
-            System.out.println(">>> TestEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
+            Log.i(TAG, ">>> TestEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
         }
     }
 

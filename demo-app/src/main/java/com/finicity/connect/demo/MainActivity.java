@@ -4,6 +4,7 @@ package com.finicity.connect.demo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +14,7 @@ import com.finicity.connect.sdk.EventHandler;
 import com.finicity.connect.sdk.EventListener;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "MainActivity";
     private Button mStartButtonEventListener;
     private Button mStartButtonEventHandler;
     private EditText mEditConnectUrl;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             // Null out text so we can repeat with new link after Connect Activity closes.
             mEditConnectUrl.setText("");
 
-            System.out.println(">>> Launching Connect activity");
+            Log.i(TAG, ">>> Launching Connect activity");
 
             Connect.start(this, url, listener);
         }
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             // Null out text so we can repeat with new link after Connect Activity closes.
             mEditConnectUrl.setText("");
 
-            System.out.println(">>> Launching Connect activity");
+            Log.i(TAG, ">>> Launching Connect activity");
 
             Connect.start(this, url, eventHandler);
         }

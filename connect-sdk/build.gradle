@@ -1,6 +1,50 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.6' //Use latest version
+}
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+task jacocoTestReport(type: JacocoReport) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports"
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = true
+    }
+    def fileFilter = ['**/R.class',
+                      '**/R$*.class', '**/*$InjectAdapter.*',
+                      '**/*$ModuleAdapter.*',
+                      '**/Dao*.*',
+                      '**/*$ViewInjector*.*',
+                      '**/*$ViewBinder*.*',
+                      '**/*MembersInjector*.*',
+                      '**/BuildConfig.*',
+                      '**/Manifest*.*',
+                      '**/*$Lambda$*.',
+                      '**/*Factory*.',
+                      '**/*$Builder*',
+                      '**/*$Parcelable*.*',
+                      '**/*DaggerApplicationComponent*.*',
+                      '**/api',
+                      '**/android/**/*.*',
+                      '**/me/**/*.*', '**/org/**/*.*', '**/org/**/*.*']
+
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes/", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java/"
+    sourceDirectories.from = files([mainSrc])
+    classDirectories.from = files([debugTree])
+    executionData.from = fileTree(dir: project.projectDir, includes:
+            ['**/**/*.exec', '**/**/*.ec'])
+}
+
+apply from: "$project.rootDir/sonar.gradle"
 
 def libraryGroupId = 'com.finicity.connect'
 def libraryArtifactId = 'connect-sdk'
