@@ -1,12 +1,16 @@
 package com.finicity.connect.sdk;
 
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.IdlingRegistry;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.web.webdriver.DriverAtoms;
 import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.hamcrest.Matchers;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -14,6 +18,9 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -32,100 +39,95 @@ import static org.junit.Assert.fail;
 public class ConnectActivityTest {
 
     // Generate a 2.0 Connect url using Postman and set goodUrl to it before running UI unit tests.
-    private static final String goodUrl = "";
+    private static final String goodUrl = "https://connect2.finicity.com/?consumerId=274552dfe090bccf5ce3e735d4ef51eb&customerId=1017865679&partnerId=2445582695152&signature=deadd0a331a90753dcd91d7da407d03ae5489b7784200a4ebded572da01ab608&timestamp=1612391678803&ttl=1614983678803&webhook=https%3A%2F%2Fwebhook.site%2F9f34fa76-f542-4785-a35c-fd4d2d57b1d2";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
+    private WebEventIdlingResource mIdlingResource;
 
     @Before
-    public void initTest() {
+    public void setup() {
+        mIdlingResource = new WebEventIdlingResource();
+        IdlingRegistry.getInstance().register(mIdlingResource);
         Connect.runningUnitTest = true;
     }
 
     @After
     public void teardown() {
         Connect.runningUnitTest = false;
+        if (mIdlingResource != null) {
+            IdlingRegistry.getInstance().unregister(mIdlingResource);
+        }
     }
 
     @Test
-    public void test01ConnectWithExpiredUrl() throws InterruptedException {
+    public void test01ConnectWithExpiredUrl() {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
     @Test
     public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
 
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
-
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        mIdlingResource.waitForEvent("search");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
     }
 
     @Test
     public void test03ConnectWithGoodUrlThenBackButton() throws InterruptedException {
 
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
-
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
-        // Search for FinBank
+        // Wait for Route search or let it timeout
+        mIdlingResource.waitForEvent("search");
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
                 .perform(DriverAtoms.clearElement())
                 .perform(DriverAtoms.webKeys("FinBank"))
                 .perform(webClick());
 
-        // This seems pretty fragile to use XPATH but it seems to work in selecting FinBank
-        Thread.sleep(5000);
+        // Select FinBank from search list using XPATH
+        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
         // Try and simulate back button press to return to previous page
-        Thread.sleep(5000);
-        onView(isRoot()).perform(ViewActions.pressBack());
+        mIdlingResource.waitForEvent("sign-in");
+        onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
 
+        /*
         Thread.sleep(5000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
         Thread.sleep(5000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
+        */
     }
 
     @Test
     public void test04ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
 
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
-
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
-        // Search for FinBank
+        // Wait for Route search or let it timeout
+        mIdlingResource.waitForEvent("search");
         onWebView()
             .withElement(findElement(Locator.NAME, "Search for your bank"))
             .perform(DriverAtoms.clearElement())
             .perform(DriverAtoms.webKeys("FinBank"))
             .perform(webClick());
 
-        // This seems pretty fragile to use XPATH but it seems to work
-        //*[@id="institution-search"]/div/div/div[1]/div
-        Thread.sleep(5000);
-        // onWebView().withElement(findElement(Locator.XPATH, "/html/body/app-root/div/div/div[2]/div/app-search/div/div/div/div/app-institution-list/div/div/div/div[1]/div")).perform(webClick());
+        // Select FinBank from search list using XPATH
+        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy Policy")).perform(webClick());
+        // Click Next using XPATH
+        mIdlingResource.waitForEvent("sign-in");
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy policy")).perform(webClick());
 
         // Try to dismiss Privacy Policy popup
         Thread.sleep(5000);
@@ -135,7 +137,7 @@ public class ConnectActivityTest {
         onWebView(Matchers.allOf(isDisplayed(), isJavascriptEnabled()))
                 .withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         onWebView(Matchers.allOf(isDisplayed(), isJavascriptEnabled()))
                 .withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
     }
@@ -143,28 +145,23 @@ public class ConnectActivityTest {
     @Test
     public void test05ConnectWithGoodUrlThenPrivacyPolicyThenBackButton() throws InterruptedException {
 
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
-
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
-        // Search for FinBank
+        // Wait for Route search or let it timeout
+        mIdlingResource.waitForEvent("search");
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
                 .perform(DriverAtoms.clearElement())
                 .perform(DriverAtoms.webKeys("FinBank"))
                 .perform(webClick());
 
-        // This seems pretty fragile to use XPATH but it seems to work
-        //*[@id="institution-search"]/div/div/div[1]/div
-        Thread.sleep(5000);
-        // onWebView().withElement(findElement(Locator.XPATH, "/html/body/app-root/div/div/div[2]/div/app-search/div/div/div/div/app-institution-list/div/div/div/div[1]/div")).perform(webClick());
+        // Select FinBank from search list using XPATH
+        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy Policy")).perform(webClick());
+        // Click Next using XPATH
+        mIdlingResource.waitForEvent("sign-in");
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy policy")).perform(webClick());
 
         // Perform back button press to dismiss popup and display dialog to user
         Thread.sleep(5000);
@@ -178,22 +175,18 @@ public class ConnectActivityTest {
         onWebView(Matchers.allOf(isDisplayed(), isJavascriptEnabled()))
                 .withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         onWebView(Matchers.allOf(isDisplayed(), isJavascriptEnabled()))
                 .withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
     }
 
     @Test
-    public void test06ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
-
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
+    public void test06ConnectWithGoodUrlThenAddBankAccount() {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
-        // Search for FinBank
+        // Wait for Route search or let it timeout
+        mIdlingResource.waitForEvent("search");
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
                 .perform(DriverAtoms.clearElement())
@@ -201,15 +194,15 @@ public class ConnectActivityTest {
                 .perform(webClick());
 
         // Select FinBank from search list using XPATH
-        Thread.sleep(5000);
+        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
-        // Click Continue using XPATH
-        Thread.sleep(5000);
+        // Click Next using XPATH
+        mIdlingResource.waitForEvent("sign-in");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"financial-sign-in\"]/div[2]/app-button/a/div")).perform(webClick());
 
-        // Fill out UserId and Password
-        Thread.sleep(5000);
+        // Fill out UserId and Password and submit form
+        mIdlingResource.waitForEvent("login");
         onWebView()
                 .withElement(findElement(Locator.NAME, "Banking Userid"))
                 .perform(DriverAtoms.clearElement())
@@ -220,21 +213,18 @@ public class ConnectActivityTest {
                 .perform(DriverAtoms.clearElement())
                 .perform(DriverAtoms.webKeys("go"));
 
-        // Click Sign In using XPATH
-        Thread.sleep(5000);
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-login\"]/form/app-button/a")).perform(webClick());
 
         // Select 1st account in list using XPATH
-        Thread.sleep(10000);
-        //*[@id="institution-select-accounts"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div
+        mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
 
         // Scroll down to save button and click
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webScrollIntoView()).perform(webClick());
+        mIdlingResource.waitForEvent("loading");
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webClick());
 
         // Click Submit button
-        Thread.sleep(5000);
+        mIdlingResource.waitForEvent("review-accounts");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
     }
 
@@ -243,7 +233,7 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         Connect.finishCurrentActivity();
     }
 
@@ -264,20 +254,16 @@ public class ConnectActivityTest {
     public void test09ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventListener());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
     @Test
-    public void test10onnectWithGoodUrlThenCancel() throws InterruptedException {
-
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
+    public void test10ConnectWithGoodUrlThenCancel() throws InterruptedException {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventListener());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
         Thread.sleep(5000);
@@ -287,13 +273,9 @@ public class ConnectActivityTest {
     @Test
     public void test11ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
 
-        if (goodUrl.length() == 0) {
-            fail(">>> CONNECT ERROR: Need to generate a Connect 2.0 url and set goodUrl to url before running test!!!");
-        }
-
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventListener());
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         // Search for FinBank
         onWebView()
                 .withElement(findElement(Locator.NAME, "Search for your bank"))
@@ -339,58 +321,158 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
     }
 
+    @Test
+    public void test12AlreadyRunning() throws InterruptedException {
+
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+        Thread.sleep(5000);
+
+        // Try and start a 2nd Activity
+        try {
+            Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+            fail("Should have thrown runtime exception");
+        } catch(RuntimeException e) {
+            //success
+        }
+    }
+
+    @Test
+    public void test13NullEventHandler() throws InterruptedException {
+
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, (EventHandler) null);
+        Thread.sleep(5000);
+    }
+
     public class TestEventHandler implements EventHandler {
+        private static final String TAG = "TestEventHandler";
+
         @Override
         public void onLoaded() {
-            System.out.println(">>> TestEventHandler: Received loaded event");
+            Log.i(TAG, ">>> TestEventHandler: Received Loaded event");
         }
 
         @Override
         public void onDone(JSONObject doneEvent) {
-            System.out.println(">>> TestEventHandler: Received done event\n>>>>>> " + doneEvent.toString());
+            Log.i(TAG, ">>> TestEventHandler: Received Done event\n>>>>>> " + doneEvent.toString());
         }
 
         @Override
         public void onCancel() {
-            System.out.println(">>> TestEventHandler: Received Cancel event");
-        }
+            Log.i(TAG, ">>> TestEventHandler: Received Cancel event");
+         }
 
         @Override
         public void onError(JSONObject errorEvent) {
-            System.out.println(">>> TestEventHandler: Received Error event\n>>>>>> " + errorEvent.toString());
+            Log.i(TAG, ">>> TestEventHandler: Received Error event\n>>>>>> " + errorEvent.toString());
         }
 
         @Override
         public void onRouteEvent(JSONObject routeEvent) {
-            System.out.println(">>> TestEventHandler: Received Route event\n>>>>>> " + routeEvent.toString());
+            try {
+                String screenVal = routeEvent.getString("screen");
+                Log.i(TAG, ">>> TestEventHandler: Received Route event\nscreen: " + screenVal);
+                mIdlingResource.checkEvent(screenVal);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onUserEvent(JSONObject userEvent) {
-            System.out.println(">>> TestEventHandler: Received User event\n>>>>>> " + userEvent.toString());
-
+            try {
+                String action = userEvent.getString("action");
+                Log.i(TAG, ">>> TestEventHandler: Received User event\naction: " + action);
+                mIdlingResource.checkEvent(action);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public class TestEventListener implements EventListener {
+        private static final String TAG = "TestEventListener";
+
         @Override
         public void onLoaded() {
-            System.out.println(">>> TestEventListener: Received loaded event");
+            Log.i(TAG, ">>> TestEventListener: Received Loaded event");
         }
 
         @Override
         public void onDone(JSONObject doneEvent) {
-            System.out.println(">>> TestEventListener: Received done event\n>>>>>> " + doneEvent.toString());
+            Log.i(TAG, ">>> TestEventListener: Received Done event\n>>>>>> " + doneEvent.toString());
         }
 
         @Override
         public void onCancel() {
-            System.out.println(">>> TestEventListener: Received Cancel event");
+            Log.i(TAG, ">>> TestEventListener: Received Cancel event");
         }
 
         @Override
         public void onError(JSONObject errorEvent) {
-            System.out.println(">>> TestEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
+            Log.i(TAG, ">>> TestEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
+        }
+    }
+
+    public static class WebEventIdlingResource implements IdlingResource {
+        private long startTime;
+        private long waitingTime;
+        private String expectedEvent;
+        private boolean waitingOnExpectedEvent;
+        private ResourceCallback resourceCallback;
+        private final List<String> events = new ArrayList<>();
+
+        public WebEventIdlingResource() {
+            this.startTime = System.currentTimeMillis();
+            this.waitingTime = 0;
+            this.expectedEvent = "";
+            this.waitingOnExpectedEvent = false;
+        }
+
+        public void waitForEvent(String expectedEvent) {
+            this.startTime = System.currentTimeMillis();
+            this.waitingTime = 15000;
+            this.expectedEvent = expectedEvent;
+            this.waitingOnExpectedEvent = true;
+            internalCheckEvent();
+        }
+
+        private void internalCheckEvent() {
+            // System.out.println(">>> TestEventHandler - eventStr:" + eventStr + "queuedEvents:" + events.toString());
+            if (waitingOnExpectedEvent && events.contains(expectedEvent)) {
+                events.remove(expectedEvent);
+                waitingOnExpectedEvent = false;
+                expectedEvent = "";
+                waitingTime = 0;
+                resourceCallback.onTransitionToIdle();
+            }
+        }
+
+        public void checkEvent(String event) {
+            events.add(event);
+            internalCheckEvent();
+        }
+
+        @Override
+        public String getName() {
+            return com.finicity.connect.sdk.ConnectActivityTest.class.getName() + ":" + waitingTime;
+        }
+
+        @Override
+        public boolean isIdleNow() {
+            long elapsed = System.currentTimeMillis() - startTime;
+            boolean idle = (elapsed >= waitingTime);
+            if (idle) {
+                waitingOnExpectedEvent = false;
+                expectedEvent = "";
+                waitingTime = 0;
+                resourceCallback.onTransitionToIdle();
+            }
+            return idle;
+        }
+
+        @Override
+        public void registerIdleTransitionCallback(IdlingResource.ResourceCallback resourceCallback) {
+            this.resourceCallback = resourceCallback;
         }
     }
 

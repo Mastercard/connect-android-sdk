@@ -1,0 +1,44 @@
+before_script:
+  - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/"
+  - export ANDROID_HOME=$HOME/Library/Android/sdk
+  - export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+  
+variables:
+  JACOCO_CSV_FILE: '$CI_PROJECT_DIR/connect-sdk/build/reports/jacoco/jacocoTestReport/jacocoTestReport.csv'
+    
+stages:
+  - build
+  - postbuild
+  - scan
+  
+build_project:
+  stage: build
+  script:
+    - ./gradlew connect-sdk:clean
+    - ./gradlew connect-sdk:assemble
+  tags:
+    - xcode
+
+coverage:
+  stage: postbuild
+  script:
+    - ./ci/start-emu
+    - ./gradlew connect-sdk:createDebugCoverageReport
+    - ./ci/stop-emu
+    - ./gradlew connect-sdk:jacocoTestReport
+    - awk -F"," '{ instructions += $5; covered += $5 - $4 } END { printf "Test Coverage %0.2f%%\n", 100*covered/instructions }' $JACOCO_CSV_FILE
+  artifacts:
+    when: always
+    paths:
+      - connect-sdk/build/outputs/
+      - connect-sdk/build/reports/
+    expire_in: 1 days
+  tags:
+    - xcode
+    
+sonarqube:
+  stage: scan
+  script:
+    - ./gradlew connect-sdk:sonarqube
+  tags:
+    - xcode

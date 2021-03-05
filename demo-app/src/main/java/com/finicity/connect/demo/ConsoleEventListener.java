@@ -1,28 +1,31 @@
 package com.finicity.connect.demo;
 
+import android.util.Log;
+
 import com.finicity.connect.sdk.EventListener;
 
 import org.json.JSONObject;
 
 public class ConsoleEventListener implements EventListener {
+    private static final String TAG = "ConsoleEventListener";
 
     @Override
     public void onLoaded() {
-        System.out.println(">>> ConsoleEventListener: Received loaded event");
+        Log.i(TAG, ">>> ConsoleEventListener: Received Loaded event");
     }
 
     @Override
     public void onDone(JSONObject doneEvent) {
-        System.out.println(">>> ConsoleEventListener: Received done event\n>>>>>> " + doneEvent.toString());
+        Log.i(TAG, ">>> ConsoleEventListener: Received Done event\n>>>>>> " + doneEvent.toString());
     }
 
     @Override
     public void onCancel() {
-        System.out.println(">>> ConsoleEventListener: Received Cancel event");
+        Log.i(TAG, ">>> ConsoleEventListener: Received Cancel event");
     }
 
     @Override
     public void onError(JSONObject errorEvent) {
-        System.out.println(">>> ConsoleEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
+        Log.i(TAG, ">>> ConsoleEventListener: Received Error event\n>>>>>> " + errorEvent.toString());
     }
 }
