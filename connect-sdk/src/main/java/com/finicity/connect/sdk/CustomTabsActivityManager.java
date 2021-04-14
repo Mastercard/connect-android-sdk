@@ -62,7 +62,9 @@ public class CustomTabsActivityManager extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((Connect)connectActivity).postWindowClosedMessage();
+        if (connectActivity != null) {
+            ((Connect)connectActivity).postWindowClosedMessage();
+        }
     }
 
     @Override

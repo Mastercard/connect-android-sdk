@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 public class ConnectActivityTest {
 
     // Generate a 2.0 Connect url using Postman and set goodUrl to it before running UI unit tests.
-    private static final String goodUrl = "https://connect2.finicity.com?consumerId=a699c2dc7df8b449fd2851e6c7dbf7b8&customerId=5004071680&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=d829c47327c46003bd2fabf9f06fb62766d451b55cb6aabf4689b635a61dbcd5&timestamp=1618271785987&ttl=1618278985987";
+    private static final String goodUrl = "https://connect2.finicity.com?consumerId=940f4bb4dda5ca4c2631e0f3088ba443&customerId=5004201429&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=21198c32c0f70c23f8941d073ecde060908c50ede840c318256763a71932229f&timestamp=1618430840766&ttl=1618438040766";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
 
@@ -79,7 +79,7 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void test03ConnectWithGoodUrlThenBackButton() throws InterruptedException {
+    public void test03ConnectWithGoodUrlThenBackButton() {
 
         Connect.start(InstrumentationRegistry.getContext(), goodUrl, new TestEventHandler());
 
@@ -98,14 +98,6 @@ public class ConnectActivityTest {
         // Try and simulate back button press to return to previous page
         mIdlingResource.waitForEvent("sign-in");
         onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
-
-        /*
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
-
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
-        */
     }
 
     @Test
