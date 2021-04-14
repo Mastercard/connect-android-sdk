@@ -13,6 +13,6 @@ sonarqube {
         property "sonar.test.exclusions", "**test/**,**androidTest/**"
         property "sonar.exclusions", "**/*.xml"
         property "sonar.qualitygate.wait", "true"
-        property "sonar.coverage.jacoco.xmlReportPaths", "$projectDir/build/reports/coverage/debug/report.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "$projectDir/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
     }
 }

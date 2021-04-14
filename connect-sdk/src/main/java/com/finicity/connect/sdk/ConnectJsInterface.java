@@ -3,6 +3,7 @@ package com.finicity.connect.sdk;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 class ConnectJsInterface {
     private Activity activity;
     private EventHandler eventHandler;
+    private Boolean mCustomTabStarted = false;
 
     public ConnectJsInterface(Activity activity, EventHandler eventHandler) {
         this.activity = activity;
@@ -49,7 +51,6 @@ class ConnectJsInterface {
         activity.finish();
     }
 
-
     private JSONObject getEventData(JSONObject rootEvent) {
         // Parse out data field, or query field if data does not exist
         // This is for backwards compatibility with future updates to Connect.
@@ -71,4 +72,24 @@ class ConnectJsInterface {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         activity.startActivity(browserIntent);
     }
+
+    @JavascriptInterface
+    public void openLinkInCustomTab(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        Intent intent = customTabsIntent.intent;
+        intent.setData(Uri.parse(url));
+        mCustomTabStarted = true;
+        activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity)); // , customTabsIntent.startAnimationBundle);
+    }
+
+    @JavascriptInterface
+    public void closeCustomTab() {
+        if (!mCustomTabStarted) {
+            return;
+        }
+        mCustomTabStarted = false;
+        activity.startActivity(CustomTabsActivityManager.createDismissIntent(activity));
+    }
+
 }

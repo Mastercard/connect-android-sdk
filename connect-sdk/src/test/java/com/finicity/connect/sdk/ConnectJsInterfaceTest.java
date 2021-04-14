@@ -12,6 +12,7 @@ import org.robolectric.RobolectricTestRunner;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -127,5 +128,28 @@ public class ConnectJsInterfaceTest {
         jsInterface.openLinkInBrowser("url");
 
         verify(activity).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void testCloseCustomTab() {
+        jsInterface.closeCustomTab();
+
+        verify(activity, times(0)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void testOpenCustomTab() {
+        jsInterface.openLinkInCustomTab("url");
+
+        verify(activity, times(1)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void testOpenCloseCustomTab() {
+        jsInterface.openLinkInCustomTab("url");
+        verify(activity, times(1)).startActivity(any(Intent.class));
+
+        jsInterface.closeCustomTab();
+        verify(activity, times(2)).startActivity(any(Intent.class));
     }
 }

@@ -3,7 +3,8 @@
     package="com.finicity.connect.sdk">
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
-        <activity android:name=".Connect"></activity>
+        <activity android:name=".Connect" />
+        <activity android:name=".CustomTabsActivityManager" />
     </application>
 
 </manifest>

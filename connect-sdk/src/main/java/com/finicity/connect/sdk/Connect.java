@@ -18,7 +18,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "1.0.4";
+    private static final String SDK_VERSION = "1.0.5";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -147,6 +147,11 @@ public class Connect extends Activity {
         Connect.CONNECT_INSTANCE = null;
         Connect.EVENT_HANDLER = null;
         this.mPopupView = null;
+    }
+
+    public void postWindowClosedMessage() {
+        String javascript = "window.postMessage({ type: 'window', closed: true }, '*')";
+        mMainWebView.evaluateJavascript(javascript, null);
     }
 
     // static method to finish the current activity, if there is one
