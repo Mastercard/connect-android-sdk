@@ -144,6 +144,10 @@ public class Connect extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
+        if (mMainWebView != null) {
+            mMainWebView.destroy();
+            mMainWebView = null;
+        }
         Connect.CONNECT_INSTANCE = null;
         Connect.EVENT_HANDLER = null;
         this.mPopupView = null;
