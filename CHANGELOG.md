@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.0.5 (April 22, 2021)
+
+Patch:
+- Added Chrome custom tab support for displaying Oauth popup.
+
 ### 1.0.4 (September 22, 2020)
 
 Patch:
@@ -11,7 +16,7 @@ Patch:
 Patch:
 - Updated Connect.onCreate() to first call super.onCreate() before doing the EventListener / process restart check (see last change).  Turns out finishing an activity before calling super.onCreate() causes an exception.
 
-### 1.0.1 (Summary 2020)
+### 1.0.1 (Summer 2020)
 
 Patch:
 - Added logic to Connect.onCreate() to immediately finish if it detects that Android has restarted the process.  This is because the static EventListener reference in Connect no longer exists and must be supplied by the parent activity.
