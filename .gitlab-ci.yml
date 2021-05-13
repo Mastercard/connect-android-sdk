@@ -47,6 +47,7 @@ sonarqube:
     - xcode
 
 publish:
+  stage: publish
   only:
     - master
   when: manual
