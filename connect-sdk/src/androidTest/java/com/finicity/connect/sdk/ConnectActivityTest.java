@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 public class ConnectActivityTest {
 
     // Generate a 2.0 Connect url using Postman and set goodUrl to it before running UI unit tests.
-    private static final String goodUrl = "https://connect2.finicity.com?consumerId=f79bd8e51f17ff003b5b34af9cd84eca&customerId=5005906442&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=a5b2bed6edb82303cd0fce3eee6e6d3ab458aeac449895de4a7fe456d84ce2e6&timestamp=1620867814806&ttl=1620875014806";
+    private static final String goodUrl = "https://connect2.finicity.com?consumerId=0f8b43c5ddf79ea96fb0dd310c695530&customerId=5005956151&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=6d78e9c9d3d3385a2ff7d335c8deb389f7506582e27083279ea5bb48b7985f80&timestamp=1620936171074&ttl=1620943371074";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
 
