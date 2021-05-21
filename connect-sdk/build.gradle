@@ -48,7 +48,7 @@ apply from: "$project.rootDir/sonar.gradle"
 
 def libraryGroupId = 'com.finicity.connect'
 def libraryArtifactId = 'connect-sdk'
-def libraryVersion = '1.0.5'
+def libraryVersion = '1.0.6'
 
 android {
     compileSdkVersion 28
@@ -58,7 +58,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 105
-        versionName "1.0.5"
+        versionName "1.0.6"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'

@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.0.6 (May 21, 2021)
+
+Patch:
+- Send SDK version and platform type to Connect.
+
 ### 1.0.5 (April 22, 2021)
 
 Patch:

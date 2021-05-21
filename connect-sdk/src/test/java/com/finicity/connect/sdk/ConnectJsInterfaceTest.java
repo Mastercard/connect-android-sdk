@@ -27,7 +27,7 @@ public class ConnectJsInterfaceTest {
     @Before
     public void setup() {
         // Mock activity and eventlistener
-        activity = mock(Activity.class);
+        activity = mock(Connect.class);
         eventHandler = mock(EventHandler.class);
 
         jsInterface = new ConnectJsInterface(activity, eventHandler);

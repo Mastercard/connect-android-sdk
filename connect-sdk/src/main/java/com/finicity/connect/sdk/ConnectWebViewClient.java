@@ -5,10 +5,12 @@ import android.webkit.WebViewClient;
 
 class ConnectWebViewClient extends WebViewClient {
 
+    private Connect mConnect;
     private EventHandler eventHandler;
     private String connectUrl;
 
-    public ConnectWebViewClient(EventHandler eventHandler, String connectUrl) {
+    public ConnectWebViewClient(Connect connect, EventHandler eventHandler, String connectUrl) {
+        this.mConnect = connect;
         this.eventHandler = eventHandler;
         this.connectUrl = connectUrl;
     }
@@ -19,6 +21,7 @@ class ConnectWebViewClient extends WebViewClient {
         // before the query string by the time it gets here.
         if (url.equals(connectUrl) || url.equals(connectUrl.replace("?", "/?"))) {
             eventHandler.onLoaded();
+            mConnect.startPingTimer();
         }
     }
 }

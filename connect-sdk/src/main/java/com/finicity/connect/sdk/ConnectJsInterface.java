@@ -10,11 +10,13 @@ import org.json.JSONObject;
 
 class ConnectJsInterface {
     private Activity activity;
+    private Connect mConnect;
     private EventHandler eventHandler;
     private Boolean mCustomTabStarted = false;
 
     public ConnectJsInterface(Activity activity, EventHandler eventHandler) {
         this.activity = activity;
+        this.mConnect = (Connect) activity;
         this.eventHandler = eventHandler;
     }
 
@@ -44,6 +46,8 @@ class ConnectJsInterface {
             eventHandler.onRouteEvent(getEventData(jsonMessage));
         } else if(eventType.equals("user")) {
             eventHandler.onUserEvent(getEventData(jsonMessage));
+        } else if(eventType.equals("ack")) {
+            mConnect.stopPingTimer();
         }
     }
 
