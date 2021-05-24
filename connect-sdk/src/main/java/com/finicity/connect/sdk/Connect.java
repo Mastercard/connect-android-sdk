@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -17,8 +16,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "1.0.5";
+    private static final String SDK_VERSION = "1.0.6";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -115,7 +117,7 @@ public class Connect extends Activity {
                 mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
                 mPopupCloseTextButton));
 
-        mMainWebView.setWebViewClient(new ConnectWebViewClient(Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
+        mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
         // JS Interface and event listener for main WebView
         ConnectJsInterface jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
@@ -144,6 +146,12 @@ public class Connect extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
+        stopPingTimer();
+
+        if (mMainWebView != null) {
+            mMainWebView.destroy();
+            mMainWebView = null;
+        }
         Connect.CONNECT_INSTANCE = null;
         Connect.EVENT_HANDLER = null;
         this.mPopupView = null;
@@ -156,7 +164,7 @@ public class Connect extends Activity {
 
     // static method to finish the current activity, if there is one
     public static void finishCurrentActivity() {
-        if(Connect.CONNECT_INSTANCE != null) {
+         if(Connect.CONNECT_INSTANCE != null) {
             Connect.CONNECT_INSTANCE.finish();
         } else {
             throw new RuntimeException("There is no Connect Activity currently running");
@@ -225,4 +233,47 @@ public class Connect extends Activity {
         mPopupLayout.setVisibility(View.GONE);
         mPopupViewContainer.removeView(mPopupView);
     }
+
+    // Ping code to notify Connect of sdkVersion and platform type for analytics
+    private Timer pingTimer;
+    private TimerTask pingTimerTask;
+    
+    protected void startPingTimer() {
+        stopPingTimer();
+
+        pingTimer= new Timer();
+
+        pingTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                CONNECT_INSTANCE.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pingConnect();
+                    }
+                });
+            }
+        };
+
+        pingTimer.schedule(pingTimerTask, 1000, 1000);
+    }
+
+    protected void stopPingTimer() {
+        if (pingTimer != null) {
+            pingTimer.cancel();
+            pingTimer.purge();
+        }
+        if (pingTimerTask != null) {
+            pingTimerTask.cancel();
+        }
+        pingTimer = null;
+        pingTimerTask = null;
+    }
+
+    protected void pingConnect() {
+        String javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+        if (mMainWebView != null) {
+            mMainWebView.evaluateJavascript(javascript, null);
+        }
+     }
 }

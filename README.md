@@ -13,12 +13,20 @@ The Connect Android SDK supports the following Android versions.
 
 * minSdkVersion 21 or later
 
+* Android Gradle Plugin v3.4.0 or greater required
 
-## Step 1- Add the SDK dependency to your project
+* Gradle 5.1.1 or greater required
 
-### Using JCenter
 
-The Connect Android SDK is now available in JCenter for distribution.  To integrate the SDK into your android project add the following line into the dependency section in build.gradle to get the latest version of the SDK.
+## Step 1 - Add Finicity's JFrog Artifactory repository to your project
+
+The Connect Android SDK is now available thru Finicity's JFrog Artifactory account for distribution.  To download and integrate the SDK into your android project add the following lines into your build.gradle file(s).
+
+```
+repositories {
+    maven { url "https://finicity.jfrog.io/artifactory/finicity-connect-gradle-release-local" }
+}
+```
 
 ```
 dependencies {
@@ -26,30 +34,22 @@ dependencies {
 }
 ```
 
-### Download the SDK from Finicity Developer Portal
 
-[connect-sdk-v1.0.3.aar](https://prod-fcconnect-public.s3-us-west-2.amazonaws.com/sdk/android/connect-sdk-v1.0.3.aar) ([sha256](https://prod-fcconnect-public.s3-us-west-2.amazonaws.com/sdk/android/connect-sdk-v1.0.3.aar.sha256))
+## Step 2 - For projects using AndroidX:
 
-1. Add the SDK library to your Android project.
-    See [Add your library as a dependency](https://developer.android.com/studio/projects/android-library#AddDependency)
-   
-2. For projects using Android:
-    a. Open the gradle.properties file.
-    b. Set **android.enableJetifier** to **true.**
-    
-    See Android help: [Migrating to AndroidX.](https://developer.android.com/jetpack/androidx/migrate)
+Open the gradle.properties file and set **android.enableJetifier** to **true.**
 
 
-## Step 2 - Update Android application settings
+## Step 3 - Update Android application settings
 
-Add internet permissions to the AndroidManifest.xml file.
+Add internet permissions to your AndroidManifest.xml file.
 
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
 
 
-## Step 3 - Add code to start the Connect SDK
+## Step 4 - Add code to start the Connect SDK
 
 The Connect class contains a start method that when called, starts an activity with the supplied event listener. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
@@ -117,7 +117,7 @@ Event | Description |
 | user | Connect 2.0 (only) Sent when user events occur in Connect. |
 
 
-### Manually stop a connect activity
+## Manually stop a connect activity
 
 The Connect activity will automatically finish on done, cancel, and error events.
 
@@ -128,6 +128,6 @@ Connect.finishCurrentActivity()
 ```
 
 
-### Process Restarts
+## Process Restarts
 
 Android sometimes stops your application’s process and restarts it when your application is re-focused. If this happens, the Connect activity automatically finishes when the application resumes. If you want Connect to run again, call the start method. See [Connect Class.](#connect-class)

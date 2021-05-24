@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
@@ -48,7 +48,7 @@ apply from: "$project.rootDir/sonar.gradle"
 
 def libraryGroupId = 'com.finicity.connect'
 def libraryArtifactId = 'connect-sdk'
-def libraryVersion = '1.0.5'
+def libraryVersion = '1.0.6'
 
 android {
     compileSdkVersion 28
@@ -58,7 +58,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 105
-        versionName "1.0.5"
+        versionName "1.0.6"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -98,19 +98,14 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'
 }
 
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set("sources")
-    from android.sourceSets.main.java.srcDirs
-}
-
 project.afterEvaluate {
+    artifactoryPublish.dependsOn('assembleRelease')
     publishing {
         publications {
             library(MavenPublication) {
                 groupId libraryGroupId
                 artifactId libraryArtifactId
                 version libraryVersion
-                artifact androidSourcesJar
                 artifact bundleReleaseAar
 
                 pom.withXml {
@@ -127,50 +122,27 @@ project.afterEvaluate {
             }
         }
     }
+
+    artifactoryPublish {
+        publications(publishing.publications.library)
+    }
 }
 
-/*
-    To clean, build aar, generate pom, and to upload aar/pom to bintray issue the following command from terminal.
-    ./gradlew connect-sdk:clean connect-sdk:assembleRelease connect-sdk:generatePomFileForLibraryPublication connect-sdk:bintrayUpload
- */
+// Properties properties = new Properties()
+// properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-// Bintray properties for accessing bintray.  If we open source then move to local.properties
-// or gradle.properties that is not in source code control
-
-ext {
-    bintrayOrg = "finicity"
-    bintrayRepo = "connect-android-sdk"
-    bintrayPackage = "com.finicity.connect"
-    bintrayPackageDesc = "Connect Android SDK"
-    bintrayPackageVcsUrl = "https://github.com/Finicity/connect-android-sdk.git"
-}
-
-/*
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-*/
-
-bintray {
-/*
-    user = properties.getProperty('bintrayUser')
-    key = properties.getProperty('bintrayApiKey')
-*/
-    user = System.getenv('BINTRAY_USER') // Get bintray User
-    key = System.getenv('BINTRAY_API_KEY') // Get bintray Secret Key
-    publications = ['library']
-    publish = true
-    override = true
-    pkg {
-        userOrg = bintrayOrg
-        repo = bintrayRepo
-        name = bintrayPackage
-        desc = bintrayPackageDesc
-        licenses = ['MIT']
-        vcsUrl = bintrayPackageVcsUrl
-        publicDownloadNumbers = true
-        version {
-            name = libraryVersion
-            released = new Date()
+artifactory {
+    contextUrl = System.getenv('ARTIFACTORY_URL')   // properties.getProperty('artifactoryUrl')   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = System.getenv('ARTIFACTORY_REPO_KEY')     // properties.getProperty('artifactoryRepoKey')
+            username = System.getenv('ARTIFACTORY_USER')        // properties.getProperty('artifactoryUser')
+            password = System.getenv('ARTIFACTORY_PASSWORD')    // properties.getProperty('artifactoryPassword')
+            maven = true
+        }
+        defaults {
+            publishArtifacts = true
+            publishPom = true
         }
     }
 }
