@@ -10,7 +10,7 @@ public class ConsoleEventHandler implements EventHandler {
     private static final String TAG = "ConsoleEventHandler";
 
     @Override
-    public void onLoaded() {
+    public void onLoad() {
         Log.i(TAG, ">>> ConsoleEventHandler: Received Loaded event");
     }
 
@@ -20,8 +20,8 @@ public class ConsoleEventHandler implements EventHandler {
     }
 
     @Override
-    public void onCancel() {
-        Log.i(TAG, ">>> ConsoleEventHandler: Received Cancel event");
+    public void onCancel(JSONObject cancelEvent) {
+        Log.i(TAG, ">>> ConsoleEventHandler: Received Cancel event\n>>>>>> " + cancelEvent.toString());
     }
 
     @Override
@@ -30,12 +30,12 @@ public class ConsoleEventHandler implements EventHandler {
     }
 
     @Override
-    public void onRouteEvent(JSONObject routeEvent) {
+    public void onRoute(JSONObject routeEvent) {
         Log.i(TAG, ">>> ConsoleEventHandler: Received Route event\n>>>>>> " + routeEvent.toString());
     }
 
     @Override
-    public void onUserEvent(JSONObject userEvent) {
+    public void onUser(JSONObject userEvent) {
         Log.i(TAG, ">>> ConsoleEventHandler: Received User event\n>>>>>> " + userEvent.toString());
     }
 }

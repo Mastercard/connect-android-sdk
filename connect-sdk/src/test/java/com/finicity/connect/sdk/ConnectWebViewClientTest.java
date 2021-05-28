@@ -1,6 +1,5 @@
 package com.finicity.connect.sdk;
 
-import android.app.Activity;
 import android.webkit.WebView;
 
 import org.junit.Before;
@@ -15,17 +14,15 @@ import static org.mockito.Mockito.verify;
 @RunWith(RobolectricTestRunner.class)
 public class ConnectWebViewClientTest {
 
-    private Activity activity;
     private EventHandler eventHandler;
-    private static String CONNECT_URL = "http://host?param=val";
-
     private ConnectWebViewClient client;
+    private static final String CONNECT_URL = "http://host?param=val";
 
     @Before
     public void setup() {
-        activity = mock(Connect.class);
+        Connect activity = mock(Connect.class);
         eventHandler = mock(EventHandler.class);
-        client = new ConnectWebViewClient((Connect) activity, eventHandler, CONNECT_URL);
+        client = new ConnectWebViewClient(activity, eventHandler, CONNECT_URL);
     }
 
     @Test
@@ -35,7 +32,7 @@ public class ConnectWebViewClientTest {
 
         client.onPageFinished(mock(WebView.class), url);
 
-        verify(eventHandler).onLoaded();
+        verify(eventHandler).onLoad();
     }
 
     @Test
@@ -44,6 +41,6 @@ public class ConnectWebViewClientTest {
 
         client.onPageFinished(mock(WebView.class), url);
 
-        verify(eventHandler, never()).onLoaded();
+        verify(eventHandler, never()).onLoad();
     }
 }

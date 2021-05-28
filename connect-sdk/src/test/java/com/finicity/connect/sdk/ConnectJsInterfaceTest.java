@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -20,16 +21,16 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class ConnectJsInterfaceTest {
 
     private Activity activity;
+    private Connect connActivity;
     private EventHandler eventHandler;
-
     private ConnectJsInterface jsInterface;
 
     @Before
     public void setup() {
         // Mock activity and eventlistener
         activity = mock(Connect.class);
+        connActivity = (Connect) activity;
         eventHandler = mock(EventHandler.class);
-
         jsInterface = new ConnectJsInterface(activity, eventHandler);
     }
 
@@ -69,10 +70,10 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(message);
 
-        verify(eventHandler).onCancel();
+        verify(eventHandler).onCancel(any(JSONObject.class));
         verify(eventHandler, never()).onDone(any(JSONObject.class));
         verify(eventHandler, never()).onError(any(JSONObject.class));
-        verify(eventHandler, never()).onLoaded();
+        verify(eventHandler, never()).onLoad();
 
         verify(activity).finish();
     }
@@ -84,9 +85,9 @@ public class ConnectJsInterfaceTest {
         jsInterface.postMessage(message);
 
         verify(eventHandler).onDone(any(JSONObject.class));
-        verify(eventHandler, never()).onCancel();
+        verify(eventHandler, never()).onCancel(any(JSONObject.class));
         verify(eventHandler, never()).onError(any(JSONObject.class));
-        verify(eventHandler, never()).onLoaded();
+        verify(eventHandler, never()).onLoad();
 
         verify(activity).finish();
     }
@@ -99,8 +100,8 @@ public class ConnectJsInterfaceTest {
 
         verify(eventHandler).onError(any(JSONObject.class));
         verify(eventHandler, never()).onDone(any(JSONObject.class));
-        verify(eventHandler, never()).onCancel();
-        verify(eventHandler, never()).onLoaded();
+        verify(eventHandler, never()).onCancel(any(JSONObject.class));
+        verify(eventHandler, never()).onLoad();
 
         verify(activity).finish();
     }
@@ -111,7 +112,7 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(message);
 
-        verify(eventHandler).onRouteEvent(any(JSONObject.class));
+        verify(eventHandler).onRoute(any(JSONObject.class));
     }
 
     @Test
@@ -120,14 +121,25 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(message);
 
-        verify(eventHandler).onUserEvent(any(JSONObject.class));
+        verify(eventHandler).onUser(any(JSONObject.class));
     }
 
     @Test
-    public void testOpenLinkInBrowser() {
-        jsInterface.openLinkInBrowser("url");
+    public void testPostMessage_closePopup() {
+        String message = "{ \"type\": \"closePopup\" }";
 
-        verify(activity).startActivity(any(Intent.class));
+        jsInterface.postMessage(message);
+
+        verify(activity, times(0)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void testPostMessage_ack() {
+        String message = "{ \"type\": \"ack\" }";
+
+        jsInterface.postMessage(message);
+
+        verify(connActivity, atLeast(1)).stopPingTimer();
     }
 
     @Test
@@ -151,5 +163,12 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.closeCustomTab();
         verify(activity, times(2)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void testPostMessage_url() {
+        String message = "{ \"type\": \"url\", \"url\": \"url\" }";
+        jsInterface.postMessage(message);
+        verify(activity, times(1)).startActivity(any(Intent.class));
     }
 }

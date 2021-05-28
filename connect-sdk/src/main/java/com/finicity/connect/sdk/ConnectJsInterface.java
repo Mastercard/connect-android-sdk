@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
 import android.webkit.JavascriptInterface;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 class ConnectJsInterface {
@@ -34,7 +35,7 @@ class ConnectJsInterface {
 
         // Invoke appropriate event listener method
         if(eventType.equals("cancel")) {
-            eventHandler.onCancel();
+            eventHandler.onCancel(getEventData(jsonMessage));
             this.finishActivity();
         } else if(eventType.equals("done")) {
             eventHandler.onDone(getEventData(jsonMessage));
@@ -43,11 +44,19 @@ class ConnectJsInterface {
             eventHandler.onError(getEventData(jsonMessage));
             this.finishActivity();
         } else if(eventType.equals("route")) {
-            eventHandler.onRouteEvent(getEventData(jsonMessage));
+            eventHandler.onRoute(getEventData(jsonMessage));
         } else if(eventType.equals("user")) {
-            eventHandler.onUserEvent(getEventData(jsonMessage));
+            eventHandler.onUser(getEventData(jsonMessage));
         } else if(eventType.equals("ack")) {
             mConnect.stopPingTimer();
+        } else if(eventType.equals("url")) {
+            try {
+                String url = jsonMessage.getString("url");
+                openLinkInCustomTab(url);
+            } catch (JSONException e) {
+            }
+        } else if(eventType.equals("closePopup")) {
+            closeCustomTab();
         }
     }
 
@@ -71,13 +80,6 @@ class ConnectJsInterface {
         return eventData;
     }
 
-    @JavascriptInterface
-    public void openLinkInBrowser(String url) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        activity.startActivity(browserIntent);
-    }
-
-    @JavascriptInterface
     public void openLinkInCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder.build();
@@ -87,7 +89,6 @@ class ConnectJsInterface {
         activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity)); // , customTabsIntent.startAnimationBundle);
     }
 
-    @JavascriptInterface
     public void closeCustomTab() {
         if (!mCustomTabStarted) {
             return;

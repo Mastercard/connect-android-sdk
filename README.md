@@ -51,7 +51,7 @@ Add internet permissions to your AndroidManifest.xml file.
 
 ## Step 4 - Add code to start the Connect SDK
 
-The Connect class contains a start method that when called, starts an activity with the supplied event listener. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
+The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
 
 ### Connect Class
@@ -86,35 +86,35 @@ Throughout Connect’s flow, events about the state of the web application are s
 ```
 Java
 public interface EventHandler {
-    void onLoaded();
+    void onLoad();
+    void onCancel(JSONObject cancelEvent);
     void onDone(JSONObject doneEvent);
-    void onCancel();
     void onError(JSONObject errorEvent);
-    void onRouteEvent(JSONObject routeEvent);
-    void onUserEvent(JSONObject userEvent);
+    void onRoute(JSONObject routeEvent);
+    void onUser(JSONObject userEvent);
 }
 ```
 
 ```
 Kotlin
 interface EventHandler {
-    fun onLoaded()
+    fun onLoad()
+    fun onCancel(cancelEvent: JSONObject?)
     fun onDone(doneEvent: JSONObject?)
-    fun onCancel()
     fun onError(errorEvent: JSONObject?)
-    fun onRouteEvent(routeEvent: JSONObject?)
-    fun onUserEvent(userEvent: JSONObject?)
+    fun onRoute(routeEvent: JSONObject?)
+    fun onUser(userEvent: JSONObject?)
 }
 ```
 
 Event | Description |
 | ------ | ------ |
-| loaded | Sent when the Connect web page is loaded and ready to display. |
-| done | Sent when the user successfully completes the Connect appliction. |
-| cancel | Sent when the user cancels the Connect application.|
-| error | Sent when there is an error during the Connect application. |
-| route | Sent when the user navigates to a new route or screen in Connect. |
-| user | Connect 2.0 (only) Sent when user events occur in Connect. |
+| onLoad | Sent when the Connect web page is loaded and ready to display |
+| onCancel | Sent when the user cancels the Connect application |
+| onDone | Sent when the user successfully completes the Connect appliction |
+| onError | Sent when there is an error during the Connect application |
+| onRoute | Sent when the user navigates to a new route or screen in Connect |
+| onUser | Called when a user performs an action. User events provide visibility into what action a user could take within the Connect application |
 
 
 ## Manually stop a connect activity

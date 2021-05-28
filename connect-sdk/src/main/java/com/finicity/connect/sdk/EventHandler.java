@@ -3,10 +3,10 @@ package com.finicity.connect.sdk;
 import org.json.JSONObject;
 
 public interface EventHandler {
-    void onLoaded();
+    void onLoad();
     void onDone(JSONObject doneEvent);
-    void onCancel();
+    void onCancel(JSONObject cancelEvent);
     void onError(JSONObject errorEvent);
-    void onRouteEvent(JSONObject routeEvent);
-    void onUserEvent(JSONObject userEvent);
+    void onRoute(JSONObject routeEvent);
+    void onUser(JSONObject userEvent);
 }
