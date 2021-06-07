@@ -16,11 +16,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import org.json.JSONObject;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "1.0.6";
+    private static final String SDK_VERSION = "2.0.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -32,15 +34,8 @@ public class Connect extends Activity {
 
     private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
+    private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
-
-    @Deprecated
-    public static void start(Context context, String connectUrl, EventListener eventListener) {
-        // Create EventHandler and call other start method
-        EventListenerWrapper wrapper = new EventListenerWrapper(eventListener);
-
-        Connect.start(context, connectUrl, wrapper);
-    }
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if(Connect.CONNECT_INSTANCE != null) {
@@ -75,7 +70,7 @@ public class Connect extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /**
+        /*
          * If the application process has been killed and resumed, onCreate is called
          * but Connect.EVENT_HANDLER is now null. Therefore this activity should be finished
          * to prevent errors. The application utilizing this framework should then restart
@@ -120,7 +115,7 @@ public class Connect extends Activity {
         mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
         // JS Interface and event listener for main WebView
-        ConnectJsInterface jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
+        jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
         mMainWebView.addJavascriptInterface(jsInterface, "Android");
 
         // Load configured URL
@@ -154,20 +149,26 @@ public class Connect extends Activity {
         }
         Connect.CONNECT_INSTANCE = null;
         Connect.EVENT_HANDLER = null;
+        Connect.jsInterface = null;
         this.mPopupView = null;
     }
 
     public void postWindowClosedMessage() {
         String javascript = "window.postMessage({ type: 'window', closed: true }, '*')";
-        mMainWebView.evaluateJavascript(javascript, null);
+        if (mMainWebView != null) {
+            mMainWebView.evaluateJavascript(javascript, null);
+        }
     }
 
     // static method to finish the current activity, if there is one
     public static void finishCurrentActivity() {
          if(Connect.CONNECT_INSTANCE != null) {
-            Connect.CONNECT_INSTANCE.finish();
+             if (jsInterface != null) {
+                 jsInterface.closeCustomTab();
+             }
+             Connect.CONNECT_INSTANCE.finish();
         } else {
-            throw new RuntimeException("There is no Connect Activity currently running");
+             throw new RuntimeException("There is no Connect Activity currently running");
         }
     }
 
@@ -191,8 +192,9 @@ public class Connect extends Activity {
             } else {
                 try {
                     // Send cancel event and finish
-                    Connect.EVENT_HANDLER.onCancel();
-
+                    String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
+                    JSONObject jo = new JSONObject(message);
+                    Connect.EVENT_HANDLER.onCancel(jo);
                     finish();
                 } catch(Exception e) {
                     finish();

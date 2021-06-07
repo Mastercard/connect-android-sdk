@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.0.0 (May 27, 2021)
+
+Patch:
+- Updated EventHandler interface to match other SDKs.
+- Removed deprecated EventListener interface.  Use EventHandler interface to receive Connect events.
+
 ### 1.0.6 (May 21, 2021)
 
 Patch:

@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">Connect SDK Demo for Legacy Apps</string>
-    <string name="listener_start_button_text">Start Connect with EventListener (deprecated)</string>
     <string name="handler_start_button_text">Start Connect with EventHandler</string>
 </resources>

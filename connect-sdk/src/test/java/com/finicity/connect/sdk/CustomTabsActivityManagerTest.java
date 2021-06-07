@@ -94,7 +94,7 @@ public class CustomTabsActivityManagerTest {
 
         Intent intent = mock(Intent.class);
         spy.onActivityResult(Connect.SELECT_FILE_RESULT_CODE,Activity.RESULT_CANCELED,intent);
-        Assert.assertTrue(spy.mFilePathCallback == null);
+        Assert.assertNull(spy.mFilePathCallback);
     }
 
     @Test
@@ -105,6 +105,6 @@ public class CustomTabsActivityManagerTest {
         Connect spy = spy(cta);
         Intent intent = mock(Intent.class);
         spy.onActivityResult(Connect.SELECT_FILE_RESULT_CODE,Activity.RESULT_OK,intent);
-        Assert.assertTrue(spy.mFilePathCallback == null);
+        Assert.assertNull(spy.mFilePathCallback);
     }
 }
