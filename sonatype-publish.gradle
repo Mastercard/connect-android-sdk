@@ -80,11 +80,13 @@ def addMetadataToPom(pom) {
 
 
 signing {
-    byte[] decoded = signingKey.decodeBase64()
-    String signingKey = new String(decoded)
-    useInMemoryPgpKeys(
-            signingKey,
-            signingPassword
-    )
-    sign publishing.publications
+    if (signingKey) {
+        byte[] decoded = signingKey.decodeBase64()
+        String signingKey = new String(decoded)
+        useInMemoryPgpKeys(
+                signingKey,
+                signingPassword
+        )
+        sign publishing.publications
+    }
 }

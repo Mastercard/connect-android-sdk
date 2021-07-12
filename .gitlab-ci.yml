@@ -10,7 +10,8 @@ stages:
   - build
   - postbuild
   - scan
-  - publish
+  - sonatype
+  - release
   
 build_project:
   stage: build
@@ -46,14 +47,21 @@ sonarqube:
   tags:
     - xcode
 
-publish:
-  stage: publish
+publish_to_staging:
+  stage: sonatype
+  script:
+    - ./gradlew connect-sdk:clean
+    - ./gradlew connect-sdk:assembleRelease
+    - ./gradlew connect-sdk:publishToSonatype closeSonatypeStagingRepository
+  tags:
+    - xcode    
+
+release:
+  stage: release
   only:
     - master
   when: manual
   script:
-    - ./gradlew connect-sdk:clean
-    - ./gradlew connect-sdk:assembleRelease
-    - ./gradlew artifactoryPublish
+    - ./gradlew releaseSonatypeStagingRepository
   tags:
-    - xcode    
+    - xcode 
