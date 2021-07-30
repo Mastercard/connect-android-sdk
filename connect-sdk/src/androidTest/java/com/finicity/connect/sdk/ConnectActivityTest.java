@@ -9,6 +9,9 @@ import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
+import com.finicity.connect.genurllib.FinicityGenerateUrlCallbackHandler;
+import com.finicity.connect.genurllib.GenUrlLib;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -20,6 +23,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -35,7 +39,7 @@ import static org.junit.Assert.fail;
 public class ConnectActivityTest {
 
     // Generate a 2.0 Connect url using Postman and set goodUrl to it before running UI unit tests.
-    private static final String goodUrl = "https://connect2.finicity.com?consumerId=b3bcdb93b2a118c9d6c5e17fed6cbac5&customerId=5009588073&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=7590ff052e63242c3a638fdea789e9e9bfcf0b1654de68ebacca568d165a3604&timestamp=1626121110858&ttl=1626128310858";
+    private static String goodUrl = "";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
 
@@ -44,6 +48,7 @@ public class ConnectActivityTest {
         mIdlingResource = new WebEventIdlingResource();
         IdlingRegistry.getInstance().register(mIdlingResource);
         Connect.runningUnitTest = true;
+        generateConnectUrl();
     }
 
     @After
@@ -298,6 +303,35 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, null);
         Thread.sleep(5000);
+    }
+
+    private void generateConnectUrl() {
+        if (goodUrl.isEmpty()) {
+            // Use countdown latch to wait for chain of Finicity API's Auth, Customer, Consumer, Generate to complete asynchronously.
+            final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+            // Try and use GenUrlLib to generate a connect url to use for tests
+            GenUrlLib.generateUrl(InstrumentationRegistry.getContext(), new FinicityGenerateUrlCallbackHandler() {
+                @Override
+                public void onError(String error) {
+                    countDownLatch.countDown();
+                }
+
+                @Override
+                public void onSuccess(String link) {
+                    goodUrl = link;
+                    countDownLatch.countDown();
+                }
+            }, false);
+
+            // Wait for generateUrl to complete with error or success
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("GenUrlAndroidTest - generateConnectUrl exiting");
+        }
     }
 
     public class TestEventHandler implements EventHandler {
