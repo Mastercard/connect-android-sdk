@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.artifactory'
-apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
 jacoco {
@@ -46,10 +44,6 @@ task jacocoTestReport(type: JacocoReport) {
 
 apply from: "$project.rootDir/sonar.gradle"
 
-def libraryGroupId = 'com.finicity.connect'
-def libraryArtifactId = 'connect-sdk'
-def libraryVersion = '2.0.0'
-
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
@@ -88,7 +82,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:customtabs:28.0.0'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:2.7.22'
     testImplementation 'org.robolectric:robolectric:4.3'
 
@@ -96,53 +90,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'
+    androidTestImplementation 'com.finicity.connect:genurllib:1.0.0'
 }
 
-project.afterEvaluate {
-    artifactoryPublish.dependsOn('assembleRelease')
-    publishing {
-        publications {
-            library(MavenPublication) {
-                groupId libraryGroupId
-                artifactId libraryArtifactId
-                version libraryVersion
-                artifact bundleReleaseAar
-
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    configurations.implementation.allDependencies.each {
-                        if (it.name != 'unspecified') {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    artifactoryPublish {
-        publications(publishing.publications.library)
-    }
+ext {
+    PUBLISH_GROUP_ID = 'com.finicity.connect'
+    PUBLISH_VERSION = '2.0.0'
+    PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 
-// Properties properties = new Properties()
-// properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-artifactory {
-    contextUrl = System.getenv('ARTIFACTORY_URL')   // properties.getProperty('artifactoryUrl')   //The base Artifactory URL if not overridden by the publisher/resolver
-    publish {
-        repository {
-            repoKey = System.getenv('ARTIFACTORY_REPO_KEY')     // properties.getProperty('artifactoryRepoKey')
-            username = System.getenv('ARTIFACTORY_USER')        // properties.getProperty('artifactoryUser')
-            password = System.getenv('ARTIFACTORY_PASSWORD')    // properties.getProperty('artifactoryPassword')
-            maven = true
-        }
-        defaults {
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-}
+apply from: "${rootProject.projectDir}/sonatype-publish.gradle"
