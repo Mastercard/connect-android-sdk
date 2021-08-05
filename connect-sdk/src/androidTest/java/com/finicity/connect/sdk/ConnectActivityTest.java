@@ -305,6 +305,16 @@ public class ConnectActivityTest {
         Thread.sleep(5000);
     }
 
+    @Test
+    public void test13PopupWindowWithAutoClose() throws InterruptedException {
+
+        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenAutoClose.html", new TestEventHandler());
+
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
+        Thread.sleep(5000);
+    }
+
     private void generateConnectUrl() {
         if (goodUrl.isEmpty()) {
             // Use countdown latch to wait for chain of Finicity API's Auth, Customer, Consumer, Generate to complete asynchronously.

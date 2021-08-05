@@ -22,6 +22,7 @@ class ConnectWebChromeClient extends WebChromeClient {
     private RelativeLayout mPopupLayout;
     private ImageButton mPopupCloseImgButton;
     private Button mPopupCloseTextButton;
+    public static Boolean runningUnitTest = false;
 
     public ConnectWebChromeClient(Connect connect,
                                   RelativeLayout popupViewContainer,
@@ -74,9 +75,11 @@ class ConnectWebChromeClient extends WebChromeClient {
         } catch(ActivityNotFoundException e) {
             mConnect.mFilePathCallback = null;
 
-            Toast.makeText(mConnect,
-                    mConnect.getString(R.string.file_access_error_msg),
-                    Toast.LENGTH_LONG).show();
+            if (!runningUnitTest) {
+                Toast.makeText(mConnect,
+                        mConnect.getString(R.string.file_access_error_msg),
+                        Toast.LENGTH_LONG).show();
+            }
 
             return false;
         }
