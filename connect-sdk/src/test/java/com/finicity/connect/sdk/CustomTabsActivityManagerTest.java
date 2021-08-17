@@ -79,32 +79,4 @@ public class CustomTabsActivityManagerTest {
         verify(spy, times(0)).finish();
     }
 
-    @Test
-    public void test05OnActivityResult() {
-
-        ActivityController<Connect> controller = Robolectric.buildActivity(Connect.class);
-        Connect cta = controller.get();
-        Connect spy = spy(cta);
-
-        spy.mFilePathCallback = new ValueCallback<Uri[]>() {
-            @Override
-            public void onReceiveValue(Uri[] value) {
-            }
-        };
-
-        Intent intent = mock(Intent.class);
-        spy.onActivityResult(Connect.SELECT_FILE_RESULT_CODE,Activity.RESULT_CANCELED,intent);
-        Assert.assertNull(spy.mFilePathCallback);
-    }
-
-    @Test
-    public void test06OnActivityResult() {
-
-        ActivityController<Connect> controller = Robolectric.buildActivity(Connect.class);
-        Connect cta = controller.get();
-        Connect spy = spy(cta);
-        Intent intent = mock(Intent.class);
-        spy.onActivityResult(Connect.SELECT_FILE_RESULT_CODE,Activity.RESULT_OK,intent);
-        Assert.assertNull(spy.mFilePathCallback);
-    }
 }
