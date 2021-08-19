@@ -118,6 +118,8 @@ public class Connect extends Activity {
         jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
         mMainWebView.addJavascriptInterface(jsInterface, "Android");
 
+        // mMainWebView.setWebContentsDebuggingEnabled(true); // Enable Chrome Dev Tools
+
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
     }
