@@ -1,12 +1,13 @@
 package com.finicity.connect.sdk;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.IdlingResource;
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.web.webdriver.DriverAtoms;
-import android.support.test.espresso.web.webdriver.Locator;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.web.webdriver.DriverAtoms;
+import androidx.test.espresso.web.webdriver.Locator;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import android.util.Log;
 
 import com.finicity.connect.genurllib.FinicityGenerateUrlCallbackHandler;
@@ -25,13 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.web.sugar.Web.onWebView;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.web.sugar.Web.onWebView;
+import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
+import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static org.junit.Assert.fail;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -61,7 +62,7 @@ public class ConnectActivityTest {
 
     @Test
     public void test01ConnectWithExpiredUrl() {
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getTargetContext(), badExpiredUrl, new TestEventHandler());
 
         mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());

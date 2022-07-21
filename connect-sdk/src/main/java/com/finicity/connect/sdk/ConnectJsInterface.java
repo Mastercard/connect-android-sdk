@@ -3,7 +3,7 @@ package com.finicity.connect.sdk;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsIntent;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONException;
