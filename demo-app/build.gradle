@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.finicity.connect.demo"
+        applicationId "com.mastercard.openbanking.connect.demo"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 1
