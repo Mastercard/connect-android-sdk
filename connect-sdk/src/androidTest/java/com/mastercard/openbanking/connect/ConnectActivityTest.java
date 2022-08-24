@@ -319,18 +319,6 @@ public class ConnectActivityTest {
             final CountDownLatch countDownLatch = new CountDownLatch(1);
 
             // Try and use GenUrlLib to generate a connect url to use for tests
-//            GenUrlLib.generateUrl(InstrumentationRegistry.getContext(), new GenerateUrlCallbackHandler() {
-//                @Override
-//                public void onError(String error) {
-//                    countDownLatch.countDown();
-//                }
-//
-//                @Override
-//                public void onSuccess(String link) {
-//                    goodUrl = link;
-//                    countDownLatch.countDown();
-//                }
-//            }, false);
 
             // Wait for generateUrl to complete with error or success
             try {
