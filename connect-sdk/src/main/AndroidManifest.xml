@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.finicity.connect.sdk">
+    package="com.mastercard.openbanking.connect">
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
-        <activity android:name=".Connect" />
-        <activity android:name=".CustomTabsActivityManager" />
+        <activity android:name="com.mastercard.openbanking.connect.Connect" />
+        <activity android:name="com.mastercard.openbanking.connect.CustomTabsActivityManager" />
     </application>
 
 </manifest>

@@ -51,11 +51,11 @@ def addMetadataToPom(pom) {
         root.children().last() + {
             resolveStrategy = DELEGATE_FIRST
 
-            description 'The Connect Android SDK allows you to embed Finicity Connect anywhere you want within your own mobile applications.'
-            name 'Finicity Connect Android SDK'
-            url 'https://docs.finicity.com/connect-android-sdk/'
+            description 'The Connect Android SDK allows you to embed MastercardOpenBanking Connect anywhere you want within your own mobile applications.'
+            name 'MastercardOpenBanking Connect Android SDK'
+            url 'https://developer.mastercard.com/open-banking/staging/documentation/connect/mobile-sdks/#android'
             organization {
-                name 'Finicity'
+                name 'MastercardOpenBanking'
                 url 'https://finicity.com'
             }
             licenses {
@@ -66,11 +66,11 @@ def addMetadataToPom(pom) {
             }
             developers {
                 developer {
-                    name 'Finicity'
+                    name 'MastercardOpenBanking'
                 }
             }
             scm {
-                url 'https://github.com/Finicity/connect-android-sdk'
+                url 'https://github.com/Mastercard/connect-android-sdk'
                 connection 'scm:git:git://github.com:Finicity/connect-android-sdk.git'
                 developerConnection 'scm:git:ssh://git@github.com:Finicity/connect-android-sdk.git'
             }
