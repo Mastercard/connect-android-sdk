@@ -2,12 +2,14 @@ package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeast;
@@ -18,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class ConnectJsInterfaceTest {
 
     private Activity activity;

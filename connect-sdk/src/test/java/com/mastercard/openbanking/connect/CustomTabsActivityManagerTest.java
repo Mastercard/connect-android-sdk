@@ -3,6 +3,7 @@ package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.junit.runners.MethodSorters;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.verify;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class CustomTabsActivityManagerTest {
 
     private Activity activity;

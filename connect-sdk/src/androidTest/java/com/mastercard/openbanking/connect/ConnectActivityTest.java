@@ -32,6 +32,10 @@ import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static org.junit.Assert.fail;
 
+import com.mastercard.openbanking.connect.generateurl.ConnectGenerateUrlCallbackHandler;
+import com.mastercard.openbanking.connect.generateurl.GenUrlLib;
+
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class ConnectActivityTest {
@@ -319,6 +323,18 @@ public class ConnectActivityTest {
             final CountDownLatch countDownLatch = new CountDownLatch(1);
 
             // Try and use GenUrlLib to generate a connect url to use for tests
+            GenUrlLib.generateUrl(InstrumentationRegistry.getContext(), new ConnectGenerateUrlCallbackHandler() {
+                @Override
+                public void onError(String error) {
+                    countDownLatch.countDown();
+                }
+
+                @Override
+                public void onSuccess(String link) {
+                    goodUrl = link;
+                    countDownLatch.countDown();
+                }
+            }, false);
 
             // Wait for generateUrl to complete with error or success
             try {
@@ -328,6 +344,7 @@ public class ConnectActivityTest {
             }
             System.out.println("GenUrlAndroidTest - generateConnectUrl exiting");
         }
+
     }
 
     public class TestEventHandler implements EventHandler {
