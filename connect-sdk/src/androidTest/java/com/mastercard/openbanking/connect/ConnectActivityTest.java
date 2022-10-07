@@ -42,7 +42,7 @@ public class ConnectActivityTest {
 
     // Generate a 2.0 Connect url using Postman and set goodUrl to it before running UI unit tests.
     private static String goodUrl = "";
-    private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&redirectUri=http%3A%2F%2Flocalhost%3A3001%2Fcustomers%2FredirectHandler&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
+    private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
 
     @Before
@@ -63,24 +63,24 @@ public class ConnectActivityTest {
 
     @Test
     public void test01ConnectWithExpiredUrl() {
-        Connect.start(InstrumentationRegistry.getTargetContext(), badExpiredUrl, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
 
         mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
-    @Test
-    public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
-
-        String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
-
-        mIdlingResource.waitForEvent("search");
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
-
-        Thread.sleep(1000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
-    }
+//    @Test
+//    public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
+//
+//        String url = goodUrl.replace("localhost:", "10.0.2.2:");
+//        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+//
+//        mIdlingResource.waitForEvent("search");
+//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+//
+//        Thread.sleep(1000);
+//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
+//    }
 
     @Test
     public void test03ConnectWithGoodUrlThenBackButton() {
@@ -119,33 +119,33 @@ public class ConnectActivityTest {
         mIdlingResource.waitForEvent("cancel");
     }
 
-    @Test
-    public void test05PopupWindowWithCancel() throws InterruptedException {
+//    @Test
+//    public void test05PopupWindowWithCancel() throws InterruptedException {
+//
+//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenWin.html", new TestEventHandler());
+//
+//        Thread.sleep(5000);
+//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
+//
+//        Thread.sleep(5000);
+//        onView(withId(R.id.popupCloseTextButton)).perform(click());
+//    }
 
-        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenWin.html", new TestEventHandler());
-
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-
-        Thread.sleep(5000);
-        onView(withId(R.id.popupCloseTextButton)).perform(click());
-    }
-
-    @Test
-    public void test06PopupWindowWithBackButton() throws InterruptedException {
-
-        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenWin.html", new TestEventHandler());
-
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-
-        Thread.sleep(5000);
-        onView(isRoot()).perform(ViewActions.pressBack());
-
-        // Dismiss dialog with yes
-        Thread.sleep(5000);
-        onView(withId(android.R.id.button1)).perform(ViewActions.click());
-    }
+//    @Test
+//    public void test06PopupWindowWithBackButton() throws InterruptedException {
+//
+//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenWin.html", new TestEventHandler());
+//
+//        Thread.sleep(5000);
+//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
+//
+//        Thread.sleep(5000);
+//        onView(isRoot()).perform(ViewActions.pressBack());
+//
+//        // Dismiss dialog with yes
+//        Thread.sleep(5000);
+//        onView(withId(android.R.id.button1)).perform(ViewActions.click());
+//    }
 
     @Test
     public void test07ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
@@ -307,15 +307,15 @@ public class ConnectActivityTest {
         Thread.sleep(5000);
     }
 
-    @Test
-    public void test13PopupWindowWithAutoClose() throws InterruptedException {
-
-        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenAutoClose.html", new TestEventHandler());
-
-        Thread.sleep(5000);
-        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-        Thread.sleep(5000);
-    }
+//    @Test
+//    public void test13PopupWindowWithAutoClose() throws InterruptedException {
+//
+//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenAutoClose.html", new TestEventHandler());
+//
+//        Thread.sleep(5000);
+//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
+//        Thread.sleep(5000);
+//    }
 
     private void generateConnectUrl() {
         if (goodUrl.isEmpty()) {

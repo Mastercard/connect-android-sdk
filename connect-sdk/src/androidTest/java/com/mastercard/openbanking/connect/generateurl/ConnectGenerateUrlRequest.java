@@ -6,10 +6,9 @@ public class ConnectGenerateUrlRequest {
     private String consumerId;
     private String redirectUri;
 
-    ConnectGenerateUrlRequest(String partnerId, String customerId, String consumerId, String redirectUri) {
+    ConnectGenerateUrlRequest(String partnerId, String customerId, String consumerId) {
         this.partnerId = partnerId;
         this.customerId = customerId;
         this. consumerId = consumerId;
-        this. redirectUri = redirectUri;
     }
 }

@@ -8,7 +8,7 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.5.4'
         classpath 'io.github.gradle-nexus:publish-plugin:1.1.0'
         classpath 'org.jacoco:org.jacoco.core:0.8.6' //Use latest version
 

@@ -212,7 +212,7 @@ public class GenUrlLib {
     private static void sendGenerateUrlRequest() {
 
         // Create json params
-        ConnectGenerateUrlRequest req = new ConnectGenerateUrlRequest(ConnectConfig.PARTNER_ID, ConnectConfig.customerId, ConnectConfig.consumerId, "http://localhost:3001/customers/redirectHandler");
+        ConnectGenerateUrlRequest req = new ConnectGenerateUrlRequest(ConnectConfig.PARTNER_ID, ConnectConfig.customerId, ConnectConfig.consumerId);
 
         // Send Request
         GsonRequest<ConnectGenerateUrlResponse> myReq = new GsonRequest<>(
