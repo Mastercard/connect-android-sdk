@@ -21,7 +21,7 @@ afterEvaluate {
                     name = 'MastercardOpenBanking Connect Android SDK'
                     description = 'The Connect Android SDK allows you to embed MastercardOpenBanking Connect anywhere you want within your own mobile applications.'
 
-                    url = 'https://developer.mastercard.com/open-banking/staging/documentation/connect/mobile-sdks/#android'
+                    url = 'https://developer.mastercard.com/open-banking-au/documentation/connect/mobile-sdks/#android/'
                     organization {
                         name = 'MastercardOpenBanking'
                         url = 'https://mastercard.com'
