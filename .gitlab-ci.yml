@@ -40,12 +40,12 @@ coverage:
   tags:
     - xcode
     
-sonarqube:
-  stage: scan
-  script:
-    - ./gradlew connect-sdk:sonarqube
-  tags:
-    - xcode
+#sonarqube:
+#  stage: scan
+#  script:
+#    - ./gradlew connect-sdk:sonarqube
+#  tags:
+#    - xcode
 
 publish_to_staging:
   stage: sonatype

@@ -1,4 +1,3 @@
-
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -12,81 +11,74 @@ afterEvaluate {
         publications {
             library(MavenPublication) {
                 // Add metadata to pom file that is required for maven central publishing
-                addMetadataToPom(pom)
                 groupId PUBLISH_GROUP_ID
                 artifactId PUBLISH_ARTIFACT_ID
                 version PUBLISH_VERSION
                 artifact androidSourcesJar
                 artifact bundleReleaseAar
 
-                // Add our dependencies to POM file so that when our library is downloaded its dependencies are also downloaded.
-                // This is why we only support integration via repository because we now depend on CustomTabs library for OAuth support.
-                // If we distribute by zip file then dependency on CustomTabs would not automatically occur and developers would see issues with OAuth.
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    configurations.implementation.allDependencies.each {
-                        if (it.name != 'unspecified') {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
+                pom {
+                    name = 'MastercardOpenBanking Connect Android SDK'
+                    description = 'The Connect Android SDK allows you to embed MastercardOpenBanking Connect anywhere you want within your own mobile applications.'
+
+                    url = 'https://developer.mastercard.com/open-banking-au/documentation/connect/mobile-sdks/#android/'
+                    organization {
+                        name = 'MastercardOpenBanking'
+                        url = 'https://mastercard.com'
+                    }
+                    licenses {
+                        license {
+                            name = 'The MIT License (MIT)'
+                            url = 'http://www.opensource.org/licenses/mit-license.php'
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'MastercardOpenBanking'
+                        }
+                    }
+                    scm {
+                        url = 'https://github.com/Mastercard/connect-android-sdk'
+                        connection = 'scm:git:git://github.com:Mastercard/connect-android-sdk.git'
+                        developerConnection = 'scm:git:ssh://git@github.com:Mastercard/connect-android-sdk.git'
+                    }
+
+                    withXml {
+                        def dependenciesNode = asNode().appendNode('dependencies')
+
+                        // Add our dependencies to POM file so that when our library is downloaded its dependencies are also downloaded.
+                        // This is why we only support integration via repository because we now depend on CustomTabs library for OAuth support.
+                        // If we distribute by zip file then dependency on CustomTabs would not automatically occur and developers would see issues with OAuth.
+                        project.configurations.implementation.allDependencies.each {
+                            if (it.name != 'unspecified') {
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', it.group)
+                                dependencyNode.appendNode('artifactId', it.name)
+                                dependencyNode.appendNode('version', it.version)
+                            }
                         }
                     }
                 }
             }
         }
-    }
-}
+        repositories {
+            // The repository to publish to, Sonatype/MavenCentral
+            maven {
+                // This is an arbitrary name, you may also use "mavencentral" or
+                // any other name that's descriptive for you
+                name = "sonatype"
+                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
-def addMetadataToPom(pom) {
-    pom.withXml {
-        def root = asNode()
-
-        // eliminate test-scoped dependencies (no need in maven central POMs)
-        root.dependencies.removeAll { dep ->
-            dep.scope == "test"
-        }
-
-        // add all items necessary for maven central publication
-        root.children().last() + {
-            resolveStrategy = DELEGATE_FIRST
-
-            description 'The Connect Android SDK allows you to embed MastercardOpenBanking Connect anywhere you want within your own mobile applications.'
-            name 'MastercardOpenBanking Connect Android SDK'
-            url 'https://developer.mastercard.com/open-banking/staging/documentation/connect/mobile-sdks/#android'
-            organization {
-                name 'MastercardOpenBanking'
-                url 'https://finicity.com'
-            }
-            licenses {
-                license {
-                    name 'The MIT License (MIT)'
-                    url 'http://www.opensource.org/licenses/mit-license.php'
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
                 }
-            }
-            developers {
-                developer {
-                    name 'MastercardOpenBanking'
-                }
-            }
-            scm {
-                url 'https://github.com/Mastercard/connect-android-sdk'
-                connection 'scm:git:git://github.com:Finicity/connect-android-sdk.git'
-                developerConnection 'scm:git:ssh://git@github.com:Finicity/connect-android-sdk.git'
             }
         }
     }
-}
-
-
-signing {
-    if (signingKey) {
-        byte[] decoded = signingKey.decodeBase64()
-        String signingKey = new String(decoded)
-        useInMemoryPgpKeys(
-                signingKey,
-                signingPassword
-        )
+    signing {
         sign publishing.publications
     }
 }
