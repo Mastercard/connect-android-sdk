@@ -10,6 +10,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.mastercard.openbanking.connect.R;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -18,6 +19,7 @@ public class GenUrlLib {
     // private static final String TAG = MainActivity.class.getName();
     private static final String TAG = "GenUrl-Lib";
     private static RequestQueue mRequestQueue;
+    private static Context context;
 
     private static Response.ErrorListener errListener;
     private static Response.Listener<ConnectAuthResponse> authListener;
@@ -34,6 +36,7 @@ public class GenUrlLib {
         customerListener = null;
         consumerListener = null;
         generateUrlListener = null;
+        GenUrlLib.context = context;
 
         // Send network requests from background task.
         new AsyncTask<Void, Void, Void>() {
@@ -145,10 +148,10 @@ public class GenUrlLib {
     private static void sendAuthRequest() {
 
         // Create json params
-        ConnectAuthRequest req = new ConnectAuthRequest(ConnectConfig.PARTNER_ID, ConnectConfig.PARTNER_SECRET);
-
+        ConnectAuthRequest req = new ConnectAuthRequest(context.getResources().getString(R.string.partnerId), context.getResources().getString(R.string.partnerSecret));
         // Send Request
         GsonRequest<ConnectAuthResponse> myReq = new GsonRequest<>(
+                context,
                 Request.Method.POST,
                 ConnectConfig.AUTHENTICATE_ENDPOINT,
                 req,
@@ -168,6 +171,7 @@ public class GenUrlLib {
 
         // Send Request
         GsonRequest<ConnectCustomerResponse> myReq = new GsonRequest<>(
+                context,
                 Request.Method.POST,
                 ConnectConfig.CUSTOMER_ENDPOINT,
                 req,
@@ -199,6 +203,7 @@ public class GenUrlLib {
 
         // Send Request
         GsonRequest<ConnectConsumerResponse> myReq = new GsonRequest<>(
+                context,
                 Request.Method.POST,
                 endpoint,
                 req,
@@ -212,10 +217,10 @@ public class GenUrlLib {
     private static void sendGenerateUrlRequest() {
 
         // Create json params
-        ConnectGenerateUrlRequest req = new ConnectGenerateUrlRequest(ConnectConfig.PARTNER_ID, ConnectConfig.customerId, ConnectConfig.consumerId);
-
+        ConnectGenerateUrlRequest req = new ConnectGenerateUrlRequest(context.getResources().getString(R.string.partnerId), ConnectConfig.customerId, ConnectConfig.consumerId);
         // Send Request
         GsonRequest<ConnectGenerateUrlResponse> myReq = new GsonRequest<>(
+                context,
                 Request.Method.POST,
                 ConnectConfig.GENERATE_URL_ENDPOINT,
                 req,

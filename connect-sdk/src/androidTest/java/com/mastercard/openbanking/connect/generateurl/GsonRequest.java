@@ -1,5 +1,6 @@
 package com.mastercard.openbanking.connect.generateurl;
 
+import android.content.Context;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -7,6 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.mastercard.openbanking.connect.R;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ public class GsonRequest<T> extends Request<T> {
     private final Class<T> clazz;
     private final Response.Listener<T> listener;
     private final Object dataIn;
+    private Context context;
 
     /**
      * Make a GET request and return a parsed object from JSON.
@@ -27,12 +30,13 @@ public class GsonRequest<T> extends Request<T> {
      * @param url URL of the request to make
      * @param clazz Relevant class object, for Gson's reflection
      */
-    public GsonRequest(int method, String url, Object dataIn, Class<T> clazz,
+    public GsonRequest(Context context, int method, String url, Object dataIn, Class<T> clazz,
                        Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.dataIn = dataIn;
         this.clazz = clazz;
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class GsonRequest<T> extends Request<T> {
         // Log.i(TAG,"getHeaders called");
         Map<String, String>  headers = new HashMap<>();
         headers.put("Accept", "application/json");
-        headers.put("Finicity-App-Key", ConnectConfig.FINICITY_APP_KEY);
+        headers.put("Finicity-App-Key", context.getResources().getString(R.string.finicityAppKey));
         if (!ConnectConfig.authToken.isEmpty()) {
             headers.put("Finicity-App-Token", ConnectConfig.authToken);
         }
