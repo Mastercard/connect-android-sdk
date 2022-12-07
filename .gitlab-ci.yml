@@ -8,6 +8,8 @@ variables:
     
 stages:
   - build
+#  - postbuild
+#  - scan
   - sonatype
   - release
   
@@ -19,24 +21,24 @@ build_project:
   tags:
     - xcode
 
-coverage:
-  stage: postbuild
-  script:
-    - ./ci/start-emu
-    - ./gradlew connect-sdk:createDebugCoverageReport
-    - ./ci/stop-emu
-    - ./gradlew connect-sdk:testDebugUnitTest
-    - ./gradlew connect-sdk:jacocoTestReport
-    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { printf "Test Coverage %0.2f%%\n", 100*covered/instructions }' $JACOCO_CSV_FILE
-  artifacts:
-    when: always
-    paths:
-      - connect-sdk/build/outputs/
-      - connect-sdk/build/jacoco/
-      - connect-sdk/build/reports/
-    expire_in: 1 days
-  tags:
-    - xcode
+#coverage:
+#  stage: postbuild
+#  script:
+#    - ./ci/start-emu
+#    - ./gradlew connect-sdk:createDebugCoverageReport
+#    - ./ci/stop-emu
+#    - ./gradlew connect-sdk:testDebugUnitTest
+#    - ./gradlew connect-sdk:jacocoTestReport
+#    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { printf "Test Coverage %0.2f%%\n", 100*covered/instructions }' $JACOCO_CSV_FILE
+#  artifacts:
+#    when: always
+#    paths:
+#      - connect-sdk/build/outputs/
+#      - connect-sdk/build/jacoco/
+#      - connect-sdk/build/reports/
+#    expire_in: 1 days
+#  tags:
+#    - xcode
     
 #sonarqube:
 #  stage: scan
