@@ -8,8 +8,6 @@ variables:
     
 stages:
   - build
-#  - postbuild
-#  - scan
   - sonatype
   - release
   
