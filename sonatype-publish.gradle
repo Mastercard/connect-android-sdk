@@ -79,7 +79,7 @@ afterEvaluate {
         }
     }
     signing {
-        useInMemoryPgpKeys(signingKey, signingKeyPwd)
+        useInMemoryPgpKeys(signingSecretKey, signingPassword)
         sign publishing.publications
     }
 }
