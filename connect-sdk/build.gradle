@@ -47,11 +47,29 @@ android {
     compileSdkVersion 31
     buildToolsVersion "29.0.2"
 
+    File secretPropsFile = project.rootProject.file('local.properties')
+    Properties properties = new Properties()
+    if (secretPropsFile.exists()) {
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+    }
+
+
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 105
         versionName "2.0.0"
+
+        if (!properties.isEmpty()) {
+            resValue "string", "partnerId", properties.getProperty("PARTNER_ID", "")
+            resValue "string", "partnerSecret", properties.getProperty("PARTNER_SECRET", "")
+            resValue "string", "finicityAppKey", properties.getProperty("FINICITY_APP_KEY", "")
+        } else {
+            resValue "string", "partnerId", System.getenv("PARTNER_ID")
+            resValue "string", "partnerSecret", System.getenv("PARTNER_SECRET")
+            resValue "string", "finicityAppKey", System.getenv("FINICITY_APP_KEY")
+        }
+
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'consumer-rules.pro'

@@ -69,18 +69,21 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
-//    @Test
-//    public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
-//
-//        String url = goodUrl.replace("localhost:", "10.0.2.2:");
-//        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
-//
-//        mIdlingResource.waitForEvent("search");
-//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
-//
-//        Thread.sleep(1000);
-//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
-//    }
+    @Test
+    public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
+
+        String url = goodUrl.replace("localhost:", "10.0.2.2:");
+        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+
+        mIdlingResource.waitForEvent("search");
+        onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
+
+        Thread.sleep(1000);
+
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+
+    }
+
 
     @Test
     public void test03ConnectWithGoodUrlThenBackButton() {
