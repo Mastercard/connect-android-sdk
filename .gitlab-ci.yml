@@ -60,6 +60,7 @@ release:
   stage: release
   only:
     - master
+    - main
   when: manual
   script:
     - ./gradlew releaseSonatypeStagingRepository
