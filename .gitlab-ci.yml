@@ -52,7 +52,6 @@ publish_to_staging:
   script:
     - ./gradlew connect-sdk:clean
     - ./gradlew connect-sdk:assembleRelease
-    - ./gradlew connect-sdk:publishToSonatype closeSonatypeStagingRepository
   tags:
     - xcode    
 
@@ -63,6 +62,6 @@ release:
     - main
   when: manual
   script:
-    - ./gradlew releaseSonatypeStagingRepository
+    - ./gradlew closeAndReleaseSonatypeStagingRepository
   tags:
     - xcode 
