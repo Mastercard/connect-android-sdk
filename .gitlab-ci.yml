@@ -49,9 +49,14 @@ coverage:
 
 publish_to_staging:
   stage: sonatype
+  only:
+    - master
+    - main
+  when: manual
   script:
     - ./gradlew connect-sdk:clean
     - ./gradlew connect-sdk:assembleRelease
+    - ./gradlew closeSonatypeStagingRepository
   tags:
     - xcode    
 
@@ -62,6 +67,6 @@ release:
     - main
   when: manual
   script:
-    - ./gradlew closeAndReleaseSonatypeStagingRepository
+    - ./gradlew releaseSonatypeStagingRepository
   tags:
     - xcode 
