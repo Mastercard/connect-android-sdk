@@ -42,6 +42,8 @@ task jacocoTestReport(type: JacocoReport) {
     executionData.from = fileTree(dir: project.projectDir, includes:
             ['**/**/*.exec', '**/**/*.ec'])
 }
+apply from: "$project.rootDir/sonar.gradle"
+
 
 android {
     compileSdkVersion 31
