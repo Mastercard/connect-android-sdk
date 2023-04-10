@@ -22,7 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "2.0.0";
+    private static final String SDK_VERSION = "2.0.6";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -31,13 +31,14 @@ public class Connect extends Activity {
 
     // Static stuff
     private static final String CONNECT_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_URL_INTENT_KEY";
+    private static final String CONNECT_DEEPLINK_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_DEEPLINK_URL_INTENT_KEY";
 
     private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
     private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
 
-    public static void start(Context context, String connectUrl, EventHandler eventHandler) {
+    public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler) {
         if(Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
@@ -45,6 +46,7 @@ public class Connect extends Activity {
         Intent connectIntent = new Intent(context, Connect.class);
         if (runningUnitTest) { connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); }
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
+        connectIntent.putExtra(Connect.CONNECT_DEEPLINK_URL_INTENT_KEY, deepLinkUrl);
 
         // Set EventListener
         Connect.EVENT_HANDLER = eventHandler;
@@ -108,9 +110,9 @@ public class Connect extends Activity {
         this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
         this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
-                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
-                mPopupCloseTextButton));
+//        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
+//                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
+//                mPopupCloseTextButton));
 
         mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
@@ -258,7 +260,6 @@ public class Connect extends Activity {
                 });
             }
         };
-
         pingTimer.schedule(pingTimerTask, 1000, 1000);
     }
 
@@ -275,7 +276,8 @@ public class Connect extends Activity {
     }
 
     protected void pingConnect() {
-        String javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+        String deepLinkUrl = getIntent().getStringExtra(CONNECT_DEEPLINK_URL_INTENT_KEY);
+        String javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',deepLinkUrl: '" + deepLinkUrl + "' }, '*')";
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
