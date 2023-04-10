@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.web.sugar.Web.onWebView;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
@@ -44,6 +42,7 @@ public class ConnectActivityTest {
     private static String goodUrl = "";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
+    private static String deepLinkUrl = "";
 
     @Before
     public void setup() {
@@ -63,7 +62,7 @@ public class ConnectActivityTest {
 
     @Test
     public void test01ConnectWithExpiredUrl() {
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
 
         mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
@@ -73,7 +72,7 @@ public class ConnectActivityTest {
     public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url,"", new TestEventHandler());
 
         mIdlingResource.waitForEvent("search");
         onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
@@ -89,7 +88,7 @@ public class ConnectActivityTest {
     public void test03ConnectWithGoodUrlThenBackButton() {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -112,7 +111,7 @@ public class ConnectActivityTest {
     public void test04ConnectWithGoodUrlThenBackButtonAndCancel() {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl,  new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -154,7 +153,7 @@ public class ConnectActivityTest {
     public void test07ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -222,7 +221,7 @@ public class ConnectActivityTest {
     public void test08ConnectWithGoodUrlThenAddBankAccount() {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl,  new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -270,7 +269,7 @@ public class ConnectActivityTest {
      @Test
     public void test09ConnectWithExpiredUrlThenFinishActivity() throws InterruptedException {
 
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl,  new TestEventHandler());
 
         Thread.sleep(10000);
         Connect.finishCurrentActivity();
@@ -291,12 +290,12 @@ public class ConnectActivityTest {
     @Test
     public void test11AlreadyRunning() throws InterruptedException {
 
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
         Thread.sleep(5000);
 
         // Try and start a 2nd Activity
         try {
-            Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+            Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
             fail("Should have thrown runtime exception");
         } catch(RuntimeException e) {
             //success
@@ -306,7 +305,7 @@ public class ConnectActivityTest {
     @Test
     public void test12NullEventHandler() throws InterruptedException {
 
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, null);
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl,null);
         Thread.sleep(5000);
     }
 
