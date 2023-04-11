@@ -17,6 +17,7 @@ stages:
   - build
   - postbuild
   - scan
+  - scan-container
   - sonatype
   - release
   
@@ -53,6 +54,18 @@ sonarqube:
     - ./gradlew connect-sdk:sonarqube
   tags:
     - xcode
+
+scan-container:
+  image: dcr.fini.city/devops/osiris
+  stage: scan-container
+  allow_failure: false
+  script:
+    #- scan_container ${IMAGE_REGISTRY}
+    - scan_container $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
+  only:
+    - develop
+    - master
+
 
 publish_to_staging:
   stage: sonatype
