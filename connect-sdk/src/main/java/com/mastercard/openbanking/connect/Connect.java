@@ -110,9 +110,9 @@ public class Connect extends Activity {
         this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
         this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
 
-//        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
-//                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
-//                mPopupCloseTextButton));
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
+                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
+                mPopupCloseTextButton));
 
         mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
@@ -179,8 +179,11 @@ public class Connect extends Activity {
     // Back Button functionality
     @Override
     public void onBackPressed() {
+        if(runningUnitTest){
+            mPopupLayout.setVisibility(View.VISIBLE);
+        }
         if(mPopupLayout.getVisibility() == View.VISIBLE) {
-            if(mPopupView.canGoBack()) {
+            if(mPopupView != null && mPopupView.canGoBack()) {
                 mPopupView.goBack();
             } else {
                 DialogInterface.OnClickListener listener = getDialogClickListener();

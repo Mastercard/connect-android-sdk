@@ -105,6 +105,10 @@ public class ConnectActivityTest {
         // Try and simulate back button press to return to previous page
         mIdlingResource.waitForEvent("sign-in");
         onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
+
+        Connect.runningUnitTest = false;
+        onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
+        Connect.runningUnitTest = true;
     }
 
     @Test
