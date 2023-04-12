@@ -1,7 +1,7 @@
 include:
 - project: 'devops/central-ci'
   ref: master
-  file: '/cx-scan-develop.yml'
+  file: '/cx-scan.yml'
 
 
 
