@@ -30,6 +30,8 @@ import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static org.junit.Assert.fail;
 
+import static java.sql.DriverManager.println;
+
 import com.mastercard.openbanking.connect.generateurl.ConnectGenerateUrlCallbackHandler;
 import com.mastercard.openbanking.connect.generateurl.GenUrlLib;
 
@@ -105,6 +107,7 @@ public class ConnectActivityTest {
         // Try and simulate back button press to return to previous page
         mIdlingResource.waitForEvent("sign-in");
         onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
+        println("test");
 
         Connect.runningUnitTest = false;
         onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
