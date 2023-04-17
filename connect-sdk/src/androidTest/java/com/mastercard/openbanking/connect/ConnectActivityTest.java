@@ -65,7 +65,7 @@ public class ConnectActivityTest {
     @Test
     public void test01ConnectWithExpiredUrl() {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
-
+        System.out.println("tewt");
         mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
