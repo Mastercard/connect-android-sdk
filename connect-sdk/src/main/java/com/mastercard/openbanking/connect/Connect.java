@@ -179,9 +179,6 @@ public class Connect extends Activity {
     // Back Button functionality
     @Override
     public void onBackPressed() {
-        if(runningUnitTest){
-            mPopupLayout.setVisibility(View.VISIBLE);
-        }
         if(mPopupLayout.getVisibility() == View.VISIBLE) {
             if(mPopupView != null && mPopupView.canGoBack()) {
                 mPopupView.goBack();
