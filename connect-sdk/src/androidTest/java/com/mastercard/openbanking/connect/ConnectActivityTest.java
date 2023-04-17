@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.web.sugar.Web.onWebView;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
@@ -122,7 +124,6 @@ public class ConnectActivityTest {
         onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
         mIdlingResource.waitForEvent("cancel");
     }
-
 
 //    @Test
 //    public void test05PopupWindowWithCancel() throws InterruptedException {
@@ -312,17 +313,6 @@ public class ConnectActivityTest {
         Thread.sleep(5000);
     }
 
-//    @Test
-//    public void test13PopupWindowWithAutoClose() throws InterruptedException {
-//
-//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenAutoClose.html", new TestEventHandler());
-//
-//        Thread.sleep(5000);
-//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-//        Thread.sleep(5000);
-//    }
-
-
     @Test
     public void test13ConnectWithGoodUrlThenNextButton() throws InterruptedException {
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
@@ -337,7 +327,7 @@ public class ConnectActivityTest {
                 .perform(webClick());
 
         // Select FinBank from search list using XPATH
-        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
+        mIdlingResource.waitForEvent("GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
         // Try and simulate back button press to return to previous page
@@ -346,8 +336,18 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Next")).perform(webClick());
         Thread.sleep(4000);
         Connect.finishCurrentActivity();
-
     }
+
+
+//    @Test
+//    public void test13PopupWindowWithAutoClose() throws InterruptedException {
+//
+//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenAutoClose.html", new TestEventHandler());
+//
+//        Thread.sleep(5000);
+//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
+//        Thread.sleep(5000);
+//    }
 
     private void generateConnectUrl() {
         if (goodUrl.isEmpty()) {
