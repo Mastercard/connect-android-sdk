@@ -325,8 +325,6 @@ public class ConnectActivityTest {
 
     @Test
     public void test13ConnectWithGoodUrlThenNextButton() throws InterruptedException {
-        System.out.println("test");
-
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
 
