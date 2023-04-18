@@ -311,6 +311,8 @@ public class ConnectActivityTest {
 
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl,null);
         Thread.sleep(5000);
+        Connect.finishCurrentActivity();
+
     }
 
     @Test
