@@ -123,6 +123,7 @@ public class ConnectActivityTest {
         // Try and simulate back button press to return to non-existent page to test back-button cancel event
         onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
         mIdlingResource.waitForEvent("cancel");
+        Connect.finishCurrentActivity();
     }
 
 //    @Test
