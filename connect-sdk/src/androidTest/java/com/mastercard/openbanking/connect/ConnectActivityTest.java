@@ -333,9 +333,9 @@ public class ConnectActivityTest {
 
         // Try and simulate back button press to return to previous page
         mIdlingResource.waitForEvent("sign-in");
-        Thread.sleep(3000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Next")).perform(webClick());
-        Thread.sleep(4000);
+        mIdlingResource.waitForEvent("sign-in");
+        Thread.sleep(10000);
         Connect.finishCurrentActivity();
     }
 
