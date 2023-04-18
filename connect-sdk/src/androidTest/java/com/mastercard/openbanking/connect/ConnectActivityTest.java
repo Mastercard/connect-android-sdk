@@ -316,6 +316,7 @@ public class ConnectActivityTest {
 
     @Test
     public void test13ConnectWithGoodUrlThenNextButton() throws InterruptedException {
+        System.out.println("Test");
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
 
@@ -337,6 +338,7 @@ public class ConnectActivityTest {
         mIdlingResource.waitForEvent("sign-in");
         Thread.sleep(10000);
         Connect.finishCurrentActivity();
+
     }
 
 
