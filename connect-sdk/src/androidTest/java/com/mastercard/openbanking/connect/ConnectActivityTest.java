@@ -175,6 +175,7 @@ public class ConnectActivityTest {
         Thread.sleep(2000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Next")).perform(webClick());
         Thread.sleep(10000);
+        onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
         Connect.finishCurrentActivity();
 
     }
