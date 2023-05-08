@@ -286,6 +286,11 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-login\"]/form/app-button/a")).perform(webClick());
 
         // Select 1st account in list using XPATH
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
 
