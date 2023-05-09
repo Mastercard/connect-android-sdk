@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -84,6 +85,9 @@ public class Connect extends Activity {
             return;
         }
 
+        if(runningUnitTest){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
         // Prevent calls to start when Connect is already running
         if(Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
