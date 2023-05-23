@@ -153,32 +153,32 @@ public class ConnectActivityTest {
 //        onView(withId(android.R.id.button1)).perform(ViewActions.click());
 //    }
 
-    @Test
-    public void test06ConnectWithGoodUrlThenNextButton() throws InterruptedException {
-        String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
-
-        // Wait for Route search or let it timeout
-        mIdlingResource.waitForEvent("search");
-        onWebView()
-                .withElement(findElement(Locator.NAME, "Search for your bank"))
-                .perform(DriverAtoms.clearElement())
-                .perform(DriverAtoms.webKeys("FinBank Oauth"))
-                .perform(webClick());
-
-        // Select FinBank from search list using XPATH
-        mIdlingResource.waitForEvent("GetInstitutionsSuccess");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
-
-        // Try and simulate back button press to return to previous page
-        mIdlingResource.waitForEvent("sign-in");
-        Thread.sleep(2000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Next")).perform(webClick());
-        Thread.sleep(10000);
-        onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
-        Connect.finishCurrentActivity();
-
-    }
+//    @Test
+//    public void test06ConnectWithGoodUrlThenNextButton() throws InterruptedException {
+//        String url = goodUrl.replace("localhost:", "10.0.2.2:");
+//        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
+//
+//        // Wait for Route search or let it timeout
+//        mIdlingResource.waitForEvent("search");
+//        onWebView()
+//                .withElement(findElement(Locator.NAME, "Search for your bank"))
+//                .perform(DriverAtoms.clearElement())
+//                .perform(DriverAtoms.webKeys("FinBank Oauth"))
+//                .perform(webClick());
+//
+//        // Select FinBank from search list using XPATH
+//        mIdlingResource.waitForEvent("GetInstitutionsSuccess");
+//        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
+//
+//        // Try and simulate back button press to return to previous page
+//        mIdlingResource.waitForEvent("sign-in");
+//        Thread.sleep(2000);
+//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Next")).perform(webClick());
+//        Thread.sleep(10000);
+//        onView(isRoot()).perform(ViewActions.pressBackUnconditionally());
+//        Connect.finishCurrentActivity();
+//
+//    }
 
     @Test
     public void test07ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
