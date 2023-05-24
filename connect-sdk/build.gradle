@@ -43,6 +43,8 @@ task jacocoTestReport(type: JacocoReport) {
             ['**/**/*.exec', '**/**/*.ec'])
 }
 
+apply from: "$project.rootDir/sonar.gradle"
+
 android {
     compileSdkVersion 31
     buildToolsVersion "29.0.2"
