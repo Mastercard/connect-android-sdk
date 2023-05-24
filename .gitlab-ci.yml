@@ -1,8 +1,3 @@
-include:
-- project: 'devops/central-ci'
-    ref: master
-    file: '/cx-scan.yml'
-
 before_script:
   - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/"
   - export ANDROID_HOME=$HOME/Library/Android/sdk
@@ -53,23 +48,14 @@ coverage:
 #    - xcode
 
 publish_to_staging:
-  stage: sonatype
+  stage: release
   only:
+    - master
     - main
   when: manual
   script:
     - ./gradlew connect-sdk:clean
     - ./gradlew connect-sdk:assembleRelease
-    - ./gradlew connect-sdk:publishToSonatype closeSonatypeStagingRepository
+    - ./gradlew connect-sdk:publishToSonatype closeAndReleaseSonatypeStagingRepository
   tags:
     - xcode
-
-  release:
-    stage: release
-    only:
-      - main
-    when: manual
-    script:
-      - ./gradlew releaseSonatypeStagingRepository
-    tags:
-      - xcode
