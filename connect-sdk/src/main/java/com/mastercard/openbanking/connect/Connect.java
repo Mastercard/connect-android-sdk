@@ -22,7 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "2.0.0";
+    private static final String SDK_VERSION = "2.1.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -103,15 +103,6 @@ public class Connect extends Activity {
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true);
 
-        this.mPopupLayout = findViewById(R.id.popupLayout);
-        this.mPopupCloseImgButton = findViewById(R.id.popupCloseImgButton);
-        this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
-        this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
-
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
-                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
-                mPopupCloseTextButton));
-
         mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
         // JS Interface and event listener for main WebView
@@ -177,30 +168,17 @@ public class Connect extends Activity {
     // Back Button functionality
     @Override
     public void onBackPressed() {
-        if(mPopupLayout.getVisibility() == View.VISIBLE) {
-            if(mPopupView.canGoBack()) {
-                mPopupView.goBack();
-            } else {
-                DialogInterface.OnClickListener listener = getDialogClickListener();
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getString(R.string.exit_confirmation_title))
-                        .setMessage(getString(R.string.exit_confirmation_msg))
-                        .setPositiveButton(getString(R.string.exit_confirmation_yes), listener)
-                        .setNegativeButton(getString(R.string.exit_confirmation_no), listener).show();
-            }
+        if(mMainWebView.canGoBack()) {
+            mMainWebView.goBack();
         } else {
-            if(mMainWebView.canGoBack()) {
-                mMainWebView.goBack();
-            } else {
-                try {
-                    // Send cancel event and finish
-                    String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
-                    JSONObject jo = new JSONObject(message);
-                    Connect.EVENT_HANDLER.onCancel(jo);
-                    finish();
-                } catch(Exception e) {
-                    finish();
-                }
+            try {
+                // Send cancel event and finish
+                String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
+                JSONObject jo = new JSONObject(message);
+                Connect.EVENT_HANDLER.onCancel(jo);
+                finish();
+            } catch(Exception e) {
+                finish();
             }
         }
     }
@@ -232,10 +210,6 @@ public class Connect extends Activity {
         mPopupView.loadUrl("javascript:window.close();");
         mPopupView.destroy();
         mPopupView = null;
-
-        // Hide popupLayout
-        mPopupLayout.setVisibility(View.GONE);
-        mPopupViewContainer.removeView(mPopupView);
     }
 
     // Ping code to notify Connect of sdkVersion and platform type for analytics
