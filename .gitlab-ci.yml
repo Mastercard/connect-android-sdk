@@ -1,3 +1,8 @@
+include:
+- project: 'devops/central-ci'
+    ref: master
+    file: '/cx-scan.yml'
+
 before_script:
   - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/"
   - export ANDROID_HOME=$HOME/Library/Android/sdk
