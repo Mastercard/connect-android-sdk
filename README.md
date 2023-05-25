@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Connect Android SDK allows you to embed Connect anywhere you want within your own mobile applications.
+The Connect mobile SDKs allow you to embed the Connect user experience anywhere you want within your mobile application.
 
 
 ## Compatibility
@@ -67,6 +67,10 @@ fun start(context: Context, connectUrl: String?, eventHandler: EventHandler?)
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
 | eventHandler | A class implementing the EventHandler interface. |
+
+See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
+
+
 
 ## EventHandler Interface
 
