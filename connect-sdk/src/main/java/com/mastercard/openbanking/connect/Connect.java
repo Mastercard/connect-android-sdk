@@ -1,7 +1,6 @@
 package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -102,6 +101,15 @@ public class Connect extends Activity {
         mMainWebView.getSettings().setJavaScriptEnabled(true);
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true);
+
+        this.mPopupLayout = findViewById(R.id.popupLayout);
+        this.mPopupCloseImgButton = findViewById(R.id.popupCloseImgButton);
+        this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
+        this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
+
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
+                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
+                mPopupCloseTextButton));
 
         mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
@@ -210,6 +218,10 @@ public class Connect extends Activity {
         mPopupView.loadUrl("javascript:window.close();");
         mPopupView.destroy();
         mPopupView = null;
+
+        // Hide popupLayout
+        mPopupLayout.setVisibility(View.GONE);
+        mPopupViewContainer.removeView(mPopupView);
     }
 
     // Ping code to notify Connect of sdkVersion and platform type for analytics
