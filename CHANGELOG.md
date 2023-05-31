@@ -3,7 +3,7 @@
 ### 2.1.0 (June 3, 2023)
 
 Patch:
-- Fix for "Oauth popup sometimes it gets popped up in insecure container instead of Chrome custom tabs".
+- Fix applied for opening Oauth popup in Chrome custom tabs only.
 
 
 ### 2.0.0 (March 10, 2022)
