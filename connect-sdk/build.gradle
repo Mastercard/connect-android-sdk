@@ -46,14 +46,32 @@ task jacocoTestReport(type: JacocoReport) {
 apply from: "$project.rootDir/sonar.gradle"
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 31
     buildToolsVersion "29.0.2"
+
+    File secretPropsFile = project.rootProject.file('local.properties')
+    Properties properties = new Properties()
+    if (secretPropsFile.exists()) {
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+    }
+
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 30
         versionCode 105
-        versionName "2.0.0"
+        versionName "2.1.0"
+
+        if (!properties.isEmpty()) {
+            resValue "string", "partnerId", properties.getProperty("PARTNER_ID", "")
+            resValue "string", "partnerSecret", properties.getProperty("PARTNER_SECRET", "")
+            resValue "string", "finicityAppKey", properties.getProperty("FINICITY_APP_KEY", "")
+        } else {
+            resValue "string", "partnerId", System.getenv("PARTNER_ID")
+            resValue "string", "partnerSecret", System.getenv("PARTNER_SECRET")
+            resValue "string", "finicityAppKey", System.getenv("FINICITY_APP_KEY")
+        }
+
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'consumer-rules.pro'
@@ -87,17 +105,18 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:3.4.0'
     testImplementation 'org.robolectric:robolectric:4.3'
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.google.code.gson:gson:2.8.7'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.0'
-    androidTestImplementation 'com.finicity.connect:genurllib:1.0.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
 }
 
 ext {
-    PUBLISH_GROUP_ID = 'com.mastercardopenbanking.connect'
-    PUBLISH_VERSION = '2.0.0'
+    PUBLISH_GROUP_ID = 'com.mastercard.openbanking.connect'
+    PUBLISH_VERSION = '2.1.0'
     PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 

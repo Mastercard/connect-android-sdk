@@ -3,13 +3,9 @@ package com.mastercard.openbanking.connect;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Message;
-import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -34,29 +30,6 @@ class ConnectWebChromeClient extends WebChromeClient {
         this.mPopupLayout = popupLayout;
         this.mPopupCloseImgButton = popupCloseImgButton;
         this.mPopupCloseTextButton = popupCloseTextButton;
-    }
-
-    @Override
-    public boolean onCreateWindow(WebView view, boolean isDialog,
-                                  boolean isUserGesture, Message resultMsg) {
-        // Create popup webview and add to popup view container
-        WebView popupView = createPopupView();
-        mPopupViewContainer.addView(popupView, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-        );
-
-        // Also update Connect with new popupView
-        mConnect.updatePopupView(popupView);
-
-        // Set popup layout to visible
-        mPopupLayout.setVisibility(View.VISIBLE);
-
-        // Return popup view in resultMsg
-        ((WebView.WebViewTransport) resultMsg.obj).setWebView(popupView);
-        resultMsg.sendToTarget();
-
-        return true;
     }
 
     @Override
@@ -86,41 +59,4 @@ class ConnectWebChromeClient extends WebChromeClient {
 
         return true;
     }
-
-    private WebView createPopupView() {
-        final WebView popupView = new WebView(mConnect);
-
-        popupView.getSettings().setJavaScriptEnabled(true);
-        popupView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onCloseWindow(WebView window) {
-                super.onCloseWindow(window);
-
-                mPopupLayout.setVisibility(View.GONE);
-                mPopupViewContainer.removeView(popupView);
-            }
-        });
-
-        popupView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-        });
-
-        // Create close on-click listener
-        View.OnClickListener closePopupListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mConnect.closePopup();
-            }
-        };
-
-        // Setup popup close buttons
-        mPopupCloseImgButton.setOnClickListener(closePopupListener);
-        mPopupCloseTextButton.setOnClickListener(closePopupListener);
-
-        return popupView;
-    }
-
 }

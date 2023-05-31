@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Connect Android SDK allows you to embed Finicity Connect anywhere you want within your own mobile applications.
+The Connect mobile SDKs allow you to embed the Connect user experience anywhere you want within your mobile application.
 
 
 ## Compatibility
@@ -18,19 +18,13 @@ The Connect Android SDK supports the following Android versions.
 * Gradle 5.1.1 or greater required
 
 
-## Step 1 - Add Finicity's JFrog Artifactory repository to your project
+## Step 1 - Add repository to your project
 
-The Connect Android SDK is now available thru Finicity's JFrog Artifactory account for distribution.  To download and integrate the SDK into your android project add the following lines into your build.gradle file(s).
-
-```
-repositories {
-    maven { url "https://finicity.jfrog.io/artifactory/finicity-connect-gradle-release-local" }
-}
-```
+The Connect Android SDK is now available through maven for distribution. To download and integrate the SDK into your android project add the following lines into your build.gradle file(s).
 
 ```
 dependencies {
-    implementation 'com.finicity.connect:connect-sdk:+'
+    implementation 'com.mastercard.openbanking.connect:connect-sdk:+'
 }
 ```
 
@@ -74,7 +68,8 @@ fun start(context: Context, connectUrl: String?, eventHandler: EventHandler?)
 | connectUrl | The SDK loads the Connect URL. |
 | eventHandler | A class implementing the EventHandler interface. |
 
-See [Generate 2.0 Connect URL APIs](https://docs.finicity.com/migrate-to-connect-web-sdk-2-0/#migrate-connect-web-sdk-1)
+See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
+
 
 
 ## EventHandler Interface
