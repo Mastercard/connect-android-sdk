@@ -1,18 +1,23 @@
+include:
+  - project: 'devops/central-ci'
+    ref: master
+    file: '/cx-scan.yml'
+
 before_script:
   - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/"
   - export ANDROID_HOME=$HOME/Library/Android/sdk
   - export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-  
+
 variables:
   JACOCO_CSV_FILE: '$CI_PROJECT_DIR/connect-sdk/build/reports/jacoco/jacocoTestReport/jacocoTestReport.csv'
-    
+
 stages:
   - build
   - postbuild
   - scan
   - sonatype
   - release
-  
+
 build_project:
   stage: build
   script:
@@ -40,22 +45,31 @@ coverage:
   tags:
     - xcode
 
-#sonarqube:
-#  stage: scan
-#  script:
-#    - ./gradlew connect-sdk:sonarqube
-#  tags:
-#    - xcode
+sonarqube:
+  stage: scan
+  script:
+    - ./gradlew connect-sdk:sonarqube
+  tags:
+    - xcode
 
 publish_to_staging:
-  stage: release
+  stage: sonatype
   only:
-    - master
     - main
   when: manual
   script:
     - ./gradlew connect-sdk:clean
     - ./gradlew connect-sdk:assembleRelease
-    - ./gradlew connect-sdk:publishToSonatype closeAndReleaseSonatypeStagingRepository
+    - ./gradlew connect-sdk:publishToSonatype closeSonatypeStagingRepository
+  tags:
+    - xcode
+
+release:
+  stage: release
+  only:
+    - main
+  when: manual
+  script:
+    - ./gradlew releaseSonatypeStagingRepository
   tags:
     - xcode

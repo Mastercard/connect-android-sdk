@@ -29,20 +29,20 @@ public class ConnectWebViewClientTest {
     }
 
     @Test
-    public void testOnPageFinished_matchingUrl() {
+    public void testOnPageStart_matchingUrl() {
         // Replace '?' with '/?' which is the expected Android behavior on this callback
         String url = CONNECT_URL.replace("?", "/?");
 
-        client.onPageFinished(mock(WebView.class), url);
+        client.onPageStarted(mock(WebView.class), url,null);
 
         verify(eventHandler).onLoad();
     }
 
     @Test
-    public void testOnPageFinished_nonMatchingUrl() {
+    public void testOnPageStart_nonMatchingUrl() {
         String url = "not a match";
 
-        client.onPageFinished(mock(WebView.class), url);
+        client.onPageStarted(mock(WebView.class), url,null);
 
         verify(eventHandler, never()).onLoad();
     }

@@ -1,7 +1,6 @@
 package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,7 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "2.0.0";
+    private static final String SDK_VERSION = "2.1.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -177,30 +176,17 @@ public class Connect extends Activity {
     // Back Button functionality
     @Override
     public void onBackPressed() {
-        if(mPopupLayout.getVisibility() == View.VISIBLE) {
-            if(mPopupView.canGoBack()) {
-                mPopupView.goBack();
-            } else {
-                DialogInterface.OnClickListener listener = getDialogClickListener();
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getString(R.string.exit_confirmation_title))
-                        .setMessage(getString(R.string.exit_confirmation_msg))
-                        .setPositiveButton(getString(R.string.exit_confirmation_yes), listener)
-                        .setNegativeButton(getString(R.string.exit_confirmation_no), listener).show();
-            }
+        if(mMainWebView.canGoBack()) {
+            mMainWebView.goBack();
         } else {
-            if(mMainWebView.canGoBack()) {
-                mMainWebView.goBack();
-            } else {
-                try {
-                    // Send cancel event and finish
-                    String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
-                    JSONObject jo = new JSONObject(message);
-                    Connect.EVENT_HANDLER.onCancel(jo);
-                    finish();
-                } catch(Exception e) {
-                    finish();
-                }
+            try {
+                // Send cancel event and finish
+                String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
+                JSONObject jo = new JSONObject(message);
+                Connect.EVENT_HANDLER.onCancel(jo);
+                finish();
+            } catch(Exception e) {
+                finish();
             }
         }
     }
