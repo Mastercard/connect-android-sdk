@@ -20,6 +20,8 @@ The Connect Android SDK supports the following Android versions.
 
 ## Step 1 - Add repository to your project
 
+## Maven
+
 The Connect Android SDK is now available through maven for distribution. To download and integrate the SDK into your android project add the following lines into your build.gradle file(s).
 
 ```
@@ -28,7 +30,7 @@ dependencies {
 }
 ```
 
-Manual
+## Manual
 
 * Clone the project: connect-sdk
 
