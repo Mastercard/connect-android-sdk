@@ -1,5 +1,6 @@
 package com.mastercard.openbanking.connect;
 
+import android.graphics.Bitmap;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -16,7 +17,8 @@ class ConnectWebViewClient extends WebViewClient {
     }
 
     @Override
-    public void onPageFinished(WebView view, String url) {
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        super.onPageStarted(view, url, favicon);
         // Compare finished URL to Connect link. For some reason an extra '/' is getting added
         // before the query string by the time it gets here.
         if (url.equals(connectUrl) || url.equals(connectUrl.replace("?", "/?"))) {

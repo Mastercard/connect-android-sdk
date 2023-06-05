@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Connect Android SDK allows you to embed Connect anywhere you want within your own mobile applications.
+The Connect mobile SDKs allow you to embed the Connect user experience anywhere you want within your mobile application.
 
 
 ## Compatibility
@@ -20,6 +20,8 @@ The Connect Android SDK supports the following Android versions.
 
 ## Step 1 - Add repository to your project
 
+## Maven
+
 The Connect Android SDK is now available through maven for distribution. To download and integrate the SDK into your android project add the following lines into your build.gradle file(s).
 
 ```
@@ -28,6 +30,19 @@ dependencies {
 }
 ```
 
+## Manual
+
+* Clone the project: connect-sdk
+
+* On your Android project click on File > New > Import Module  > Select the path of connect sdk folder location > Finish
+
+* Modify the build.gradle file in connect-sdk module, remove the below code which is on line no 46 and 123
+
+```
+apply from: "$project.rootDir/sonar.gradle"
+apply from: "${rootProject.projectDir}/sonatype-publish.gradle"
+```
+* Clean and build the project
 
 ## Step 2 - For projects using AndroidX:
 
@@ -67,6 +82,10 @@ fun start(context: Context, connectUrl: String?, eventHandler: EventHandler?)
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
 | eventHandler | A class implementing the EventHandler interface. |
+
+See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
+
+
 
 ## EventHandler Interface
 
