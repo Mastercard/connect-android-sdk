@@ -1,8 +1,11 @@
 package com.mastercard.openbanking.connect;
 
-import android.graphics.Bitmap;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.Nullable;
 
 class ConnectWebViewClient extends WebViewClient {
 
@@ -16,14 +19,13 @@ class ConnectWebViewClient extends WebViewClient {
         this.connectUrl = connectUrl;
     }
 
+    @Nullable
     @Override
-    public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        super.onPageStarted(view, url, favicon);
-        // Compare finished URL to Connect link. For some reason an extra '/' is getting added
-        // before the query string by the time it gets here.
-        if (url.equals(connectUrl) || url.equals(connectUrl.replace("?", "/?"))) {
+    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+        if(request != null && request.getUrl() != null && request.getUrl().toString().contains("config.json")){
             eventHandler.onLoad();
             mConnect.startPingTimer();
         }
+        return super.shouldInterceptRequest(view, request);
     }
 }
