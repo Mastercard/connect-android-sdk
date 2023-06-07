@@ -15,7 +15,6 @@ import com.mastercard.openbanking.connect.EventHandler;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private EditText mEditConnectUrl;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i(TAG, ">>> Launching Connect activity");
 
-            Connect.start(this, url,getString(R.string.deeplink).concat("://") ,eventHandler);
+            Connect.start(this, url, getString(R.string.deeplink).concat("://"), eventHandler);
         }
     }
 
