@@ -69,18 +69,19 @@ The Connect Android SDK’s main component is the Connect class that contains a 
 
 ```
 Java
-public static void start(Context context, String connectUrl, EventHandler eventHandler)
+public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler)
 ```
 
 ```
 Kotlin
-fun start(context: Context, connectUrl: String?, eventHandler: EventHandler?)
+fun start(context: Context, connectUrl: String?, deepLinkUrl: String?, eventHandler: EventHandler?)
 ```
 
 | Argument | Description |
 | ------ | ------ |
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
+| deepLinkUrl | The DeepLink url to redirect back to app. |
 | eventHandler | A class implementing the EventHandler interface. |
 
 See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
