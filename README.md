@@ -20,9 +20,9 @@ The Connect Android SDK supports the following Android versions.
 
 ## Step 1 - Add repository to your project
 
-## Maven
+## Gradle
 
-The Connect Android SDK is now available through maven for distribution. To download and integrate the SDK into your android project add the following lines into your build.gradle file(s).
+Add the following code to the dependency section in the build.gradle file. To install a specific version, replace “+” with the preferred version number:
 
 ```
 dependencies {
@@ -56,12 +56,38 @@ Add internet permissions to your AndroidManifest.xml file.
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
+Add activity in AndroidManifest.xml file.
+```
+ <activity android:name="com.mastercard.openbanking.connect.Connect"   
+ android:launchMode="singleTask"    
+ android:exported="true">
+ <intent-filter>        
+    <action android:name="android.intent.action.VIEW" />        
+    <category android:name="android.intent.category.DEFAULT" />        
+    <category android:name="android.intent.category.BROWSABLE" />        
+    <data android:scheme="@string/deeplink"/>    
+ </intent-filter>
+ </activity>
+ ```
+Add deeplink  in  String.xml file
+```<string name="deeplink">{any_convenient_name}://</string>```
+
+Format of deeplink:
+
+{any_convenient_name}://
+
+any_convenient_name is case sensitive and should only use lower-case character
 
 
 ## Step 4 - Add code to start the Connect SDK
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
+```Connect.start(this, url, getString(R.string.deeplink), eventHandler);```
+
+Note:
+
+R.string.deeplink is the name which has been added in string.xml file.
 
 ### Connect Class
 
