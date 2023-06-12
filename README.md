@@ -70,11 +70,11 @@ Add activity in AndroidManifest.xml file.
  </activity>
  ```
 Add deeplink  in  String.xml file
-```<string name="deeplink">{any_convenient_name}://</string>```
+```<string name="deeplink">{any_convenient_name}</string>```
 
 Format of deeplink:
 
-{any_convenient_name}://
+{any_convenient_name}
 
 any_convenient_name is case sensitive and should only use lower-case character
 
@@ -83,7 +83,7 @@ any_convenient_name is case sensitive and should only use lower-case character
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
-```Connect.start(this, url, getString(R.string.deeplink), eventHandler);```
+```Connect.start(this, url, getString(R.string.deeplink).concat("://), eventHandler);```
 
 Note:
 
