@@ -39,12 +39,14 @@ public class Connect extends Activity {
     public static Boolean runningUnitTest = false;
 
     public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler) {
-        if(Connect.CONNECT_INSTANCE != null) {
+        if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
         Intent connectIntent = new Intent(context, Connect.class);
-        if (runningUnitTest) { connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); }
+        if (runningUnitTest) {
+            connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
         connectIntent.putExtra(Connect.CONNECT_DEEPLINK_URL_INTENT_KEY, deepLinkUrl);
 
@@ -78,17 +80,17 @@ public class Connect extends Activity {
          * to prevent errors. The application utilizing this framework should then restart
          * Connect.
          */
-        if(Connect.EVENT_HANDLER == null) {
+        if (Connect.EVENT_HANDLER == null) {
             Connect.CONNECT_INSTANCE = null;
             this.finish();
             return;
         }
 
-        if(runningUnitTest){
+        if (runningUnitTest) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         // Prevent calls to start when Connect is already running
-        if(Connect.CONNECT_INSTANCE != null) {
+        if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
@@ -113,11 +115,10 @@ public class Connect extends Activity {
         this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
         this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,
                 mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
                 mPopupCloseTextButton));
 
-        mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
         // JS Interface and event listener for main WebView
         jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
@@ -131,8 +132,8 @@ public class Connect extends Activity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if(requestCode == SELECT_FILE_RESULT_CODE) {
-            if(resultCode != RESULT_CANCELED) {
+        if (requestCode == SELECT_FILE_RESULT_CODE) {
+            if (resultCode != RESULT_CANCELED) {
                 if (mFilePathCallback != null) {
                     mFilePathCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
                     mFilePathCallback = null;
@@ -169,20 +170,20 @@ public class Connect extends Activity {
 
     // static method to finish the current activity, if there is one
     public static void finishCurrentActivity() {
-         if(Connect.CONNECT_INSTANCE != null) {
-             if (jsInterface != null) {
-                 jsInterface.closeCustomTab();
-             }
-             Connect.CONNECT_INSTANCE.finish();
+        if (Connect.CONNECT_INSTANCE != null) {
+            if (jsInterface != null) {
+                jsInterface.closeCustomTab();
+            }
+            Connect.CONNECT_INSTANCE.finish();
         } else {
-             throw new RuntimeException("There is no Connect Activity currently running");
+            throw new RuntimeException("There is no Connect Activity currently running");
         }
     }
 
     // Back Button functionality
     @Override
     public void onBackPressed() {
-        if(mMainWebView.canGoBack()) {
+        if (mMainWebView.canGoBack()) {
             mMainWebView.goBack();
         } else {
             try {
@@ -191,7 +192,7 @@ public class Connect extends Activity {
                 JSONObject jo = new JSONObject(message);
                 Connect.EVENT_HANDLER.onCancel(jo);
                 finish();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 finish();
             }
         }
@@ -201,7 +202,7 @@ public class Connect extends Activity {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(which == DialogInterface.BUTTON_POSITIVE) {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
                     closePopup();
                 }
             }
@@ -233,11 +234,11 @@ public class Connect extends Activity {
     // Ping code to notify Connect of sdkVersion and platform type for analytics
     private Timer pingTimer;
     private TimerTask pingTimerTask;
-    
+
     protected void startPingTimer() {
         stopPingTimer();
 
-        pingTimer= new Timer();
+        pingTimer = new Timer();
 
         pingTimerTask = new TimerTask() {
             @Override
@@ -271,5 +272,5 @@ public class Connect extends Activity {
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
-     }
+    }
 }
