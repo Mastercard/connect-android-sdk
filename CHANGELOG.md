@@ -2,7 +2,7 @@
 
 ### 2.2.0 (June 12, 2023)
 
-Enhancement:
+Breaking Change:
 - Added deeplink support to navigate it back to app.
 
 ### 2.1.0 (June 3, 2023)
