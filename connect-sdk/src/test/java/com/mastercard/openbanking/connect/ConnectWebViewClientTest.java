@@ -1,17 +1,20 @@
 package com.mastercard.openbanking.connect;
 
+import android.os.Build;
 import android.webkit.WebView;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class ConnectWebViewClientTest {
 
     private EventHandler eventHandler;
@@ -26,20 +29,20 @@ public class ConnectWebViewClientTest {
     }
 
     @Test
-    public void testOnPageFinished_matchingUrl() {
+    public void testOnPageStart_matchingUrl() {
         // Replace '?' with '/?' which is the expected Android behavior on this callback
         String url = CONNECT_URL.replace("?", "/?");
 
-        client.onPageFinished(mock(WebView.class), url);
+        client.onPageStarted(mock(WebView.class), url,null);
 
         verify(eventHandler).onLoad();
     }
 
     @Test
-    public void testOnPageFinished_nonMatchingUrl() {
+    public void testOnPageStart_nonMatchingUrl() {
         String url = "not a match";
 
-        client.onPageFinished(mock(WebView.class), url);
+        client.onPageStarted(mock(WebView.class), url,null);
 
         verify(eventHandler, never()).onLoad();
     }

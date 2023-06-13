@@ -3,7 +3,7 @@ apply plugin: "org.sonarqube"
 sonarqube {
     properties {
         property "sonar.host.url", "https://sonarqube.fini.city"
-        property "sonar.login", "8a456489e97b7e8f99279a22b3a55f536e0ac53c"
+        property "sonar.login", SONAR_LOGIN
         property "sonar.projectName", "android-sdk-legacy"
         property "sonar.projectKey", "android-sdk-legacy"
         property "sonar.projectDescription", "Connect Android SDK"

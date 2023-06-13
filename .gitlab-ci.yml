@@ -1,26 +1,23 @@
 include:
-- project: 'devops/central-ci'
-  ref: master
-  file: '/cx-scan.yml'
-
-
+  - project: 'devops/central-ci'
+    ref: master
+    file: '/cx-scan.yml'
 
 before_script:
   - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/"
   - export ANDROID_HOME=$HOME/Library/Android/sdk
   - export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-  
+
 variables:
   JACOCO_CSV_FILE: '$CI_PROJECT_DIR/connect-sdk/build/reports/jacoco/jacocoTestReport/jacocoTestReport.csv'
-    
+
 stages:
   - build
   - postbuild
   - scan
-#  - scan-container
   - sonatype
   - release
-  
+
 build_project:
   stage: build
   script:
@@ -47,7 +44,7 @@ coverage:
     expire_in: 1 days
   tags:
     - xcode
-    
+
 sonarqube:
   stage: scan
   script:
@@ -55,33 +52,24 @@ sonarqube:
   tags:
     - xcode
 
-# scan-container:
-#   image: dcr.fini.city/devops/osiris
-#   stage: scan-container
-#   allow_failure: false
-#   script:
-#     #- scan_container ${IMAGE_REGISTRY}
-#     - scan_container $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
-#   only:
-#     - develop
-#     - master
-
-
 publish_to_staging:
   stage: sonatype
+  only:
+    - main
+  when: manual
   script:
     - ./gradlew connect-sdk:clean
     - ./gradlew connect-sdk:assembleRelease
     - ./gradlew connect-sdk:publishToSonatype closeSonatypeStagingRepository
   tags:
-    - xcode    
+    - xcode
 
 release:
   stage: release
   only:
-    - master
+    - main
   when: manual
   script:
     - ./gradlew releaseSonatypeStagingRepository
   tags:
-    - xcode 
+    - xcode

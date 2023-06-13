@@ -1,27 +1,33 @@
 // Create variables with empty default values
-ext["ossrhUsername"] = ''
-ext["ossrhPassword"] = ''
-ext["signingKey"] = ''
 ext["signingKeyId"] = ''
 ext["signingPassword"] = ''
+ext["signingSecretKey"] = ''
+ext["ossrhUsername"] = ''
+ext["ossrhPassword"] = ''
 ext["sonatypeStagingProfileId"] = ''
+ext["SONAR_LOGIN"] = ''
 
-//File localPropsFile = project.rootProject.file('local.properties')
-//if (localPropsFile.exists()) {
-//    // Read local.properties file first if it exists
-//    Properties p = new Properties()
-//    new FileInputStream(localPropsFile).withCloseable { is -> p.load(is) }
-//    p.each { name, value -> ext[name] = value }
-//} else {
-    // Use system environment variables
+File secretPropsFile = project.rootProject.file('local.properties')
+if (secretPropsFile.exists()) {
+    println "Found secret props file, loading props"
+    Properties p = new Properties()
+    p.load(new FileInputStream(secretPropsFile))
+    p.each { name, value ->
+        ext[name] = value
+    }
+} else {
+    println "No props file, loading env vars"
+    ext["signingKeyId"] = System.getenv('SIGNING_KEY_ID')
+    ext["signingPassword"] = System.getenv('SIGNING_PASSWORD')
+    ext["signingSecretKey"] = System.getenv('SIGNING_SECRET_KEY')
     ext["ossrhUsername"] = System.getenv('OSSRH_USERNAME')
     ext["ossrhPassword"] = System.getenv('OSSRH_PASSWORD')
     ext["sonatypeStagingProfileId"] = System.getenv('SONATYPE_STAGING_PROFILE_ID')
-    ext["signingKey"] = System.getenv('SIGNING_KEY')
-    ext["signingKeyId"] = System.getenv('SIGNING_KEY_ID')
-    ext["signingPassword"] = System.getenv('SIGNING_PASSWORD')
+    ext["SONAR_LOGIN"] = System.getenv('SONAR_LOGIN')
 
-//}
+
+
+}
 
 // Set up Sonatype repository
 nexusPublishing {
@@ -30,8 +36,6 @@ nexusPublishing {
             stagingProfileId = sonatypeStagingProfileId
             username = ossrhUsername
             password = ossrhPassword
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
     }
 }
