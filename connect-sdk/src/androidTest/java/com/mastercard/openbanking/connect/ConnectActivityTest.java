@@ -32,6 +32,8 @@ import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static org.junit.Assert.fail;
 
+import static java.sql.DriverManager.println;
+
 import com.mastercard.openbanking.connect.generateurl.ConnectGenerateUrlCallbackHandler;
 import com.mastercard.openbanking.connect.generateurl.GenUrlLib;
 
@@ -44,6 +46,7 @@ public class ConnectActivityTest {
     private static String goodUrl = "";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
+    private static String deepLinkUrl = "";
 
     @Before
     public void setup() {
@@ -63,7 +66,7 @@ public class ConnectActivityTest {
 
     @Test
     public void test01ConnectWithExpiredUrl() {
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
 
         mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
@@ -73,7 +76,7 @@ public class ConnectActivityTest {
     public void test02ConnectWithGoodUrlThenCancel() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, "", new TestEventHandler());
 
         mIdlingResource.waitForEvent("search");
         onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
@@ -89,7 +92,7 @@ public class ConnectActivityTest {
     public void test03ConnectWithGoodUrlThenBackButton() {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -112,7 +115,7 @@ public class ConnectActivityTest {
     public void test04ConnectWithGoodUrlThenBackButtonAndCancel() {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl,  new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -122,39 +125,11 @@ public class ConnectActivityTest {
         mIdlingResource.waitForEvent("cancel");
     }
 
-//    @Test
-//    public void test05PopupWindowWithCancel() throws InterruptedException {
-//
-//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenWin.html", new TestEventHandler());
-//
-//        Thread.sleep(5000);
-//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-//
-//        Thread.sleep(5000);
-//        onView(withId(R.id.popupCloseTextButton)).perform(click());
-//    }
-
-//    @Test
-//    public void test06PopupWindowWithBackButton() throws InterruptedException {
-//
-//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenWin.html", new TestEventHandler());
-//
-//        Thread.sleep(5000);
-//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-//
-//        Thread.sleep(5000);
-//        onView(isRoot()).perform(ViewActions.pressBack());
-//
-//        // Dismiss dialog with yes
-//        Thread.sleep(5000);
-//        onView(withId(android.R.id.button1)).perform(ViewActions.click());
-//    }
-
     @Test
-    public void test07ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
+    public void test05ConnectWithGoodUrlThenPrivacyPolicy() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl, new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -177,52 +152,11 @@ public class ConnectActivityTest {
         Connect.finishCurrentActivity();
     }
 
-    /*
     @Test
-    public void test07ConnectWithGoodUrlThenPrivacyPolicyThenBackButton() throws InterruptedException {
+    public void test06ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
-
-        // Wait for Route search or let it timeout
-        mIdlingResource.waitForEvent("search");
-        onWebView()
-                .withElement(findElement(Locator.NAME, "Search for your bank"))
-                .perform(DriverAtoms.clearElement())
-                .perform(DriverAtoms.webKeys("FinBank"))
-                .perform(webClick());
-
-        // Select FinBank from search list using XPATH
-        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
-
-        // Click Next using XPATH
-        mIdlingResource.waitForEvent("sign-in");
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy policy")).perform(webClick());
-
-        // Perform back button press to dismiss popup and display dialog to user
-        Thread.sleep(5000);
-        onView(isRoot()).perform(ViewActions.pressBack());
-
-        // Dismiss dialog with yes
-        Thread.sleep(5000);
-        onView(withId(android.R.id.button1)).perform(ViewActions.click());
-
-        Thread.sleep(5000);
-        onWebView(Matchers.allOf(isDisplayed(), isJavascriptEnabled()))
-                .withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
-
-        Thread.sleep(1000);
-        onWebView(Matchers.allOf(isDisplayed(), isJavascriptEnabled()))
-                .withElement(findElement(Locator.LINK_TEXT, "Yes")).perform(webClick());
-    }
-    */
-
-    @Test
-    public void test08ConnectWithGoodUrlThenAddBankAccount() {
-
-        String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, deepLinkUrl,  new TestEventHandler());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -255,6 +189,7 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-login\"]/form/app-button/a")).perform(webClick());
 
         // Select 1st account in list using XPATH
+        Thread.sleep(10000);
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
 
@@ -268,17 +203,14 @@ public class ConnectActivityTest {
     }
 
      @Test
-    public void test09ConnectWithExpiredUrlThenFinishActivity() throws InterruptedException {
-
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
-
+    public void test07ConnectWithExpiredUrlThenFinishActivity() throws InterruptedException {
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl,  new TestEventHandler());
         Thread.sleep(10000);
         Connect.finishCurrentActivity();
     }
 
     @Test
-    public void test10FinishActivity() {
-
+    public void test08FinishActivity() {
         // Try and finish a Activity that was never started
         try {
             Connect.finishCurrentActivity();
@@ -289,14 +221,13 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void test11AlreadyRunning() throws InterruptedException {
-
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+    public void test09AlreadyRunning() throws InterruptedException {
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
         Thread.sleep(5000);
 
         // Try and start a 2nd Activity
         try {
-            Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, new TestEventHandler());
+            Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl, new TestEventHandler());
             fail("Should have thrown runtime exception");
         } catch(RuntimeException e) {
             //success
@@ -304,21 +235,10 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void test12NullEventHandler() throws InterruptedException {
-
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, null);
+    public void test10NullEventHandler() throws InterruptedException {
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, deepLinkUrl,null);
         Thread.sleep(5000);
     }
-
-//    @Test
-//    public void test13PopupWindowWithAutoClose() throws InterruptedException {
-//
-//        Connect.start(InstrumentationRegistry.getContext(), "https://pick3pro.com/TestOpenAutoClose.html", new TestEventHandler());
-//
-//        Thread.sleep(5000);
-//        onWebView().withElement(findElement(Locator.ID, "openWinBtn")).perform(webClick());
-//        Thread.sleep(5000);
-//    }
 
     private void generateConnectUrl() {
         if (goodUrl.isEmpty()) {

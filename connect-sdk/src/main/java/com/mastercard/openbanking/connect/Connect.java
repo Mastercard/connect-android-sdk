@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -21,7 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "2.1.0";
+    private static final String SDK_VERSION = "2.2.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -30,20 +31,24 @@ public class Connect extends Activity {
 
     // Static stuff
     private static final String CONNECT_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_URL_INTENT_KEY";
+    private static final String CONNECT_DEEPLINK_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_DEEPLINK_URL_INTENT_KEY";
 
     private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
     private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
 
-    public static void start(Context context, String connectUrl, EventHandler eventHandler) {
-        if(Connect.CONNECT_INSTANCE != null) {
+    public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler) {
+        if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
         Intent connectIntent = new Intent(context, Connect.class);
-        if (runningUnitTest) { connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); }
+        if (runningUnitTest) {
+            connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
+        connectIntent.putExtra(Connect.CONNECT_DEEPLINK_URL_INTENT_KEY, deepLinkUrl);
 
         // Set EventListener
         Connect.EVENT_HANDLER = eventHandler;
@@ -75,14 +80,17 @@ public class Connect extends Activity {
          * to prevent errors. The application utilizing this framework should then restart
          * Connect.
          */
-        if(Connect.EVENT_HANDLER == null) {
+        if (Connect.EVENT_HANDLER == null) {
             Connect.CONNECT_INSTANCE = null;
             this.finish();
             return;
         }
 
+        if (runningUnitTest) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
         // Prevent calls to start when Connect is already running
-        if(Connect.CONNECT_INSTANCE != null) {
+        if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
@@ -107,11 +115,10 @@ public class Connect extends Activity {
         this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
         this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this,
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,
                 mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
                 mPopupCloseTextButton));
 
-        mMainWebView.setWebViewClient(new ConnectWebViewClient(this, Connect.EVENT_HANDLER, getIntent().getStringExtra(CONNECT_URL_INTENT_KEY)));
 
         // JS Interface and event listener for main WebView
         jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
@@ -125,8 +132,8 @@ public class Connect extends Activity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if(requestCode == SELECT_FILE_RESULT_CODE) {
-            if(resultCode != RESULT_CANCELED) {
+        if (requestCode == SELECT_FILE_RESULT_CODE) {
+            if (resultCode != RESULT_CANCELED) {
                 if (mFilePathCallback != null) {
                     mFilePathCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
                     mFilePathCallback = null;
@@ -163,20 +170,20 @@ public class Connect extends Activity {
 
     // static method to finish the current activity, if there is one
     public static void finishCurrentActivity() {
-         if(Connect.CONNECT_INSTANCE != null) {
-             if (jsInterface != null) {
-                 jsInterface.closeCustomTab();
-             }
-             Connect.CONNECT_INSTANCE.finish();
+        if (Connect.CONNECT_INSTANCE != null) {
+            if (jsInterface != null) {
+                jsInterface.closeCustomTab();
+            }
+            Connect.CONNECT_INSTANCE.finish();
         } else {
-             throw new RuntimeException("There is no Connect Activity currently running");
+            throw new RuntimeException("There is no Connect Activity currently running");
         }
     }
 
     // Back Button functionality
     @Override
     public void onBackPressed() {
-        if(mMainWebView.canGoBack()) {
+        if (mMainWebView.canGoBack()) {
             mMainWebView.goBack();
         } else {
             try {
@@ -185,7 +192,7 @@ public class Connect extends Activity {
                 JSONObject jo = new JSONObject(message);
                 Connect.EVENT_HANDLER.onCancel(jo);
                 finish();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 finish();
             }
         }
@@ -195,7 +202,7 @@ public class Connect extends Activity {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(which == DialogInterface.BUTTON_POSITIVE) {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
                     closePopup();
                 }
             }
@@ -227,11 +234,11 @@ public class Connect extends Activity {
     // Ping code to notify Connect of sdkVersion and platform type for analytics
     private Timer pingTimer;
     private TimerTask pingTimerTask;
-    
+
     protected void startPingTimer() {
         stopPingTimer();
 
-        pingTimer= new Timer();
+        pingTimer = new Timer();
 
         pingTimerTask = new TimerTask() {
             @Override
@@ -244,8 +251,7 @@ public class Connect extends Activity {
                 });
             }
         };
-
-        pingTimer.schedule(pingTimerTask, 1000, 1000);
+        pingTimer.schedule(pingTimerTask, 2000, 1000);
     }
 
     protected void stopPingTimer() {
@@ -261,9 +267,10 @@ public class Connect extends Activity {
     }
 
     protected void pingConnect() {
-        String javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+        String deepLinkUrl = getIntent().getStringExtra(CONNECT_DEEPLINK_URL_INTENT_KEY);
+        String javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',deepLinkUrl: '" + deepLinkUrl + "' }, '*')";
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
-     }
+    }
 }
