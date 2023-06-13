@@ -65,29 +65,19 @@ Add activity in AndroidManifest.xml file.
     <action android:name="android.intent.action.VIEW" />        
     <category android:name="android.intent.category.DEFAULT" />        
     <category android:name="android.intent.category.BROWSABLE" />        
-    <data android:scheme="@string/deeplink"/>    
+    <data android:scheme="{deep_link_app_name}"/>    
  </intent-filter>
  </activity>
  ```
-Add deeplink  in  String.xml file
-```<string name="deeplink">{any_convenient_name}</string>```
-
-Format of deeplink:
-
-{any_convenient_name}
-
-any_convenient_name is case sensitive and should only use lower-case character
+{deep_link_app_name} is case sensitive and should only use lower-case character
 
 
 ## Step 4 - Add code to start the Connect SDK
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
-```Connect.start(this, url, getString(R.string.deeplink).concat("://), eventHandler);```
+```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
 
-Note:
-
-R.string.deeplink is the name which has been added in string.xml file.
 
 ### Connect Class
 
