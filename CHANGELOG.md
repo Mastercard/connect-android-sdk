@@ -1,9 +1,9 @@
 # Changelog
 
-### 2.2.0 (June 12, 2023)
+### 2.2.0 (June 13, 2023)
 
 Breaking Change:
-- Added deeplink support to navigate it back to app.
+- Added deeplink support to navigate it back to app (App to App Authentication).
 
 ### 2.1.0 (June 3, 2023)
 
