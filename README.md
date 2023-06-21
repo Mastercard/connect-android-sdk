@@ -20,14 +20,12 @@ The Connect Android SDK supports the following Android versions.
 
 ## Step 1 - Add repository to your project
 
-## Gradle
+## Maven-central
 
-Add the following code to the dependency section in the build.gradle file. To install a specific version, replace “+” with the preferred version number:
+Add the following code to the dependency section in the build.gradle file.
 
 ```
-dependencies {
-    implementation 'com.mastercard.openbanking.connect:connect-sdk:+'
-}
+ implementation 'com.mastercard.openbanking.connect:connect-sdk:<insert latest version>' 
 ```
 
 ## Manual
