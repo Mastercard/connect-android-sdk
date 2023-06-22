@@ -240,6 +240,21 @@ public class ConnectActivityTest {
         Thread.sleep(5000);
     }
 
+    @Test
+    public void test11ConnectWithGoodUrlWithoutDeeplink() throws InterruptedException {
+
+        String url = goodUrl.replace("localhost:", "10.0.2.2:");
+        Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
+
+        mIdlingResource.waitForEvent("search");
+        onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
+
+        Thread.sleep(1000);
+
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+
+    }
+
     private void generateConnectUrl() {
         if (goodUrl.isEmpty()) {
             // Use countdown latch to wait for chain of Finicity API's Auth, Customer, Consumer, Generate to complete asynchronously.
@@ -269,6 +284,7 @@ public class ConnectActivityTest {
         }
 
     }
+
 
     public class TestEventHandler implements EventHandler {
         private static final String TAG = "TestEventHandler";

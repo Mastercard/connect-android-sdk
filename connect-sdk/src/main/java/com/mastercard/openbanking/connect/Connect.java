@@ -22,7 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "2.2.0";
+    private static final String SDK_VERSION = "2.3.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -37,6 +37,24 @@ public class Connect extends Activity {
     private static Connect CONNECT_INSTANCE;
     private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
+
+    public static void start(Context context, String connectUrl, EventHandler eventHandler) {
+        if (Connect.CONNECT_INSTANCE != null) {
+            throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
+        }
+
+        Intent connectIntent = new Intent(context, Connect.class);
+        if (runningUnitTest) {
+            connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
+
+        // Set EventListener
+        Connect.EVENT_HANDLER = eventHandler;
+
+        context.startActivity(connectIntent);
+    }
+
 
     public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
@@ -268,8 +286,13 @@ public class Connect extends Activity {
 
     protected void pingConnect() {
         String deepLinkUrl = getIntent().getStringExtra(CONNECT_DEEPLINK_URL_INTENT_KEY);
-        String javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',deepLinkUrl: '" + deepLinkUrl + "' }, '*')";
-        if (mMainWebView != null) {
+        String javascript;
+        if(deepLinkUrl != null){
+             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',deepLinkUrl: '" + deepLinkUrl + "' }, '*')";
+        }else{
+             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+        }
+       if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
     }
