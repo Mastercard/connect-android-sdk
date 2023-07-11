@@ -29,6 +29,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="@string/deepLinkUrl"/>
+                <data
+                    android:scheme="https"
+                    android:host="acmelending.net"/>
             </intent-filter>
         </activity>
     </application>

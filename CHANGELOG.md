@@ -1,5 +1,10 @@
 # Changelog
 
+### 3.0.0 (June 22, 2023)
+
+Breaking Change:
+- Added optional redirectUrl param to support navigation back to app.
+
 ### 2.3.0 (June 22, 2023)
 
 Enhancement:

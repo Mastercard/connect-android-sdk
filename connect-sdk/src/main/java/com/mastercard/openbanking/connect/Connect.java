@@ -22,7 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity {
-    private static final String SDK_VERSION = "2.3.0";
+    private static final String SDK_VERSION = "3.0.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -31,7 +31,7 @@ public class Connect extends Activity {
 
     // Static stuff
     private static final String CONNECT_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_URL_INTENT_KEY";
-    private static final String CONNECT_DEEPLINK_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_DEEPLINK_URL_INTENT_KEY";
+    private static final String CONNECT_REDIRECT_LINK_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_REDIRECT_LINK_URL_INTENT_KEY";
 
     private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
@@ -56,7 +56,7 @@ public class Connect extends Activity {
     }
 
 
-    public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler) {
+    public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
@@ -66,7 +66,7 @@ public class Connect extends Activity {
             connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
         connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
-        connectIntent.putExtra(Connect.CONNECT_DEEPLINK_URL_INTENT_KEY, deepLinkUrl);
+        connectIntent.putExtra(Connect.CONNECT_REDIRECT_LINK_URL_INTENT_KEY, redirectUrl);
 
         // Set EventListener
         Connect.EVENT_HANDLER = eventHandler;
@@ -285,12 +285,12 @@ public class Connect extends Activity {
     }
 
     protected void pingConnect() {
-        String deepLinkUrl = getIntent().getStringExtra(CONNECT_DEEPLINK_URL_INTENT_KEY);
+        String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-        if(deepLinkUrl != null){
-             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',deepLinkUrl: '" + deepLinkUrl + "' }, '*')";
+        if(redirectUrl != null){
+            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',redirectUrl: '" + redirectUrl + "' }, '*')";
         }else{
-             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
         }
        if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
