@@ -1,20 +1,17 @@
 package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
 import org.json.JSONObject;
 
@@ -74,15 +71,8 @@ public class Connect extends Activity {
         context.startActivity(connectIntent);
     }
 
-    // Layout stuff
-    private RelativeLayout mMainLayout;
     private WebView mMainWebView;
 
-    private RelativeLayout mPopupLayout;
-    private ImageButton mPopupCloseImgButton;
-    private Button mPopupCloseTextButton;
-    private RelativeLayout mPopupViewContainer;
-    private WebView mPopupView;
 
     // Upload
     protected static final int SELECT_FILE_RESULT_CODE = 100;
@@ -121,21 +111,13 @@ public class Connect extends Activity {
         setContentView(R.layout.activity_connect);
 
         // Main layout and view
-        this.mMainLayout = findViewById(R.id.mainLayout);
         this.mMainWebView = findViewById(R.id.mainWebView);
         mMainWebView.getSettings().setSupportMultipleWindows(true);
         mMainWebView.getSettings().setJavaScriptEnabled(true);
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true);
 
-        this.mPopupLayout = findViewById(R.id.popupLayout);
-        this.mPopupCloseImgButton = findViewById(R.id.popupCloseImgButton);
-        this.mPopupCloseTextButton = findViewById(R.id.popupCloseTextButton);
-        this.mPopupViewContainer = findViewById(R.id.popupViewContainer);
-
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,
-                mPopupViewContainer, mPopupLayout, mPopupCloseImgButton,
-                mPopupCloseTextButton));
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER));
 
 
         // JS Interface and event listener for main WebView
@@ -176,7 +158,6 @@ public class Connect extends Activity {
         Connect.CONNECT_INSTANCE = null;
         Connect.EVENT_HANDLER = null;
         Connect.jsInterface = null;
-        this.mPopupView = null;
     }
 
     public void postWindowClosedMessage() {
@@ -204,16 +185,13 @@ public class Connect extends Activity {
         if (mMainWebView.canGoBack()) {
             mMainWebView.goBack();
         } else {
-            try {
-                // Send cancel event and finish
-                String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
-                JSONObject jo = new JSONObject(message);
-                Connect.EVENT_HANDLER.onCancel(jo);
-                finish();
-            } catch (Exception e) {
-                finish();
-            }
-        }
+            DialogInterface.OnClickListener listener = getDialogClickListener();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.exit_confirmation_title))
+                    .setMessage(getString(R.string.exit_confirmation_msg))
+                    .setPositiveButton(getString(R.string.exit_confirmation_yes), listener)
+                    .setNegativeButton(getString(R.string.exit_confirmation_no), listener).show();
+         }
     }
 
     private DialogInterface.OnClickListener getDialogClickListener() {
@@ -221,32 +199,18 @@ public class Connect extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
-                    closePopup();
+                    try {
+                        // Send cancel event and finish
+                        String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
+                        JSONObject jo = new JSONObject(message);
+                        Connect.EVENT_HANDLER.onCancel(jo);
+                        finish();
+                    } catch (Exception e) {
+                        finish();
+                    }
                 }
             }
         };
-    }
-
-    protected void updatePopupView(WebView newPopupView) {
-        this.mPopupView = newPopupView;
-
-        // Fix user agent
-        String defaultUserAgent = newPopupView.getSettings().getUserAgentString();
-        String finUserAgent = defaultUserAgent.replace("; wv", "") + " Finicity-Connect-Mobile-SDK/" + SDK_VERSION;
-
-        this.mPopupView.getSettings().setUserAgentString(finUserAgent);
-
-    }
-
-    protected void closePopup() {
-        // Kill webview
-        mPopupView.loadUrl("javascript:window.close();");
-        mPopupView.destroy();
-        mPopupView = null;
-
-        // Hide popupLayout
-        mPopupLayout.setVisibility(View.GONE);
-        mPopupViewContainer.removeView(mPopupView);
     }
 
     // Ping code to notify Connect of sdkVersion and platform type for analytics
