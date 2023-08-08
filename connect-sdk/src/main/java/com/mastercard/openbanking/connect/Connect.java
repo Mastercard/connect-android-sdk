@@ -252,7 +252,7 @@ public class Connect extends Activity {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
         if(redirectUrl != null){
-            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',redirectUrl: '" + redirectUrl + "' }, '*')";
+            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',deepLinkUrl: '" + redirectUrl + "' }, '*')";
         }else{
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
         }
