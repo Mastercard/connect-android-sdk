@@ -1,9 +1,12 @@
 # Changelog
 
-### 3.0.0 (June 22, 2023)
+### 3.0.0 (October 10, 2023)
+Enhancement:
+- Newly added redirectUrl parameter inside SDK to support universal link and deeplink, It will enhance app to app seamless communication.
+### Breaking changes
+- SDK support for deepLinkUrl is deprecated, Please use redirectUrl parameter instead, it will support both universal link and deeplink.
+  Please follow readme documentation. https://github.com/Mastercard/connect-android-sdk#readme
 
-Breaking Change:
-- Added optional redirectUrl param to support navigation back to app.
 
 ### 2.3.0 (June 22, 2023)
 

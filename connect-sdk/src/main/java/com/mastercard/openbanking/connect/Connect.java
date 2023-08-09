@@ -233,7 +233,7 @@ public class Connect extends Activity {
                 });
             }
         };
-        pingTimer.schedule(pingTimerTask, 2000, 1000);
+        pingTimer.schedule(pingTimerTask, 1000, 1000);
     }
 
     protected void stopPingTimer() {
