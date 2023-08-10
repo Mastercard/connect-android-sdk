@@ -116,7 +116,7 @@ fun start(context: Context, connectUrl: String?, redirectUrl: String?, eventHand
 | ------ | ------ |
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
-| redirectUrl | redirectUrl to redirect back to App. This parameter is optional and only required to used in App to App flow. |
+| redirectUrl | App link URL/ Deep link URL to redirect back to your mobile app after completing FI’s OAuth flow. This parameter is only required for App to App. |
 | eventHandler | A class implementing the EventHandler interface. |
 
 See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
