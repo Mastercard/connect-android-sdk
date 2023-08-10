@@ -9,24 +9,39 @@ The Connect mobile SDKs allow you to embed the Connect user experience anywhere 
 
 The Connect Android SDK supports the following Android versions.
 
-* Android 5.0 (Lollipop) or later
-
-* minSdkVersion 21 or later
-
-* Android Gradle Plugin v3.4.0 or greater required
-
-* Gradle 5.1.1 or greater required
+* Android 5.0 (Lollipop) or later & minSdkVersion 21 or later
 
 
 ## Step 1 - Add repository to your project
 
 ## Maven-central
 
-Add the following code to the dependency section in the build.gradle file.
+Please modify your root-level Gradle file(build.gradle) as per below code.
 
 ```
- implementation 'com.mastercard.openbanking.connect:connect-sdk:<insert latest version>' 
+ allprojects {
+   repositories {
+       google()
+       mavenCentral()
+   }
+ }
 ```
+
+Please modify your app-level Gradle file(build.gradle) as per below code.
+
+```
+android {
+  defaultConfig {
+    minSdkVersion 21 // or greater
+  }
+}
+dependencies {
+  // ...
+  implementation 'com.mastercard.openbanking.connect:connect-sdk:<insert latest version>'
+}
+```
+
+Note: The latest version of the Connect Android SDK can be found in [Maven Central](https://central.sonatype.com/artifact/com.mastercard.openbanking.connect/connect-sdk/2.3.0/versions).
 
 ## Manual
 
@@ -49,14 +64,15 @@ Open the gradle.properties file and set **android.enableJetifier** to **true.**
 
 ## Step 3 - Update Android application settings
 
-## Add internet permissions to your AndroidManifest.xml file.
+The Connect Android SDK requires internet access to connect with our servers. As such, you need to add internet permissions to the AndroidManifest.xml file.
 
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
-## Add activity in AndroidManifest.xml file.
+## App Link Support
 
-## For the App Link Support:
+Add activity in AndroidManifest.xml file.
+
 ```
  <activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
@@ -72,7 +88,10 @@ Open the gradle.properties file and set **android.enableJetifier** to **true.**
  </activity>
  ```
 
-## For the DeepLink support(Not recommended):
+## Deep Link Support(Not recommended)
+
+Add activity in AndroidManifest.xml file.
+
 ```
 <activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
@@ -92,15 +111,23 @@ Open the gradle.properties file and set **android.enableJetifier** to **true.**
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
-For the App Link:
+## Connect Class
+
+The Connect Android SDK’s main component is the Connect class that contains a static start method, which runs an activity that connects with the EventHandler. To access the APIs in the SDK include the following imports:
+
+```  
+  import com.mastercard.openbanking.connect.Connect;
+  import com.mastercard.openbanking.connect.EventHandler;
+```
+
+## App Link Support
+
 ```Connect.start(this, url, "https://yourdomain.com/connect", eventHandler);```
 
-For the Deep Link:
+## Deep Link Support
+
 ```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
 
-### Connect Class
-
-The Connect Android SDK’s main component is the Connect class that contains a static start method, which runs an activity that connects with the EventHandler.
 
 ```
 Java
@@ -127,7 +154,7 @@ See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-bankin
 
 Throughout Connect’s flow, events about the state of the web application are sent as JSONObjects to the EventHandler methods.
 
-> **_NOTE:_**  The onUserEvent handler will not return anything unless you’re specifically targeting Connect 2.0.
+> **_NOTE:_**  The onUserEvent handler will not return anything unless you’re specifically targeting Connect.
 
 ```
 Java
@@ -173,7 +200,5 @@ You can manually finish a Connect activity by invoking:
 Connect.finishCurrentActivity()
 ```
 
+If there isn’t a current Connect activity running, then the method will throw a RuntimeException.
 
-## Process Restarts
-
-Android sometimes stops your application’s process and restarts it when your application is re-focused. If this happens, the Connect activity automatically finishes when the application resumes. If you want Connect to run again, call the start method. See [Connect Class.](#connect-class)
