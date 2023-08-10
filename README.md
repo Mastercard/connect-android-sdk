@@ -11,6 +11,8 @@ The Connect Android SDK supports the following Android versions.
 
 * Android 5.0 (Lollipop) or later & minSdkVersion 21 or later
 
+WARNING:Support for deepLinkUrl parameters is deprecated from Connect Android SDK version 3.0.0, going forward please use the redirectUrl parameter which supports both universal and deep links. For more information see [Github documentation](https://github.com/Mastercard/connect-android-sdk/blob/main/README.md)
+
 
 ## Step 1 - Add repository to your project
 
@@ -64,43 +66,6 @@ The Connect Android SDK requires internet access to connect with our servers. As
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
-## App Link Support
-
-Add activity in AndroidManifest.xml file.
-
-```
- <activity android:name="com.mastercard.openbanking.connect.Connect"   
- android:launchMode="singleTask"    
- android:exported="true">
- <intent-filter>        
-    <action android:name="android.intent.action.VIEW" />        
-    <category android:name="android.intent.category.DEFAULT" />        
-    <category android:name="android.intent.category.BROWSABLE" />        
-     <data
-        android:scheme="https"
-        android:host="{{yourdomain.com}}"/>
- </intent-filter>
- </activity>
- ```
-
-## Deep Link Support(Not recommended)
-
-Add activity in AndroidManifest.xml file.
-
-```
-<activity android:name="com.mastercard.openbanking.connect.Connect"   
- android:launchMode="singleTask"    
- android:exported="true">
- <intent-filter>        
-    <action android:name="android.intent.action.VIEW" />        
-    <category android:name="android.intent.category.DEFAULT" />        
-    <category android:name="android.intent.category.BROWSABLE" />        
-    <data android:scheme="{deep_link_app_name}"/>    
- </intent-filter>
- </activity>
- ```
-{deep_link_app_name} is case sensitive and should only use lower-case character
-
 
 ## Step 3 - Add code to start the Connect Android SDK
 
@@ -114,15 +79,6 @@ The Connect Android SDK’s main component is the Connect class that contains a 
   import com.mastercard.openbanking.connect.Connect;
   import com.mastercard.openbanking.connect.EventHandler;
 ```
-
-## App Link Support
-
-```Connect.start(this, url, "https://yourdomain.com/connect", eventHandler);```
-
-## Deep Link Support
-
-```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
-
 
 ```
 Java
@@ -142,7 +98,6 @@ fun start(context: Context, connectUrl: String?, redirectUrl: String?, eventHand
 | eventHandler | A class implementing the EventHandler interface. |
 
 See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
-
 
 
 ## EventHandler Interface
@@ -183,6 +138,55 @@ Event | Description |
 | onError | Sent when there is an error during the Connect application |
 | onRoute | Sent when the user navigates to a new route or screen in Connect |
 | onUser | Called when a user performs an action. User events provide visibility into what action a user could take within the Connect application |
+
+## App To App
+
+## App Link Support
+
+Add activity in AndroidManifest.xml file.
+
+```
+ <activity android:name="com.mastercard.openbanking.connect.Connect"   
+ android:launchMode="singleTask"    
+ android:exported="true">
+ <intent-filter>        
+    <action android:name="android.intent.action.VIEW" />        
+    <category android:name="android.intent.category.DEFAULT" />        
+    <category android:name="android.intent.category.BROWSABLE" />        
+     <data
+        android:scheme="https"
+        android:host="{{yourdomain.com}}"/>
+ </intent-filter>
+ </activity>
+ ```
+
+## Deep Link Support(Not recommended)
+
+Add activity in AndroidManifest.xml file.
+
+```
+<activity android:name="com.mastercard.openbanking.connect.Connect"   
+ android:launchMode="singleTask"    
+ android:exported="true">
+ <intent-filter>        
+    <action android:name="android.intent.action.VIEW" />        
+    <category android:name="android.intent.category.DEFAULT" />        
+    <category android:name="android.intent.category.BROWSABLE" />        
+    <data android:scheme="{deep_link_app_name}"/>    
+ </intent-filter>
+ </activity>
+ ```
+{deep_link_app_name} is case sensitive and should only use lower-case character
+
+## Add code to start the Connect Android SDK
+
+## App Link Support
+
+```Connect.start(this, url, "https://yourdomain.com/connect", eventHandler);```
+
+## Deep Link Support
+
+```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
 
 
 ## Manually stop a connect activity
