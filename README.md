@@ -49,14 +49,14 @@ Open the gradle.properties file and set **android.enableJetifier** to **true.**
 
 ## Step 3 - Update Android application settings
 
-#Add internet permissions to your AndroidManifest.xml file.
+## Add internet permissions to your AndroidManifest.xml file.
 
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
-#Add activity in AndroidManifest.xml file.
+## Add activity in AndroidManifest.xml file.
 
-##For the App Link Support:
+## For the App Link Support:
 ```
  <activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
@@ -72,7 +72,7 @@ Open the gradle.properties file and set **android.enableJetifier** to **true.**
  </activity>
  ```
 
-##For the DeepLink support(Not recommended):
+## For the DeepLink support(Not recommended):
 ```
 <activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
