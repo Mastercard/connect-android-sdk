@@ -55,8 +55,25 @@ Add internet permissions to your AndroidManifest.xml file.
 <uses-permission android:name="android.permission.INTERNET">
 ```
 Add activity in AndroidManifest.xml file.
+For the App Link Support:
 ```
  <activity android:name="com.mastercard.openbanking.connect.Connect"   
+ android:launchMode="singleTask"    
+ android:exported="true">
+ <intent-filter>        
+    <action android:name="android.intent.action.VIEW" />        
+    <category android:name="android.intent.category.DEFAULT" />        
+    <category android:name="android.intent.category.BROWSABLE" />        
+     <data
+        android:scheme="https"
+        android:host="{{yourdomain.com}}"/>
+ </intent-filter>
+ </activity>
+ ```
+
+For the DeepLink support
+```
+<activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
  android:exported="true">
  <intent-filter>        
@@ -74,8 +91,11 @@ Add activity in AndroidManifest.xml file.
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
-```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
+For the App Link support
+```Connect.start(this, url, "https://yourdomain.com/connect", eventHandler);```
 
+For the Deep Link  support
+``Connect.start(this, url, "{deep_link_app_name}://", eventHandler);````
 
 ### Connect Class
 
@@ -83,19 +103,19 @@ The Connect Android SDK’s main component is the Connect class that contains a 
 
 ```
 Java
-public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler)
+public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler)
 ```
 
 ```
 Kotlin
-fun start(context: Context, connectUrl: String?, deepLinkUrl: String?, eventHandler: EventHandler?)
+fun start(context: Context, connectUrl: String?, redirectUrl: String?, eventHandler: EventHandler?)
 ```
 
 | Argument | Description |
 | ------ | ------ |
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
-| deepLinkUrl | The DeepLink url to redirect back to app. |
+| redirectUrl | redirectUrl to redirect back to app. This parameter is optional and only required to used in app to app flow. |
 | eventHandler | A class implementing the EventHandler interface. |
 
 See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
