@@ -90,7 +90,7 @@ Kotlin
 fun start(context: Context, connectUrl: String?, redirectUrl: String?, eventHandler: EventHandler?)
 ```
 
-| Argument | Description |
+| Parameter | Description |
 | ------ | ------ |
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
