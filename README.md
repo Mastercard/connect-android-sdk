@@ -45,7 +45,7 @@ Note: The latest version of the Connect Android SDK can be found in [Maven Centr
 
 ## Manual
 
-* Clone the project: connect-sdk
+* Clone the Connect Android SDK project from [Github](https://github.com/Mastercard/connect-android-sdk)
 
 * On your Android project click on File > New > Import Module  > Select the path of connect sdk folder location > Finish
 
@@ -57,12 +57,7 @@ apply from: "${rootProject.projectDir}/sonatype-publish.gradle"
 ```
 * Clean and build the project
 
-## Step 2 - For projects using AndroidX:
-
-Open the gradle.properties file and set **android.enableJetifier** to **true.**
-
-
-## Step 3 - Update Android application settings
+## Step 2 - Update Android application settings
 
 The Connect Android SDK requires internet access to connect with our servers. As such, you need to add internet permissions to the AndroidManifest.xml file.
 
@@ -107,7 +102,7 @@ Add activity in AndroidManifest.xml file.
 {deep_link_app_name} is case sensitive and should only use lower-case character
 
 
-## Step 4 - Add code to start the Connect SDK
+## Step 3 - Add code to start the Connect SDK
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
