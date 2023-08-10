@@ -49,13 +49,14 @@ Open the gradle.properties file and set **android.enableJetifier** to **true.**
 
 ## Step 3 - Update Android application settings
 
-Add internet permissions to your AndroidManifest.xml file.
+#Add internet permissions to your AndroidManifest.xml file.
 
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
-Add activity in AndroidManifest.xml file.
-For the App Link Support:
+#Add activity in AndroidManifest.xml file.
+
+##For the App Link Support:
 ```
  <activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
@@ -71,7 +72,7 @@ For the App Link Support:
  </activity>
  ```
 
-For the DeepLink support
+##For the DeepLink support(Not recommended):
 ```
 <activity android:name="com.mastercard.openbanking.connect.Connect"   
  android:launchMode="singleTask"    
@@ -91,11 +92,11 @@ For the DeepLink support
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
-For the App Link support
+For the App Link:
 ```Connect.start(this, url, "https://yourdomain.com/connect", eventHandler);```
 
-For the Deep Link  support
-``Connect.start(this, url, "{deep_link_app_name}://", eventHandler);````
+For the Deep Link:
+```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
 
 ### Connect Class
 
@@ -115,7 +116,7 @@ fun start(context: Context, connectUrl: String?, redirectUrl: String?, eventHand
 | ------ | ------ |
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
-| redirectUrl | redirectUrl to redirect back to app. This parameter is optional and only required to used in app to app flow. |
+| redirectUrl | redirectUrl to redirect back to App. This parameter is optional and only required to used in App to App flow. |
 | eventHandler | A class implementing the EventHandler interface. |
 
 See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
