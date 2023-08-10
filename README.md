@@ -102,11 +102,11 @@ Add activity in AndroidManifest.xml file.
 {deep_link_app_name} is case sensitive and should only use lower-case character
 
 
-## Step 3 - Add code to start the Connect SDK
-
-The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
+## Step 3 - Add code to start the Connect Android SDK
 
 ## Connect Class
+
+The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
 The Connect Android SDK’s main component is the Connect class that contains a static start method, which runs an activity that connects with the EventHandler. To access the APIs in the SDK include the following imports:
 
@@ -149,7 +149,7 @@ See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-bankin
 
 Throughout Connect’s flow, events about the state of the web application are sent as JSONObjects to the EventHandler methods.
 
-> **_NOTE:_**  The onUserEvent handler will not return anything unless you’re specifically targeting Connect.
+> **_NOTE:_**  The onUser event handler will not return anything unless you’re specifically targeting Connect.
 
 ```
 Java
