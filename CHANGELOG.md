@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.0.0 (October 10, 2023)
+### 3.0.0 (August 10, 2023)
 Enhancement:
 - Newly added redirectUrl parameter inside SDK to support universal link and deeplink, It will enhance app to app seamless communication.
 ### Breaking changes
