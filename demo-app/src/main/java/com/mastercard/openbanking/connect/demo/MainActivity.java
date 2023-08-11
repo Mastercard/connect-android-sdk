@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i(TAG, ">>> Launching Connect activity");
 
-            Connect.start(this, url, "https://acmelending.net", eventHandler);
+            Connect.start(this, url, eventHandler);
         }
     }
 
