@@ -6,33 +6,18 @@ import android.net.Uri;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 class ConnectWebChromeClient extends WebChromeClient {
 
     private Connect mConnect;
-    private RelativeLayout mPopupViewContainer;
-    private RelativeLayout mPopupLayout;
-    private ImageButton mPopupCloseImgButton;
-    private Button mPopupCloseTextButton;
     public static Boolean runningUnitTest = false;
     private EventHandler eventHandler;
 
     public ConnectWebChromeClient(Connect connect,
-                                  EventHandler eventHandler,
-                                  RelativeLayout popupViewContainer,
-                                  RelativeLayout popupLayout,
-                                  ImageButton popupCloseImgButton,
-                                  Button popupCloseTextButton) {
+                                  EventHandler eventHandler) {
         this.mConnect = connect;
         this.eventHandler = eventHandler;
-        this.mPopupViewContainer = popupViewContainer;
-        this.mPopupLayout = popupLayout;
-        this.mPopupCloseImgButton = popupCloseImgButton;
-        this.mPopupCloseTextButton = popupCloseTextButton;
     }
 
     @Override

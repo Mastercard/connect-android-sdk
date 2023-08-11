@@ -4,46 +4,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#4CAF50"
+    android:background="@drawable/bg"
     tools:context="com.mastercard.openbanking.connect.demo.MainActivity">
+
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:paddingTop="17dp"
+        android:paddingBottom="17dp"
+        android:text="Connect sdk demo app"
+        android:textAlignment="textStart"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="44dp"
-        android:gravity="center_horizontal"
-        android:text="Enter Connect URL and click button"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/editConnectUrl"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="#66889D"
+        android:padding="17dp"
+        android:text="To get started, copy/paste a Generate URL value into the field below."
+        android:textAlignment="textStart"
+        android:textColor="@color/white"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
     <EditText
         android:id="@+id/editConnectUrl"
-        android:layout_width="371dp"
+        android:layout_width="0dp"
         android:layout_height="47dp"
-        android:layout_marginStart="99dp"
-        android:layout_marginTop="156dp"
-        android:layout_marginEnd="99dp"
+        android:layout_marginTop="32dp"
         android:background="@android:color/white"
         android:ems="10"
         android:gravity="center_vertical"
-        android:hint="Paste Connect URL"
+        android:hint="Paste Generate URL here"
         android:maxLines="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintHorizontal_bias="0.12"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
         android:id="@+id/startButtonEventHandler"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_corner"
+        android:padding="5dp"
         android:text="@string/handler_start_button_text"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/editConnectUrl"
+        app:layout_constraintStart_toStartOf="@+id/editConnectUrl"
         app:layout_constraintTop_toBottomOf="@+id/editConnectUrl"
         app:layout_constraintVertical_bias="0.025" />
 

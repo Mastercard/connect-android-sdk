@@ -9,28 +9,45 @@ The Connect mobile SDKs allow you to embed the Connect user experience anywhere 
 
 The Connect Android SDK supports the following Android versions.
 
-* Android 5.0 (Lollipop) or later
+* Android 5.0 (Lollipop) or later & minSdkVersion 21 or later
 
-* minSdkVersion 21 or later
-
-* Android Gradle Plugin v3.4.0 or greater required
-
-* Gradle 5.1.1 or greater required
+WARNING:Support for deepLinkUrl parameters is deprecated from Connect Android SDK version 3.0.0, going forward please use the redirectUrl parameter which supports both universal and deep links. For more information see [Github documentation](https://github.com/Mastercard/connect-android-sdk/blob/main/README.md)
 
 
 ## Step 1 - Add repository to your project
 
 ## Maven-central
 
-Add the following code to the dependency section in the build.gradle file.
+Please modify your root-level Gradle file(build.gradle) as per below code.
 
 ```
- implementation 'com.mastercard.openbanking.connect:connect-sdk:<insert latest version>' 
+ allprojects {
+   repositories {
+       google()
+       mavenCentral()
+   }
+ }
 ```
+
+Please modify your app-level Gradle file(build.gradle) as per below code.
+
+```
+android {
+  defaultConfig {
+    minSdkVersion 21 // or greater
+  }
+}
+dependencies {
+  // ...
+  implementation 'com.mastercard.openbanking.connect:connect-sdk:<insert latest version>'
+}
+```
+
+Note: The latest version of the Connect Android SDK can be found in [Maven Central](https://central.sonatype.com/artifact/com.mastercard.openbanking.connect/connect-sdk/2.3.0/versions).
 
 ## Manual
 
-* Clone the project: connect-sdk
+* Clone the Connect Android SDK project from [Github](https://github.com/Mastercard/connect-android-sdk)
 
 * On your Android project click on File > New > Import Module  > Select the path of connect sdk folder location > Finish
 
@@ -42,71 +59,52 @@ apply from: "${rootProject.projectDir}/sonatype-publish.gradle"
 ```
 * Clean and build the project
 
-## Step 2 - For projects using AndroidX:
+## Step 2 - Update Android application settings
 
-Open the gradle.properties file and set **android.enableJetifier** to **true.**
-
-
-## Step 3 - Update Android application settings
-
-Add internet permissions to your AndroidManifest.xml file.
+The Connect Android SDK requires internet access to connect with our servers. As such, you need to add internet permissions to the AndroidManifest.xml file.
 
 ```
 <uses-permission android:name="android.permission.INTERNET">
 ```
-Add activity in AndroidManifest.xml file.
-```
- <activity android:name="com.mastercard.openbanking.connect.Connect"   
- android:launchMode="singleTask"    
- android:exported="true">
- <intent-filter>        
-    <action android:name="android.intent.action.VIEW" />        
-    <category android:name="android.intent.category.DEFAULT" />        
-    <category android:name="android.intent.category.BROWSABLE" />        
-    <data android:scheme="{deep_link_app_name}"/>    
- </intent-filter>
- </activity>
- ```
-{deep_link_app_name} is case sensitive and should only use lower-case character
 
+## Step 3 - Add code to start the Connect Android SDK
 
-## Step 4 - Add code to start the Connect SDK
+## Connect Class
 
 The Connect class contains a start method that when called, starts an activity with the supplied event handler. The SDK only allows a single instance of the Connect activity to run. If you start Connect while a Connect activity is already running, a RuntimeException is thrown.
 
-```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
+The Connect Android SDK’s main component is the Connect class that contains a static start method, which runs an activity that connects with the EventHandler. To access the APIs in the SDK include the following imports:
 
-
-### Connect Class
-
-The Connect Android SDK’s main component is the Connect class that contains a static start method, which runs an activity that connects with the EventHandler.
+```  
+  import com.mastercard.openbanking.connect.Connect;
+  import com.mastercard.openbanking.connect.EventHandler;
+```
 
 ```
 Java
-public static void start(Context context, String connectUrl, String deepLinkUrl, EventHandler eventHandler)
+public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler)
 ```
 
 ```
 Kotlin
-fun start(context: Context, connectUrl: String?, deepLinkUrl: String?, eventHandler: EventHandler?)
+fun start(context: Context, connectUrl: String?, redirectUrl: String?, eventHandler: EventHandler?)
 ```
 
-| Argument | Description |
+| Parameter | Description |
 | ------ | ------ |
 | context | The Android Context is referenced by Connect when an activity starts. |
 | connectUrl | The SDK loads the Connect URL. |
-| deepLinkUrl | The DeepLink url to redirect back to app. |
+| redirectUrl | App link URL/ Deep link URL to redirect back to your mobile app after completing FI’s OAuth flow. This parameter is only required for App to App. |
 | eventHandler | A class implementing the EventHandler interface. |
 
 See [Generate 2.0 Connect URL APIs](https://developer.mastercard.com/open-banking-us/documentation/connect/generate-2-connect-url-apis/)
-
 
 
 ## EventHandler Interface
 
 Throughout Connect’s flow, events about the state of the web application are sent as JSONObjects to the EventHandler methods.
 
-> **_NOTE:_**  The onUserEvent handler will not return anything unless you’re specifically targeting Connect 2.0.
+> **_NOTE:_**  The onUser event handler will not return anything unless you’re specifically targeting Connect.
 
 ```
 Java
@@ -141,6 +139,55 @@ Event | Description |
 | onRoute | Sent when the user navigates to a new route or screen in Connect |
 | onUser | Called when a user performs an action. User events provide visibility into what action a user could take within the Connect application |
 
+## App To App
+
+## App Link Support
+
+Add activity in AndroidManifest.xml file.
+
+```
+ <activity android:name="com.mastercard.openbanking.connect.Connect"   
+ android:launchMode="singleTask"    
+ android:exported="true">
+ <intent-filter>        
+    <action android:name="android.intent.action.VIEW" />        
+    <category android:name="android.intent.category.DEFAULT" />        
+    <category android:name="android.intent.category.BROWSABLE" />        
+     <data
+        android:scheme="https"
+        android:host="{{yourdomain.com}}"/>
+ </intent-filter>
+ </activity>
+ ```
+
+## Deep Link Support(Not recommended)
+
+Add activity in AndroidManifest.xml file.
+
+```
+<activity android:name="com.mastercard.openbanking.connect.Connect"   
+ android:launchMode="singleTask"    
+ android:exported="true">
+ <intent-filter>        
+    <action android:name="android.intent.action.VIEW" />        
+    <category android:name="android.intent.category.DEFAULT" />        
+    <category android:name="android.intent.category.BROWSABLE" />        
+    <data android:scheme="{deep_link_app_name}"/>    
+ </intent-filter>
+ </activity>
+ ```
+{deep_link_app_name} is case sensitive and should only use lower-case character
+
+## Add code to start the Connect Android SDK
+
+## App Link Support
+
+```Connect.start(this, url, "https://yourdomain.com/connect", eventHandler);```
+
+## Deep Link Support
+
+```Connect.start(this, url, "{deep_link_app_name}://", eventHandler);```
+
 
 ## Manually stop a connect activity
 
@@ -152,7 +199,5 @@ You can manually finish a Connect activity by invoking:
 Connect.finishCurrentActivity()
 ```
 
+If there isn’t a current Connect activity running, then the method will throw a RuntimeException.
 
-## Process Restarts
-
-Android sometimes stops your application’s process and restarts it when your application is re-focused. If this happens, the Connect activity automatically finishes when the application resumes. If you want Connect to run again, call the start method. See [Connect Class.](#connect-class)
