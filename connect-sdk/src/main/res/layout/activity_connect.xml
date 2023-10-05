@@ -63,4 +63,13 @@
             android:layout_below="@id/popupTopBarLayout" />
 
     </RelativeLayout>
+
+    <ProgressBar
+        android:visibility="visible"
+        android:id="@+id/progressBar"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:indeterminateTint="#616f7d"
+
+        android:layout_centerInParent="true"/>
 </RelativeLayout>
