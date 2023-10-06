@@ -70,6 +70,6 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:indeterminateTint="#616f7d"
-
         android:layout_centerInParent="true"/>
+
 </RelativeLayout>
