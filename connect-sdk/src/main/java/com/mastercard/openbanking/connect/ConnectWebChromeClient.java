@@ -6,36 +6,24 @@ import android.net.Uri;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 class ConnectWebChromeClient extends WebChromeClient {
 
     private Connect mConnect;
-    private RelativeLayout mPopupViewContainer;
-    private RelativeLayout mPopupLayout;
-    private ImageButton mPopupCloseImgButton;
-    private Button mPopupCloseTextButton;
     public static Boolean runningUnitTest = false;
+    private EventHandler eventHandler;
 
     public ConnectWebChromeClient(Connect connect,
-                                  RelativeLayout popupViewContainer,
-                                  RelativeLayout popupLayout,
-                                  ImageButton popupCloseImgButton,
-                                  Button popupCloseTextButton) {
+                                  EventHandler eventHandler) {
         this.mConnect = connect;
-        this.mPopupViewContainer = popupViewContainer;
-        this.mPopupLayout = popupLayout;
-        this.mPopupCloseImgButton = popupCloseImgButton;
-        this.mPopupCloseTextButton = popupCloseTextButton;
+        this.eventHandler = eventHandler;
     }
 
     @Override
     public boolean onShowFileChooser(WebView mWebView, ValueCallback<Uri[]> filePathCallback,
                                      WebChromeClient.FileChooserParams fileChooserParams) {
-        if(mConnect.mFilePathCallback != null) {
+        if (mConnect.mFilePathCallback != null) {
             mConnect.mFilePathCallback.onReceiveValue(null);
         }
 
@@ -45,7 +33,7 @@ class ConnectWebChromeClient extends WebChromeClient {
 
         try {
             mConnect.startActivityForResult(intent, Connect.SELECT_FILE_RESULT_CODE);
-        } catch(ActivityNotFoundException e) {
+        } catch (ActivityNotFoundException e) {
             mConnect.mFilePathCallback = null;
 
             if (!runningUnitTest) {
@@ -58,5 +46,14 @@ class ConnectWebChromeClient extends WebChromeClient {
         }
 
         return true;
+    }
+
+    @Override
+    public void onProgressChanged(WebView view, int newProgress) {
+        super.onProgressChanged(view, newProgress);
+        if (newProgress == 100) {
+            eventHandler.onLoad();
+            mConnect.startPingTimer();
+        }
     }
 }

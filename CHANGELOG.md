@@ -1,5 +1,18 @@
 # Changelog
 
+### 3.0.0 (August 10, 2023)
+
+Enhancement:
+- Enhanced App To App OAuth Flow with newly added redirectUrl parameter inside Connect Android SDK to support App link and deeplink for navigation between mobile apps. For details on App To App refer [documentation here](https://developer.mastercard.com/open-banking-us/documentation/connect/mobile-sdks/)
+
+Breaking changes:
+- Connect Android SDK support for deepLinkUrl is deprecated from this version, Please use the redirectUrl parameter instead, it will support both App link and deeplink. Please follow the readme documentation for [more details](https://github.com/Mastercard/connect-android-sdk#readme)
+
+### 2.3.0 (June 22, 2023)
+
+Enhancement:
+- Added optional deeplinkUrl param to support navigation back to app (App to App Authentication).
+
 ### 2.1.0 (June 3, 2023)
 
 Patch:

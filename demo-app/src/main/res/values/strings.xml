@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Connect SDK Demo for Legacy Apps</string>
-    <string name="handler_start_button_text">Start Connect with EventHandler</string>
+    <string name="app_name">Connect SDK demo app</string>
+    <string name="handler_start_button_text">Launch Connect</string>
 </resources>
