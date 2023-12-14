@@ -5,20 +5,28 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Connect extends Activity {
+public class Connect extends Activity implements ConnectWebViewClientHandler{
     private static final String SDK_VERSION = "3.0.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
@@ -72,6 +80,7 @@ public class Connect extends Activity {
     }
 
     private WebView mMainWebView;
+    private ProgressBar progressBar;
 
 
     // Upload
@@ -128,6 +137,10 @@ public class Connect extends Activity {
 
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
+
+        this.progressBar = findViewById(R.id.progressBar);
+        handleWebviewInitialLoading(mMainWebView,this);
+
     }
 
     @Override
@@ -259,5 +272,30 @@ public class Connect extends Activity {
        if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
+    }
+
+    public void handleWebviewInitialLoading(WebView webView,ConnectWebViewClientHandler connectWebViewClientHandler) {
+
+        webView.setWebViewClient(new ConnectWebViewClient(connectWebViewClientHandler));
+    }
+
+
+    @Override
+    public void handleBadURLError() {
+        Toast.makeText(this, "Something went wrong, please try again..", Toast.LENGTH_LONG).show();
+        try {
+            // Send error event and finish
+            String message = "{ \"code\": \"100\", \"reason\": \"something went wrong..\" }";
+            JSONObject jo = new JSONObject(message);
+            Connect.EVENT_HANDLER.onError(jo);
+            finish();
+        } catch (Exception e) {
+            finish();
+        }
+    }
+
+    @Override
+    public void handleOnPageFinish() {
+        progressBar.setVisibility(View.GONE);
     }
 }
