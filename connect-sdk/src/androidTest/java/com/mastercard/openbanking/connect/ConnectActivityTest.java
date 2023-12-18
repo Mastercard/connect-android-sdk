@@ -46,7 +46,7 @@ public class ConnectActivityTest {
     private static String goodUrl = "";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
-    private static String redirectUrl = "";
+    private static String redirectUrl = "https://anydomain.com";
 
     @Before
     public void setup() {
@@ -153,6 +153,7 @@ public class ConnectActivityTest {
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
 
         // Wait for landing screen
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("landingScreen");
         onWebView()
                 .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
@@ -194,14 +195,17 @@ public class ConnectActivityTest {
         // Select 1st account in list using XPATH
         Thread.sleep(10000);
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-account-details-card//app-checkbox/label/div/div")).perform(webClick());
+//        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-account-details-card/div/div[2]/app-checkbox/label/div/div")).perform(webClick());
 
 
         // Scroll down to save button and click
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("loading");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webClick());
 
         // Click Submit button
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("review-accounts");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
     }

@@ -150,7 +150,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         this.progressBar = findViewById(R.id.progressBar);
         handleWebviewInitialLoading(mMainWebView, this);
     
-        if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY))){
+        if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
             Toast.makeText(this, "Redirect URL passed is invalid..", Toast.LENGTH_SHORT).show();
         }
     }
