@@ -139,7 +139,7 @@ public class ConnectActivityTest {
 
         // wait for privacy policy
         mIdlingResource.waitForEvent("privacy-policy");
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy policy")).perform(webClick());
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy Notice")).perform(webClick());
 
         // Try to dismiss Privacy Policy popup
         Thread.sleep(5000);
@@ -194,7 +194,8 @@ public class ConnectActivityTest {
         // Select 1st account in list using XPATH
         Thread.sleep(10000);
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-account-details-card//app-checkbox/label/div/div")).perform(webClick());
+
 
         // Scroll down to save button and click
         mIdlingResource.waitForEvent("loading");
