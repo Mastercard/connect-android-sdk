@@ -316,7 +316,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             Uri uri = Uri.parse(deepLink);
             return uri != null && uri.isHierarchical() && isSchemeValid(uri) && isHostValid(uri);
         }catch (Exception e){
-            e.printStackTrace();
             return false;
         }
 
@@ -327,7 +326,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             String scheme = uri.getScheme();
             return scheme != null && !scheme.isEmpty();
         }catch (Exception e){
-            e.printStackTrace();
             return false;
         }
 
@@ -338,7 +336,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             String host = uri.getHost();
             return host != null && !host.isEmpty();
         }catch (Exception e){
-            e.printStackTrace();
             return false;
         }
     }
