@@ -37,7 +37,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.0";
+    private static final String SDK_VERSION = "3.0.1";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -151,7 +151,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         handleWebviewInitialLoading(mMainWebView, this);
     
         if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
-            Toast.makeText(this, "Redirect URL passed is invalid..", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "RedirectUrl is invalid please verify URL", Toast.LENGTH_SHORT).show();
         }
     }
 

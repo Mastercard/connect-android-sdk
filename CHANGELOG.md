@@ -1,5 +1,12 @@
 # Changelog
 
+### 3.0.1 (December, 21, 2023)
+
+Patch:
+- Added the loader before connect session initialisation for better user experience.
+- Added warning message if Redirect URL passed for App to App Authentication is invalid.
+
+
 ### 3.0.0 (August 10, 2023)
 
 Enhancement:
