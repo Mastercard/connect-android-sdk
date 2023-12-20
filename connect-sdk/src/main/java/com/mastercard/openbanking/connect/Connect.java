@@ -135,7 +135,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true);
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER));
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,this));
 
 
         // JS Interface and event listener for main WebView
@@ -148,8 +148,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
 
         this.progressBar = findViewById(R.id.progressBar);
-        handleWebviewInitialLoading(mMainWebView, this);
-    
+
         if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
             Toast.makeText(this, "RedirectUrl is invalid please verify URL", Toast.LENGTH_SHORT).show();
         }
@@ -283,26 +282,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         }
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
-        }
-    }
-
-    public void handleWebviewInitialLoading(WebView webView, ConnectWebViewClientHandler connectWebViewClientHandler) {
-
-        webView.setWebViewClient(new ConnectWebViewClient(connectWebViewClientHandler));
-    }
-
-
-    @Override
-    public void handleBadURLError() {
-        Toast.makeText(this, "Something went wrong, please try again..", Toast.LENGTH_LONG).show();
-        try {
-            // Send error event and finish
-            String message = "{ \"code\": \"100\", \"reason\": \"something went wrong..\" }";
-            JSONObject jo = new JSONObject(message);
-            Connect.EVENT_HANDLER.onError(jo);
-            finish();
-        } catch (Exception e) {
-            finish();
         }
     }
 
