@@ -4,7 +4,8 @@
 
 Patch:
 - Added the loader before connect session initialisation for better user experience.
-- Added warning message if Redirect URL passed for App to App Authentication is invalid.
+- Added warning message if invalid Redirect URL passed for App to App Authentication.
+
 
 
 ### 3.0.0 (August 10, 2023)
