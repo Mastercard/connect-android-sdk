@@ -153,7 +153,7 @@ public class ConnectActivityTest {
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
 
         // Wait for landing screen
-        Thread.sleep(5000);
+        Thread.sleep(2000);
         mIdlingResource.waitForEvent("landingScreen");
         onWebView()
                 .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
@@ -200,12 +200,12 @@ public class ConnectActivityTest {
 
 
         // Scroll down to save button and click
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         mIdlingResource.waitForEvent("loading");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webClick());
 
         // Click Submit button
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         mIdlingResource.waitForEvent("review-accounts");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
     }
