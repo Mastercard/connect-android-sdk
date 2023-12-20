@@ -3,7 +3,7 @@
 ### 3.0.1 (December, 21, 2023)
 
 Patch:
-- Added the loader before connect session initialisation for better user experience.
+- Added loader before connect session initialisation for better user experience.
 - Added warning message if invalid Redirect URL passed for App to App Authentication.
 
 
