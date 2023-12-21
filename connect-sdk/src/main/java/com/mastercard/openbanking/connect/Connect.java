@@ -5,21 +5,39 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Patterns;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Connect extends Activity {
-    private static final String SDK_VERSION = "3.0.0";
+public class Connect extends Activity implements ConnectWebViewClientHandler {
+    private static final String SDK_VERSION = "3.0.1";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -67,11 +85,11 @@ public class Connect extends Activity {
 
         // Set EventListener
         Connect.EVENT_HANDLER = eventHandler;
-
         context.startActivity(connectIntent);
     }
 
     private WebView mMainWebView;
+    private ProgressBar progressBar;
 
 
     // Upload
@@ -117,7 +135,7 @@ public class Connect extends Activity {
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true);
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER));
+        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,this));
 
 
         // JS Interface and event listener for main WebView
@@ -128,6 +146,12 @@ public class Connect extends Activity {
 
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
+
+        this.progressBar = findViewById(R.id.progressBar);
+
+        if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
+            Toast.makeText(this, "RedirectUrl is invalid please verify URL", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -191,7 +215,7 @@ public class Connect extends Activity {
                     .setMessage(getString(R.string.exit_confirmation_msg))
                     .setPositiveButton(getString(R.string.exit_confirmation_yes), listener)
                     .setNegativeButton(getString(R.string.exit_confirmation_no), listener).show();
-         }
+        }
     }
 
     private DialogInterface.OnClickListener getDialogClickListener() {
@@ -251,13 +275,47 @@ public class Connect extends Activity {
     protected void pingConnect() {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-        if(redirectUrl != null){
+        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
-        }else{
+        } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
         }
-       if (mMainWebView != null) {
+        if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
+        }
+    }
+
+    @Override
+    public void handleOnPageFinish() {
+        progressBar.setVisibility(View.GONE);
+    }
+
+    public boolean isValidRedirectUrl(String deepLink) {
+        try {
+            Uri uri = Uri.parse(deepLink);
+            return uri != null && uri.isHierarchical() && isSchemeValid(uri) && isHostValid(uri);
+        }catch (Exception e){
+            return false;
+        }
+
+    }
+
+    public boolean isSchemeValid(Uri uri) {
+        try{
+            String scheme = uri.getScheme();
+            return scheme != null && !scheme.isEmpty();
+        }catch (Exception e){
+            return false;
+        }
+
+    }
+
+    public boolean isHostValid(Uri uri) {
+        try{
+            String host = uri.getHost();
+            return host != null && !host.isEmpty();
+        }catch (Exception e){
+            return false;
         }
     }
 }

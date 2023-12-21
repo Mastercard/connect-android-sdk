@@ -46,7 +46,7 @@ public class ConnectActivityTest {
     private static String goodUrl = "";
     private static final String badExpiredUrl = "https://connect2.finicity.com?consumerId=dbceec20d8b97174e6aed204856f5a55&customerId=1016927519&partnerId=2445582695152&signature=abb1762e5c640f02823c56332daede3fe2f2143f4f5b8be6ec178ac72d7dbc5a&timestamp=1607806595887&ttl=1607813795887";
     private WebEventIdlingResource mIdlingResource;
-    private static String redirectUrl = "";
+    private static String redirectUrl = "https://anydomain.com";
 
     @Before
     public void setup() {
@@ -94,6 +94,12 @@ public class ConnectActivityTest {
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl, new TestEventHandler());
 
+        // Wait for landing screen and click Next
+        mIdlingResource.waitForEvent("landingScreen");
+        onWebView()
+                .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
+                .perform(DriverAtoms.webClick());
+
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
         onWebView()
@@ -131,21 +137,9 @@ public class ConnectActivityTest {
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl, new TestEventHandler());
 
-        // Wait for Route search or let it timeout
-        mIdlingResource.waitForEvent("search");
-        onWebView()
-            .withElement(findElement(Locator.NAME, "Search for your bank"))
-            .perform(DriverAtoms.clearElement())
-            .perform(DriverAtoms.webKeys("FinBank"))
-            .perform(webClick());
-
-        // Select FinBank from search list using XPATH
-        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
-
-        // Click Next using XPATH
-        mIdlingResource.waitForEvent("sign-in");
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy policy")).perform(webClick());
+        // wait for privacy policy
+        mIdlingResource.waitForEvent("privacy-policy");
+        onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy Notice")).perform(webClick());
 
         // Try to dismiss Privacy Policy popup
         Thread.sleep(5000);
@@ -157,6 +151,13 @@ public class ConnectActivityTest {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
+
+        // Wait for landing screen
+        Thread.sleep(2000);
+        mIdlingResource.waitForEvent("landingScreen");
+        onWebView()
+                .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
+                .perform(DriverAtoms.webClick());
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -170,9 +171,12 @@ public class ConnectActivityTest {
         mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
-        // Click Next using XPATH
+        // Click Next for Login screen
         mIdlingResource.waitForEvent("sign-in");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"financial-sign-in\"]/div[2]/app-button/a/div")).perform(webClick());
+        onWebView()
+                .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
+                .perform(DriverAtoms.webClick());
+
 
         // Fill out UserId and Password and submit form
         mIdlingResource.waitForEvent("login");
@@ -191,13 +195,17 @@ public class ConnectActivityTest {
         // Select 1st account in list using XPATH
         Thread.sleep(10000);
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
+//        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-account-details-card/div/div[2]/app-checkbox/label/div/div")).perform(webClick());
+
 
         // Scroll down to save button and click
+        Thread.sleep(3000);
         mIdlingResource.waitForEvent("loading");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webClick());
 
         // Click Submit button
+        Thread.sleep(3000);
         mIdlingResource.waitForEvent("review-accounts");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
     }
