@@ -13,11 +13,13 @@ class ConnectWebChromeClient extends WebChromeClient {
     private Connect mConnect;
     public static Boolean runningUnitTest = false;
     private EventHandler eventHandler;
+    ConnectWebViewClientHandler connectWebViewClientHandler;
 
     public ConnectWebChromeClient(Connect connect,
-                                  EventHandler eventHandler) {
+                                  EventHandler eventHandler,ConnectWebViewClientHandler connectWebViewClientHandler) {
         this.mConnect = connect;
         this.eventHandler = eventHandler;
+        this.connectWebViewClientHandler = connectWebViewClientHandler;
     }
 
     @Override
@@ -54,6 +56,8 @@ class ConnectWebChromeClient extends WebChromeClient {
         if (newProgress == 100) {
             eventHandler.onLoad();
             mConnect.startPingTimer();
+            connectWebViewClientHandler.handleOnPageFinish();
         }
+
     }
 }

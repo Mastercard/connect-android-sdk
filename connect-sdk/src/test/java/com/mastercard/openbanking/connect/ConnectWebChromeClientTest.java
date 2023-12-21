@@ -46,7 +46,7 @@ public class ConnectWebChromeClientTest {
             }
         };
 
-        ConnectWebChromeClient connectWebChromeClient = spy(new ConnectWebChromeClient(connect, null));
+        ConnectWebChromeClient connectWebChromeClient = spy(new ConnectWebChromeClient(connect, null,connect));
 
         WebView webView = mock(WebView.class);
         WebChromeClient.FileChooserParams params = spy(WebChromeClient.FileChooserParams.class);
@@ -70,7 +70,7 @@ public class ConnectWebChromeClientTest {
 
         connect.mFilePathCallback = mFilePathCallback;
 
-        ConnectWebChromeClient connectWebChromeClient = spy(new ConnectWebChromeClient(connect, null));
+        ConnectWebChromeClient connectWebChromeClient = spy(new ConnectWebChromeClient(connect, null,connect));
 
         WebView webView = mock(WebView.class);
         WebChromeClient.FileChooserParams params = spy(WebChromeClient.FileChooserParams.class);
@@ -93,7 +93,7 @@ public class ConnectWebChromeClientTest {
             }
         };
 
-        ConnectWebChromeClient connectWebChromeClient = spy(new ConnectWebChromeClient(connect, null));
+        ConnectWebChromeClient connectWebChromeClient = spy(new ConnectWebChromeClient(connect, null,connect));
         ConnectWebChromeClient.runningUnitTest = true;
 
         WebView webView = mock(WebView.class);
