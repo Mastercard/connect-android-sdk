@@ -2,6 +2,8 @@ include:
   - project: 'devops/central-ci'
     ref: master
     file: '/cx-scan.yml'
+  - project: devops/central-ci
+    file: jobs/by-stage/scan/black-duck-scan.yml
 
 before_script:
   - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/"
