@@ -36,28 +36,16 @@ public class RedirectURLValidatorTest {
         assertTrue(connect.isValidRedirectUrl("ftp://example.com"));
         assertTrue(connect.isValidRedirectUrl("https://acmelending.net/"));
         assertTrue(connect.isValidRedirectUrl("https://acme.stg.fini.city/"));
+        assertTrue(connect.isValidRedirectUrl("")); //returns true because this is an optional parameter
+        assertTrue(connect.isValidRedirectUrl(null)); //returns true because this is an optional parameter
     }
     @Test
     public void testInvalidDeepLink() {
 
         assertFalse(connect.isValidRedirectUrl("linktodomain"));
+        assertFalse(connect.isValidRedirectUrl("myapp:"));
         assertFalse(connect.isValidRedirectUrl("acmelending.net"));
         assertFalse(connect.isValidRedirectUrl("invalid-url"));
-    }
-    @Test
-    public void testInvalidScheme() {
-        assertFalse(connect.isSchemeValid(null));
-        assertFalse(connect.isSchemeValid(""));
-        assertFalse(connect.isSchemeValid("   "));
-        assertFalse(connect.isSchemeValid("https"));
-        assertFalse(connect.isSchemeValid("myapp"));
-        assertFalse(connect.isSchemeValid("myapp:"));
-        assertFalse(connect.isSchemeValid("myapp:/"));
-    }
-    @Test
-    public void testValidScheme() {
-        assertTrue(connect.isSchemeValid("anything://"));
-        assertTrue(connect.isSchemeValid("http://"));
-        assertTrue(connect.isSchemeValid("https://"));
+        assertFalse(connect.isValidRedirectUrl("invalid url"));
     }
 }

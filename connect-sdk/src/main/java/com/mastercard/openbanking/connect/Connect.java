@@ -152,7 +152,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
         this.progressBar = findViewById(R.id.progressBar);
 
-        if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
+        String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
+
+        if(!isValidRedirectUrl(redirectUrl)){
             Log.w("Connect Android SDK", "RedirectUrl is invalid please verify URL");
         }
     }
@@ -278,7 +280,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     protected void pingConnect() {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
+        if (redirectUrl != null && !redirectUrl.isEmpty() && isValidRedirectUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
@@ -293,11 +295,11 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         progressBar.setVisibility(View.GONE);
     }
     protected boolean isValidRedirectUrl(String deepLink) {
-        return isSchemeValid(deepLink);
-    }
-    protected boolean isSchemeValid(String deepLink) {
-        String mobileRegEx = "[a-z]{1}://"; // {3} -> at least 3 alphabet are compulsory.
+        String mobileRegEx = "[a-z]{1}://";
         try {
+            if(deepLink == null || deepLink.isEmpty()) {
+                return true; // do not verify null & empty deep links
+            }
             Pattern pattern = Pattern.compile(mobileRegEx);
             Matcher matcher = pattern.matcher(deepLink);
             return matcher.find();
@@ -305,4 +307,5 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             return false;
         }
     }
+
 }
