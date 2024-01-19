@@ -278,8 +278,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     protected void pingConnect() {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-//        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
-        if (redirectUrl != null) {
+        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
