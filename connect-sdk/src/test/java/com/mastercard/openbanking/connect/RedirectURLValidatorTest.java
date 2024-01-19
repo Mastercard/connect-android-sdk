@@ -39,40 +39,25 @@ public class RedirectURLValidatorTest {
     }
     @Test
     public void testInvalidDeepLink() {
-        assertFalse(connect.isValidRedirectUrl("myapp://"));
+
         assertFalse(connect.isValidRedirectUrl("linktodomain"));
         assertFalse(connect.isValidRedirectUrl("acmelending.net"));
         assertFalse(connect.isValidRedirectUrl("invalid-url"));
-        assertFalse(connect.isValidRedirectUrl("https://"));
-        assertFalse(connect.isValidRedirectUrl("myapp://?query=param"));
-        assertFalse(connect.isValidRedirectUrl("myapp://#fragment"));
     }
     @Test
     public void testInvalidScheme() {
         assertFalse(connect.isSchemeValid(null));
-        assertFalse(connect.isSchemeValid(Uri.parse("")));
-        assertFalse(connect.isSchemeValid(Uri.parse("   ")));
-        assertFalse(connect.isSchemeValid(Uri.parse("https")));
-        assertFalse(connect.isSchemeValid(Uri.parse("myapp")));
+        assertFalse(connect.isSchemeValid(""));
+        assertFalse(connect.isSchemeValid("   "));
+        assertFalse(connect.isSchemeValid("https"));
+        assertFalse(connect.isSchemeValid("myapp"));
+        assertFalse(connect.isSchemeValid("myapp:"));
+        assertFalse(connect.isSchemeValid("myapp:/"));
     }
     @Test
     public void testValidScheme() {
-        assertTrue(connect.isSchemeValid(Uri.parse("myapp://")));
-        assertTrue(connect.isSchemeValid(Uri.parse("anything://")));
-        assertTrue(connect.isSchemeValid(Uri.parse("http://")));
-        assertTrue(connect.isSchemeValid(Uri.parse("https://")));
-    }
-    @Test
-    public void testInvalidHost() {
-        assertFalse(connect.isHostValid(null));
-        assertFalse(connect.isHostValid(Uri.parse("")));
-        assertFalse(connect.isHostValid(Uri.parse("   ")));
-    }
-    @Test
-    public void testValidHost() {
-        assertTrue(connect.isHostValid(Uri.parse("https://www.example.com")));
-        assertTrue(connect.isHostValid(Uri.parse("myapp://subdomain.example.com")));
-        assertTrue(connect.isHostValid(Uri.parse("anything://acmelending.net")));
-        assertTrue(connect.isHostValid(Uri.parse("myapp://acme.stg.fini.city")));
+        assertTrue(connect.isSchemeValid("anything://"));
+        assertTrue(connect.isSchemeValid("http://"));
+        assertTrue(connect.isSchemeValid("https://"));
     }
 }

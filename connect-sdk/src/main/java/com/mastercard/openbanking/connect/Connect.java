@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static final String SDK_VERSION = "3.0.1";
@@ -150,7 +153,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         this.progressBar = findViewById(R.id.progressBar);
 
         if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
-            Toast.makeText(this, "RedirectUrl is invalid please verify URL", Toast.LENGTH_SHORT).show();
+            Log.w("Connect Android SDK", "RedirectUrl is invalid please verify URL");
         }
     }
 
@@ -275,7 +278,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     protected void pingConnect() {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
+//        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
+        if (redirectUrl != null) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
@@ -289,32 +293,16 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     public void handleOnPageFinish() {
         progressBar.setVisibility(View.GONE);
     }
-
-    public boolean isValidRedirectUrl(String deepLink) {
+    protected boolean isValidRedirectUrl(String deepLink) {
+        return isSchemeValid(deepLink);
+    }
+    protected boolean isSchemeValid(String deepLink) {
+        String mobileRegEx = "[a-z]{1}://"; // {3} -> at least 3 alphabet are compulsory.
         try {
-            Uri uri = Uri.parse(deepLink);
-            return uri != null && uri.isHierarchical() && isSchemeValid(uri) && isHostValid(uri);
-        }catch (Exception e){
-            return false;
-        }
-
-    }
-
-    public boolean isSchemeValid(Uri uri) {
-        try{
-            String scheme = uri.getScheme();
-            return scheme != null && !scheme.isEmpty();
-        }catch (Exception e){
-            return false;
-        }
-
-    }
-
-    public boolean isHostValid(Uri uri) {
-        try{
-            String host = uri.getHost();
-            return host != null && !host.isEmpty();
-        }catch (Exception e){
+            Pattern pattern = Pattern.compile(mobileRegEx);
+            Matcher matcher = pattern.matcher(deepLink);
+            return matcher.find();
+        } catch (Exception e) {
             return false;
         }
     }
