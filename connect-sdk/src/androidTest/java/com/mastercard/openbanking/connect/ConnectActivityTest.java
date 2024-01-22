@@ -67,7 +67,7 @@ public class ConnectActivityTest {
     @Test
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
-        Thread.sleep(5000);
+        mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
