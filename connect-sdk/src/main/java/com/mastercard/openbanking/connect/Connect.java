@@ -298,7 +298,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     protected boolean isValidRedirectUrl(String redirectUrl) {
         try {
             if(redirectUrl == null || redirectUrl.isEmpty()) {
-                return true; // do not verify null & empty deep links
+                return true; // do not verify null & empty redirectUrls
             }
             Pattern pattern = Pattern.compile(REDIRECT_URL_REGEX);
             Matcher matcher = pattern.matcher(redirectUrl);
