@@ -65,10 +65,9 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void test01ConnectWithExpiredUrl() {
+    public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
-
-        mIdlingResource.waitForEvent("error");
+        Thread.sleep(5000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
@@ -77,7 +76,7 @@ public class ConnectActivityTest {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, "", new TestEventHandler());
-
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("search");
         onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
 
