@@ -55,7 +55,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static Connect CONNECT_INSTANCE;
     private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
-    private final String DEEP_LINK_REGEX = "[a-z]{1}://";
+    private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
@@ -295,13 +295,13 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     public void handleOnPageFinish() {
         progressBar.setVisibility(View.GONE);
     }
-    protected boolean isValidRedirectUrl(String deepLink) {
+    protected boolean isValidRedirectUrl(String redirectUrl) {
         try {
-            if(deepLink == null || deepLink.isEmpty()) {
+            if(redirectUrl == null || redirectUrl.isEmpty()) {
                 return true; // do not verify null & empty deep links
             }
-            Pattern pattern = Pattern.compile(DEEP_LINK_REGEX);
-            Matcher matcher = pattern.matcher(deepLink);
+            Pattern pattern = Pattern.compile(REDIRECT_URL_REGEX);
+            Matcher matcher = pattern.matcher(redirectUrl);
             return matcher.find();
         } catch (Exception e) {
             return false;
