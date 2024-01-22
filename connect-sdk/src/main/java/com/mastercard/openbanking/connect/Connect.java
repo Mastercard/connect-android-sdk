@@ -5,35 +5,19 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -155,7 +139,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
 
-        if(redirectUrl != null && !redirectUrl.isEmpty() && !isValidRedirectUrl(redirectUrl)){
+        if(redirectUrl != null && !redirectUrl.isEmpty() && !isValidUrl(redirectUrl)){
             Log.w("Connect Android SDK", "RedirectUrl is invalid please verify URL");
         }
     }
@@ -281,7 +265,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     protected void pingConnect() {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-        if (redirectUrl != null && !redirectUrl.isEmpty() && isValidRedirectUrl(redirectUrl) ) {
+        if (redirectUrl != null && !redirectUrl.isEmpty() && isValidUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
@@ -295,7 +279,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     public void handleOnPageFinish() {
         progressBar.setVisibility(View.GONE);
     }
-    protected boolean isValidRedirectUrl(String redirectUrl) {
+    protected boolean isValidUrl(String redirectUrl) {
         try {
             if(redirectUrl == null || redirectUrl.isEmpty()) {
                 return true; // do not verify null & empty redirectUrls
