@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
-import android.net.Uri;
 import android.os.Build;
 
 @RunWith(RobolectricTestRunner.class)
@@ -29,24 +28,24 @@ public class RedirectURLValidatorTest {
     @Test
     public void testValidDeepLink() {
 
-        assertTrue(connect.isValidRedirectUrl("myapp://"));
-        assertTrue(connect.isValidRedirectUrl("myapp://linktoapp"));
-        assertTrue(connect.isValidRedirectUrl("http://example.com"));
-        assertTrue(connect.isValidRedirectUrl("myapp://subdomain.example.com"));
-        assertTrue(connect.isValidRedirectUrl("myapp://path/path1"));
-        assertTrue(connect.isValidRedirectUrl("ftp://example.com"));
-        assertTrue(connect.isValidRedirectUrl("https://acmelending.net/"));
-        assertTrue(connect.isValidRedirectUrl("https://acme.stg.fini.city/"));
-        assertTrue(connect.isValidRedirectUrl("")); //returns true because this is an optional parameter
-        assertTrue(connect.isValidRedirectUrl(null)); //returns true because this is an optional parameter
+        assertTrue(connect.isValidUrl("myapp://"));
+        assertTrue(connect.isValidUrl("myapp://linktoapp"));
+        assertTrue(connect.isValidUrl("http://example.com"));
+        assertTrue(connect.isValidUrl("myapp://subdomain.example.com"));
+        assertTrue(connect.isValidUrl("myapp://path/path1"));
+        assertTrue(connect.isValidUrl("ftp://example.com"));
+        assertTrue(connect.isValidUrl("https://acmelending.net/"));
+        assertTrue(connect.isValidUrl("https://acme.stg.fini.city/"));
+        assertTrue(connect.isValidUrl("")); //returns true because this is an optional parameter
+        assertTrue(connect.isValidUrl(null)); //returns true because this is an optional parameter
     }
     @Test
     public void testInvalidDeepLink() {
 
-        assertFalse(connect.isValidRedirectUrl("linktodomain"));
-        assertFalse(connect.isValidRedirectUrl("myapp:"));
-        assertFalse(connect.isValidRedirectUrl("acmelending.net"));
-        assertFalse(connect.isValidRedirectUrl("invalid-url"));
-        assertFalse(connect.isValidRedirectUrl("invalid url"));
+        assertFalse(connect.isValidUrl("linktodomain"));
+        assertFalse(connect.isValidUrl("myapp:"));
+        assertFalse(connect.isValidUrl("acmelending.net"));
+        assertFalse(connect.isValidUrl("invalid-url"));
+        assertFalse(connect.isValidUrl("invalid url"));
     }
 }
