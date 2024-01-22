@@ -29,6 +29,7 @@ public class RedirectURLValidatorTest {
     @Test
     public void testValidDeepLink() {
 
+        assertTrue(connect.isValidRedirectUrl("myapp://"));
         assertTrue(connect.isValidRedirectUrl("myapp://linktoapp"));
         assertTrue(connect.isValidRedirectUrl("http://example.com"));
         assertTrue(connect.isValidRedirectUrl("myapp://subdomain.example.com"));
