@@ -8,16 +8,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -40,6 +46,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
     private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
+    private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
+    ;
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
@@ -280,10 +288,23 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         progressBar.setVisibility(View.GONE);
     }
     protected boolean isValidUrl(String redirectUrl) {
+        if (redirectUrl == null || redirectUrl.isEmpty() || redirectUrl.contains(" ")) {
+            return false;
+        }
+
         try {
-            if(redirectUrl == null || redirectUrl.isEmpty()) {
-                return true; // do not verify null & empty redirectUrls
+            Uri uri = Uri.parse(redirectUrl);
+
+            if (redirectUrl.startsWith("http")) {
+                if (uri.getAuthority() == null || uri.getAuthority().isEmpty()) {
+                    return false;
+                }
             }
+
+            if (containsInvalidCharacters(uri.getScheme()) || containsInvalidCharacters(uri.getAuthority())) {
+                return false;
+            }
+
             Pattern pattern = Pattern.compile(REDIRECT_URL_REGEX);
             Matcher matcher = pattern.matcher(redirectUrl);
             return matcher.find();
@@ -291,5 +312,10 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             return false;
         }
     }
+    private boolean containsInvalidCharacters(String inputToTest) {
+        Pattern invalidCharactersPattern = Pattern.compile(INVALID_CHARACTERS_REGEX);
+        Matcher invalidCharactersMatcher = invalidCharactersPattern.matcher(inputToTest);
+        return invalidCharactersMatcher.find();
 
+    }
 }

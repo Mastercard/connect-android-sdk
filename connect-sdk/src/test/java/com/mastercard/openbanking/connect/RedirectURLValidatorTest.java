@@ -36,16 +36,22 @@ public class RedirectURLValidatorTest {
         assertTrue(connect.isValidUrl("ftp://example.com"));
         assertTrue(connect.isValidUrl("https://acmelending.net/"));
         assertTrue(connect.isValidUrl("https://acme.stg.fini.city/"));
-        assertTrue(connect.isValidUrl("")); //returns true because this is an optional parameter
-        assertTrue(connect.isValidUrl(null)); //returns true because this is an optional parameter
+
     }
     @Test
     public void testInvalidDeepLink() {
 
         assertFalse(connect.isValidUrl("linktodomain"));
+        assertFalse(connect.isValidUrl("http://"));
         assertFalse(connect.isValidUrl("myapp:"));
         assertFalse(connect.isValidUrl("acmelending.net"));
         assertFalse(connect.isValidUrl("invalid-url"));
         assertFalse(connect.isValidUrl("invalid url"));
+        assertFalse(connect.isValidUrl("http://www.ex@mple.com"));
+        assertFalse(connect.isValidUrl("http://www.ex  ample.com"));
+        assertFalse(connect.isValidUrl("http://www.example.com/page?name=John & id=123m"));
+        assertFalse(connect.isValidUrl("http/www.example.com"));
+        assertFalse(connect.isValidUrl("http:// instead of http://"));
+        assertFalse(connect.isValidUrl("file:// instead of file://"));
     }
 }
