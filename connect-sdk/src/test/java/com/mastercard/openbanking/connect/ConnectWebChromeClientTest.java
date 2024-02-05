@@ -216,7 +216,7 @@ public class ConnectWebChromeClientTest {
         ConnectWebChromeClient webChromeClient = new ConnectWebChromeClient(mockConnect, mockEventHandler, mockWebViewClientHandler);
 
         WebView webView = mock(WebView.class);
-        webChromeClient.isWebViewLoaded = false;
+        webChromeClient.isWebViewLoaded = true;
         webChromeClient.onProgressChanged(webView, 100);
 
         Mockito.verify(mockConnect, Mockito.never()).startPingTimer();
