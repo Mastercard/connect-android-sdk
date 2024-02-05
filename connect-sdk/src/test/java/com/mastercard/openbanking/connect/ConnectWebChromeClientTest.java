@@ -181,5 +181,44 @@ public class ConnectWebChromeClientTest {
         spy.onActivityResult(Connect.SELECT_FILE_RESULT_CODE,Activity.RESULT_OK,intent);
         Assert.assertNull(spy.mFilePathCallback);
     }
+    @Test
+    public void testStartPingCalled_WebViewLoaded_False_Progress100() {
+        Connect mockConnect = mock(Connect.class);
+        ConnectWebViewClientHandler mockWebViewClientHandler = mock(ConnectWebViewClientHandler.class);
+        EventHandler mockEventHandler = mock(EventHandler.class);
+        ConnectWebChromeClient webChromeClient = new ConnectWebChromeClient(mockConnect, mockEventHandler, mockWebViewClientHandler);
 
+        WebView webView = mock(WebView.class);
+        webChromeClient.isWebViewLoaded = false;
+        webChromeClient.onProgressChanged(webView, 100);
+
+        Mockito.verify(mockConnect, Mockito.times(1)).startPingTimer();
+        Assert.assertTrue(webChromeClient.isWebViewLoaded);
+    }
+    @Test
+    public void testStartPingCalled_WebViewLoaded_False_Progress80() {
+        Connect mockConnect = mock(Connect.class);
+        ConnectWebViewClientHandler mockWebViewClientHandler = mock(ConnectWebViewClientHandler.class);
+        EventHandler mockEventHandler = mock(EventHandler.class);
+        ConnectWebChromeClient webChromeClient = new ConnectWebChromeClient(mockConnect, mockEventHandler, mockWebViewClientHandler);
+
+        WebView webView = mock(WebView.class);
+        webChromeClient.isWebViewLoaded = false;
+        webChromeClient.onProgressChanged(webView, 80);
+
+        Mockito.verify(mockConnect, Mockito.never()).startPingTimer();
+    }
+    @Test
+    public void testStartPingCalled_WebViewLoaded_True_Progress100() {
+        Connect mockConnect = mock(Connect.class);
+        ConnectWebViewClientHandler mockWebViewClientHandler = mock(ConnectWebViewClientHandler.class);
+        EventHandler mockEventHandler = mock(EventHandler.class);
+        ConnectWebChromeClient webChromeClient = new ConnectWebChromeClient(mockConnect, mockEventHandler, mockWebViewClientHandler);
+
+        WebView webView = mock(WebView.class);
+        webChromeClient.isWebViewLoaded = false;
+        webChromeClient.onProgressChanged(webView, 100);
+
+        Mockito.verify(mockConnect, Mockito.never()).startPingTimer();
+    }
 }

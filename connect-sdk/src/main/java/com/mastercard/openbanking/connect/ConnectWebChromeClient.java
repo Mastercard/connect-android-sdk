@@ -14,7 +14,7 @@ class ConnectWebChromeClient extends WebChromeClient {
     public static Boolean runningUnitTest = false;
     private EventHandler eventHandler;
     ConnectWebViewClientHandler connectWebViewClientHandler;
-    private boolean isWebViewLoaded = false;
+    protected boolean isWebViewLoaded = false;
 
     public ConnectWebChromeClient(Connect connect,
                                   EventHandler eventHandler,ConnectWebViewClientHandler connectWebViewClientHandler) {
