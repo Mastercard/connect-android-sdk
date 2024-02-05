@@ -287,7 +287,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
     @Override
     public void handleOnPageFinish() {
-
+        // handleOnPageFinish called
     }
 
     public boolean isValidRedirectUrl(String deepLink) {
