@@ -89,7 +89,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     }
 
     private WebView mMainWebView;
-    private ProgressBar progressBar;
+
 
 
     // Upload
@@ -147,7 +147,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
 
-        this.progressBar = findViewById(R.id.progressBar);
+
 
         if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
             Toast.makeText(this, "RedirectUrl is invalid please verify URL", Toast.LENGTH_SHORT).show();
@@ -287,7 +287,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
     @Override
     public void handleOnPageFinish() {
-        progressBar.setVisibility(View.GONE);
+
     }
 
     public boolean isValidRedirectUrl(String deepLink) {
