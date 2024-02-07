@@ -65,9 +65,8 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void test01ConnectWithExpiredUrl() {
+    public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
-
         mIdlingResource.waitForEvent("error");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
@@ -77,7 +76,7 @@ public class ConnectActivityTest {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, "", new TestEventHandler());
-
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("search");
         onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
 
@@ -89,13 +88,15 @@ public class ConnectActivityTest {
 
 
     @Test
-    public void test03ConnectWithGoodUrlThenBackButton() {
+    public void test03ConnectWithGoodUrlThenBackButton() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl, new TestEventHandler());
 
+
         // Wait for landing screen and click Next
         mIdlingResource.waitForEvent("landingScreen");
+        Thread.sleep(5000);
         onWebView()
                 .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
                 .perform(DriverAtoms.webClick());
@@ -118,11 +119,12 @@ public class ConnectActivityTest {
     }
 
     @Test
-    public void test04ConnectWithGoodUrlThenBackButtonAndCancel() {
+    public void test04ConnectWithGoodUrlThenBackButtonAndCancel() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
 
+        Thread.sleep(5000);
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
 
@@ -137,6 +139,7 @@ public class ConnectActivityTest {
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl, new TestEventHandler());
 
+        Thread.sleep(5000);
         // wait for privacy policy
         mIdlingResource.waitForEvent("privacy-policy");
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Privacy Notice")).perform(webClick());
@@ -153,7 +156,7 @@ public class ConnectActivityTest {
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
 
         // Wait for landing screen
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("landingScreen");
         onWebView()
                 .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
@@ -253,7 +256,7 @@ public class ConnectActivityTest {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, new TestEventHandler());
-
+        Thread.sleep(5000);
         mIdlingResource.waitForEvent("search");
         onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
 
