@@ -14,6 +14,7 @@ class ConnectWebChromeClient extends WebChromeClient {
     public static Boolean runningUnitTest = false;
     private EventHandler eventHandler;
     ConnectWebViewClientHandler connectWebViewClientHandler;
+    protected boolean isWebViewLoaded = false;
 
     public ConnectWebChromeClient(Connect connect,
                                   EventHandler eventHandler,ConnectWebViewClientHandler connectWebViewClientHandler) {
@@ -53,10 +54,11 @@ class ConnectWebChromeClient extends WebChromeClient {
     @Override
     public void onProgressChanged(WebView view, int newProgress) {
         super.onProgressChanged(view, newProgress);
-        if (newProgress == 100) {
+        if (newProgress == 100 && !isWebViewLoaded) {
             eventHandler.onLoad();
             mConnect.startPingTimer();
             connectWebViewClientHandler.handleOnPageFinish();
+            isWebViewLoaded = true;
         }
 
     }
