@@ -59,8 +59,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 106
-        versionName "3.0.1"
+        versionCode 107
+        versionName "3.0.2"
 
         if (!properties.isEmpty()) {
             resValue "string", "partnerId", properties.getProperty("PARTNER_ID", "")
@@ -117,7 +117,7 @@ dependencies {
 
 ext {
     PUBLISH_GROUP_ID = 'com.mastercard.openbanking.connect'
-    PUBLISH_VERSION = '3.0.1'
+    PUBLISH_VERSION = '3.0.2'
     PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 
