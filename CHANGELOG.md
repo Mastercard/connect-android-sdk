@@ -1,5 +1,13 @@
 # Changelog
 
+### 3.0.2 (February, 15, 2024)
+
+Patch:
+- Handled multiple SDK ping events issue.
+- Added error message in developer console for invalid redirectUrl passed for App to App Authentication.
+- Removed initial loader generated via Connect SDK.
+
+
 ### 3.0.1 (December, 21, 2023)
 
 Patch:
