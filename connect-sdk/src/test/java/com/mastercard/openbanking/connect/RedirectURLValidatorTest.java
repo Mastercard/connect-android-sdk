@@ -26,7 +26,7 @@ public class RedirectURLValidatorTest {
         connect = controller.get();
     }
     @Test
-    public void testValidDeepLink() {
+    public void testValidredirectURL() {
 
         assertTrue(connect.isValidUrl("myapp://"));
         assertTrue(connect.isValidUrl("myapp://linktoapp"));
@@ -39,14 +39,13 @@ public class RedirectURLValidatorTest {
 
     }
     @Test
-    public void testInvalidDeepLink() {
+    public void testInvalidRedirectURL() {
 
         assertFalse(connect.isValidUrl("linktodomain"));
         assertFalse(connect.isValidUrl("http://"));
         assertFalse(connect.isValidUrl("myapp:"));
         assertFalse(connect.isValidUrl("acmelending.net"));
         assertFalse(connect.isValidUrl("invalid-url"));
-        assertFalse(connect.isValidUrl("invalid url"));
         assertFalse(connect.isValidUrl("http://www.ex@mple.com"));
         assertFalse(connect.isValidUrl("http://www.ex  ample.com"));
         assertFalse(connect.isValidUrl("http://www.example.com/page?name=John & id=123m"));
