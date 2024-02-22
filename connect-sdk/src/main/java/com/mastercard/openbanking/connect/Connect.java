@@ -5,39 +5,32 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.1";
+    private static final String SDK_VERSION = "3.0.2";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -52,6 +45,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static Connect CONNECT_INSTANCE;
     private static ConnectJsInterface jsInterface;
     public static Boolean runningUnitTest = false;
+    private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
+    private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
+    ;
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
@@ -89,7 +85,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     }
 
     private WebView mMainWebView;
-    private ProgressBar progressBar;
+
 
 
     // Upload
@@ -147,10 +143,12 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
 
-        this.progressBar = findViewById(R.id.progressBar);
 
-        if(!isValidRedirectUrl(getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY))){
-            Toast.makeText(this, "RedirectUrl is invalid please verify URL", Toast.LENGTH_SHORT).show();
+
+        String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
+
+        if(redirectUrl != null && !redirectUrl.isEmpty() && !isValidUrl(redirectUrl)){
+            Log.w("Connect Android SDK", "RedirectUrl is invalid please verify URL");
         }
     }
 
@@ -275,7 +273,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     protected void pingConnect() {
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
         String javascript;
-        if (redirectUrl != null && isValidRedirectUrl(redirectUrl) ) {
+        if (redirectUrl != null && !redirectUrl.isEmpty() && isValidUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
@@ -287,35 +285,37 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
     @Override
     public void handleOnPageFinish() {
-        progressBar.setVisibility(View.GONE);
+        // handleOnPageFinish called
     }
+    protected boolean isValidUrl(String redirectUrl) {
+        if (redirectUrl == null || redirectUrl.isEmpty() || redirectUrl.contains(" ")) {
+            return false;
+        }
 
-    public boolean isValidRedirectUrl(String deepLink) {
         try {
-            Uri uri = Uri.parse(deepLink);
-            return uri != null && uri.isHierarchical() && isSchemeValid(uri) && isHostValid(uri);
-        }catch (Exception e){
+            Uri uri = Uri.parse(redirectUrl);
+
+            if (redirectUrl.startsWith("http")) {
+                if (uri.getAuthority() == null || uri.getAuthority().isEmpty()) {
+                    return false;
+                }
+            }
+
+            if (containsInvalidCharacters(uri.getScheme()) || containsInvalidCharacters(uri.getAuthority())) {
+                return false;
+            }
+
+            Pattern pattern = Pattern.compile(REDIRECT_URL_REGEX);
+            Matcher matcher = pattern.matcher(redirectUrl);
+            return matcher.find();
+        } catch (Exception e) {
             return false;
         }
-
     }
+    private boolean containsInvalidCharacters(String inputToTest) {
+        Pattern invalidCharactersPattern = Pattern.compile(INVALID_CHARACTERS_REGEX);
+        Matcher invalidCharactersMatcher = invalidCharactersPattern.matcher(inputToTest);
+        return invalidCharactersMatcher.find();
 
-    public boolean isSchemeValid(Uri uri) {
-        try{
-            String scheme = uri.getScheme();
-            return scheme != null && !scheme.isEmpty();
-        }catch (Exception e){
-            return false;
-        }
-
-    }
-
-    public boolean isHostValid(Uri uri) {
-        try{
-            String host = uri.getHost();
-            return host != null && !host.isEmpty();
-        }catch (Exception e){
-            return false;
-        }
     }
 }
