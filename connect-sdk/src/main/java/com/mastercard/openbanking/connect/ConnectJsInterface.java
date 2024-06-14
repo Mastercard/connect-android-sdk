@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONException;
@@ -25,6 +27,8 @@ class ConnectJsInterface {
     public void postMessage(String message) {
         JSONObject jsonMessage;
         String eventType;
+
+        Log.d("ConnectJsInterface",message);
 
         try {
             jsonMessage = new JSONObject(message);

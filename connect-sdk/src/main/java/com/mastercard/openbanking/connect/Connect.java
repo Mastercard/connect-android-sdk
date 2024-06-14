@@ -47,7 +47,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     public static Boolean runningUnitTest = false;
     private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
     private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
-    ;
+
+    private static String startPingDelay = "1000";
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
@@ -67,7 +68,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     }
 
 
-    public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler) {
+    public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler,String pingDelay) {
         if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
@@ -81,6 +82,10 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
         // Set EventListener
         Connect.EVENT_HANDLER = eventHandler;
+        if(pingDelay != null && !pingDelay.isEmpty()){
+            startPingDelay = pingDelay;
+        }
+
         context.startActivity(connectIntent);
     }
 
@@ -136,13 +141,15 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
         // JS Interface and event listener for main WebView
         jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
-        mMainWebView.addJavascriptInterface(jsInterface, "Android");
+//        mMainWebView.addJavascriptInterface(jsInterface, "Android");
+        mMainWebView.addJavascriptInterface(jsInterface, "maOBAndroidConnect");
 
         // mMainWebView.setWebContentsDebuggingEnabled(true); // Enable Chrome Dev Tools
 
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
-
+//        pingConnect();
+//        startPingTimer();
 
 
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
@@ -255,7 +262,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
                 });
             }
         };
-        pingTimer.schedule(pingTimerTask, 1000, 1000);
+        pingTimer.schedule(pingTimerTask, Integer.parseInt(startPingDelay), Integer.parseInt(startPingDelay));
     }
 
     protected void stopPingTimer() {
@@ -281,6 +288,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
+        Log.d("ConnectJsInterface","Ping Started from Android");
+
     }
 
     @Override

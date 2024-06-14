@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup radioGroup;
     String redirectUrl = "https://acmelending.net"; // Default the redirectUrl to Prod
 
+    private EditText editPingDelay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         radioGroup = findViewById(R.id.radioGroup);
         editRedirectURL = findViewById(R.id.editRedirectURL);
+        editPingDelay = findViewById(R.id.editPingDelay);
         setupRadioButtonEventHandlers();
 
     }
@@ -73,13 +76,14 @@ public class MainActivity extends AppCompatActivity {
         if (radioGroup.getCheckedRadioButtonId() == R.id.radioRedirectURL) {
             redirectUrl = editRedirectURL.getText().toString();
         }
+        String pingDelay = editPingDelay.getText().toString();
         if(url.length() > 0) {
             // Null out text so we can repeat with new link after Connect Activity closes.
             mEditConnectUrl.setText("");
             editRedirectURL.setText("");
             Log.i(TAG, ">>> Launching Connect activity");
-
-            Connect.start(this, url,redirectUrl, eventHandler);
+            Connect.start(this, url,redirectUrl, eventHandler,pingDelay); // new sdk
+//            Connect.start(this, url,redirectUrl, eventHandler); //old sdk
         }
     }
 
