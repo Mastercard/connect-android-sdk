@@ -55,10 +55,10 @@ class ConnectWebChromeClient extends WebChromeClient {
     public void onProgressChanged(WebView view, int newProgress) {
         super.onProgressChanged(view, newProgress);
 
-        if (newProgress == 20 && !isWebViewLoaded) {
-            eventHandler.onLoad();
+        if (newProgress >= 20 && !isWebViewLoaded) {
             mConnect.pingConnect();
             mConnect.startPingTimer();
+            eventHandler.onLoad();
             connectWebViewClientHandler.handleOnPageFinish();
             isWebViewLoaded = true;
         }
