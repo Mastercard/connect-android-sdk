@@ -68,6 +68,23 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     }
 
 
+    public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler) {
+        if (Connect.CONNECT_INSTANCE != null) {
+            throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
+        }
+
+        Intent connectIntent = new Intent(context, Connect.class);
+        if (runningUnitTest) {
+            connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
+        connectIntent.putExtra(Connect.CONNECT_REDIRECT_LINK_URL_INTENT_KEY, redirectUrl);
+
+        // Set EventListener
+        Connect.EVENT_HANDLER = eventHandler;
+        context.startActivity(connectIntent);
+    }
+
     public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler,String pingDelay) {
         if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
