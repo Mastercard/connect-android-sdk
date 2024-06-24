@@ -6,9 +6,11 @@ include:
     file: jobs/by-stage/scan/black-duck-scan.yml
 
 before_script:
-  - export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/"
-  - export ANDROID_HOME=$HOME/Library/Android/sdk
-  - export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+  - if [ "$CI_JOB_NAME" != "black-duck-scan" ]; then
+    export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/Contents/Home/";
+    export ANDROID_HOME=$HOME/Library/Android/sdk;
+    export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools;
+    fi
 
 variables:
   JACOCO_CSV_FILE: '$CI_PROJECT_DIR/connect-sdk/build/reports/jacoco/jacocoTestReport/jacocoTestReport.csv'

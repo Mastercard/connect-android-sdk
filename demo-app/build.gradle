@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 32
     buildToolsVersion "29.0.2"
+    namespace "com.mastercard.openbanking.connect.demo"
 
 
     defaultConfig {
