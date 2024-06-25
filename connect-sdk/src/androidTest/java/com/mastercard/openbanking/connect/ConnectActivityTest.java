@@ -83,7 +83,6 @@ public class ConnectActivityTest {
 
         Thread.sleep(1000);
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"close-modal-confirm-button\"]")).perform(webClick());
-//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
     }
 
@@ -201,13 +200,11 @@ public class ConnectActivityTest {
                 .perform(DriverAtoms.webKeys("go"));
 
         Thread.sleep(2000);
-//        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-login\"]/form/app-button/a")).perform(webClick());
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[1]/app-institution-container/div/div[3]/app-optional-anchored-content/div/div/app-button[1]")).perform(webClick());
 
         // Select 1st account in list using XPATH
         Thread.sleep(10000);
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
-//        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-account-details-card/div/div[2]/app-checkbox/label/div/div")).perform(webClick());
 
 
@@ -272,7 +269,6 @@ public class ConnectActivityTest {
         Thread.sleep(1000);
 
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"close-modal-confirm-button\"]")).perform(webClick());
-//        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
 
     }
 
