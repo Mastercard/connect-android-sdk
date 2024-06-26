@@ -68,6 +68,7 @@ public class ConnectActivityTest {
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
         mIdlingResource.waitForEvent("error");
+        Thread.sleep(2000);
         onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
     }
 
@@ -81,8 +82,7 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.CLASS_NAME, "icon-nav_exit_button")).perform(webClick());
 
         Thread.sleep(1000);
-
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"close-modal-confirm-button\"]")).perform(webClick());
 
     }
 
@@ -152,6 +152,7 @@ public class ConnectActivityTest {
     @Test
     public void test06ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
 
+
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
 
@@ -161,6 +162,7 @@ public class ConnectActivityTest {
         onWebView()
                 .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
                 .perform(DriverAtoms.webClick());
+        Thread.sleep(3000);
 
         // Wait for Route search or let it timeout
         mIdlingResource.waitForEvent("search");
@@ -169,17 +171,20 @@ public class ConnectActivityTest {
                 .perform(DriverAtoms.clearElement())
                 .perform(DriverAtoms.webKeys("FinBank"))
                 .perform(webClick());
+        Thread.sleep(5000);
 
         // Select FinBank from search list using XPATH
         mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
+        Thread.sleep(3000);
         // Click Next for Login screen
         mIdlingResource.waitForEvent("sign-in");
         onWebView()
                 .withElement(DriverAtoms.findElement(Locator.CLASS_NAME, "button"))
                 .perform(DriverAtoms.webClick());
 
+        Thread.sleep(3000);
 
         // Fill out UserId and Password and submit form
         mIdlingResource.waitForEvent("login");
@@ -188,17 +193,18 @@ public class ConnectActivityTest {
                 .perform(DriverAtoms.clearElement())
                 .perform(DriverAtoms.webKeys("demo"));
 
+        Thread.sleep(2000);
         onWebView()
                 .withElement(findElement(Locator.NAME, "Banking Password"))
                 .perform(DriverAtoms.clearElement())
                 .perform(DriverAtoms.webKeys("go"));
 
-        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-login\"]/form/app-button/a")).perform(webClick());
+        Thread.sleep(2000);
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[1]/app-institution-container/div/div[3]/app-optional-anchored-content/div/div/app-button[1]")).perform(webClick());
 
         // Select 1st account in list using XPATH
         Thread.sleep(10000);
         mIdlingResource.waitForEvent("DiscoverAccountsSuccess");
-//        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-checkbox/label/div/div")).perform(webClick());
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-select-accounts\"]/div[2]/app-account-list/div/div[1]/app-account-details-card/div/div[2]/app-checkbox/label/div/div")).perform(webClick());
 
 
@@ -262,7 +268,7 @@ public class ConnectActivityTest {
 
         Thread.sleep(1000);
 
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"close-modal-confirm-button\"]")).perform(webClick());
 
     }
 
