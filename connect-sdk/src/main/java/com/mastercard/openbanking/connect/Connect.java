@@ -158,15 +158,12 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
         // JS Interface and event listener for main WebView
         jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
-//        mMainWebView.addJavascriptInterface(jsInterface, "Android");
         mMainWebView.addJavascriptInterface(jsInterface, "maOBAndroidConnect");
 
         // mMainWebView.setWebContentsDebuggingEnabled(true); // Enable Chrome Dev Tools
 
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
-//        pingConnect();
-//        startPingTimer();
 
 
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
