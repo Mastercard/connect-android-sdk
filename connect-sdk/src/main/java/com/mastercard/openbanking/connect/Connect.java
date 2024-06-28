@@ -84,28 +84,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         Connect.EVENT_HANDLER = eventHandler;
         context.startActivity(connectIntent);
     }
-
-    public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler,String pingDelay) {
-        if (Connect.CONNECT_INSTANCE != null) {
-            throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
-        }
-
-        Intent connectIntent = new Intent(context, Connect.class);
-        if (runningUnitTest) {
-            connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
-        connectIntent.putExtra(Connect.CONNECT_REDIRECT_LINK_URL_INTENT_KEY, redirectUrl);
-
-        // Set EventListener
-        Connect.EVENT_HANDLER = eventHandler;
-        if(pingDelay != null && !pingDelay.isEmpty()){
-            startPingDelay = pingDelay;
-        }
-
-        context.startActivity(connectIntent);
-    }
-
     private WebView mMainWebView;
 
 
@@ -296,11 +274,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         String javascript;
         if (redirectUrl != null && !redirectUrl.isEmpty() && isValidUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
-            Log.d("ConnectJsInterface","Ping Started from Android -- with redirectUrl--"+redirectUrl+ " with pingDelay--"+startPingDelay);
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
-            Log.d("ConnectJsInterface","Ping Started from Android -- without redirectUrl--"+redirectUrl+ " with pingDelay--"+startPingDelay);
-
         }
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
