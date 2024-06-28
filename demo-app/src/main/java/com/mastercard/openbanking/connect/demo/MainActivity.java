@@ -79,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
         String pingDelay = editPingDelay.getText().toString();
         if(url.length() > 0) {
             // Null out text so we can repeat with new link after Connect Activity closes.
-//            mEditConnectUrl.setText("");
+            mEditConnectUrl.setText("");
             editRedirectURL.setText("");
             Log.i(TAG, ">>> Launching Connect activity");
-            Connect.start(this, url,redirectUrl, eventHandler,pingDelay); // new sdk
-//            Connect.start(this, url,redirectUrl, eventHandler); //old sdk
+//            Connect.start(this, url,redirectUrl, eventHandler,pingDelay); // new sdk
+            Connect.start(this, url,redirectUrl, eventHandler); //old sdk
         }
     }
 

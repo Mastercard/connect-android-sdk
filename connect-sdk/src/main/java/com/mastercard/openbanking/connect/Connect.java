@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.2";
+    private static final String SDK_VERSION = "3.0.3";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -158,15 +158,12 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
         // JS Interface and event listener for main WebView
         jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
-//        mMainWebView.addJavascriptInterface(jsInterface, "Android");
         mMainWebView.addJavascriptInterface(jsInterface, "maOBAndroidConnect");
 
         // mMainWebView.setWebContentsDebuggingEnabled(true); // Enable Chrome Dev Tools
 
         // Load configured URL
         mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
-//        pingConnect();
-//        startPingTimer();
 
 
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
@@ -299,13 +296,16 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         String javascript;
         if (redirectUrl != null && !redirectUrl.isEmpty() && isValidUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
+            Log.d("ConnectJsInterface","Ping Started from Android -- with redirectUrl--"+redirectUrl+ " with pingDelay--"+startPingDelay);
         } else {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+            Log.d("ConnectJsInterface","Ping Started from Android -- without redirectUrl--"+redirectUrl+ " with pingDelay--"+startPingDelay);
+
         }
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
-        Log.d("ConnectJsInterface","Ping Started from Android");
+
 
     }
 
