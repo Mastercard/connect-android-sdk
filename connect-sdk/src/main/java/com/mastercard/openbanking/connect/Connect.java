@@ -48,8 +48,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
     private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
 
-    private static String startPingDelay = "1000";
-
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
@@ -254,7 +252,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
                 });
             }
         };
-        pingTimer.schedule(pingTimerTask, Integer.parseInt(startPingDelay), Integer.parseInt(startPingDelay));
+        pingTimer.schedule(pingTimerTask, 1000, 1000);
     }
 
     protected void stopPingTimer() {
