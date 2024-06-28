@@ -1,5 +1,11 @@
 # Changelog
 
+### 3.0.3 (July, 3, 2024)
+
+Patch:
+- Resolved issues related to the Connect Lite flow.
+
+
 ### 3.0.2 (February, 22, 2024)
 
 Patch:
