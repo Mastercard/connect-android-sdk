@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.2";
+    private static final String SDK_VERSION = "3.0.3";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -47,8 +47,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     public static Boolean runningUnitTest = false;
     private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
     private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
-
-    private static String startPingDelay = "1000";
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (Connect.CONNECT_INSTANCE != null) {
@@ -84,28 +82,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         Connect.EVENT_HANDLER = eventHandler;
         context.startActivity(connectIntent);
     }
-
-    public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler,String pingDelay) {
-        if (Connect.CONNECT_INSTANCE != null) {
-            throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
-        }
-
-        Intent connectIntent = new Intent(context, Connect.class);
-        if (runningUnitTest) {
-            connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        connectIntent.putExtra(Connect.CONNECT_URL_INTENT_KEY, connectUrl);
-        connectIntent.putExtra(Connect.CONNECT_REDIRECT_LINK_URL_INTENT_KEY, redirectUrl);
-
-        // Set EventListener
-        Connect.EVENT_HANDLER = eventHandler;
-        if(pingDelay != null && !pingDelay.isEmpty()){
-            startPingDelay = pingDelay;
-        }
-
-        context.startActivity(connectIntent);
-    }
-
     private WebView mMainWebView;
 
 
@@ -276,7 +252,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
                 });
             }
         };
-        pingTimer.schedule(pingTimerTask, Integer.parseInt(startPingDelay), Integer.parseInt(startPingDelay));
+        pingTimer.schedule(pingTimerTask, 1000, 1000);
     }
 
     protected void stopPingTimer() {
@@ -302,7 +278,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
-        Log.d("ConnectJsInterface","Ping Started from Android");
+
 
     }
 

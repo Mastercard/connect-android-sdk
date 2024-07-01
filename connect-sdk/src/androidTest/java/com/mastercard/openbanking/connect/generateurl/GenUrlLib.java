@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -160,6 +161,10 @@ public class GenUrlLib {
                 errListener );
 
         mRequestQueue.add(myReq);
+        myReq.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     private static void sendCustomerRequest() {
@@ -180,6 +185,10 @@ public class GenUrlLib {
                 errListener );
 
         mRequestQueue.add(myReq);
+        myReq.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     private static void sendConsumerRequest() {
@@ -212,6 +221,10 @@ public class GenUrlLib {
                 errListener );
 
         mRequestQueue.add(myReq);
+        myReq.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     private static void sendGenerateUrlRequest() {
@@ -229,6 +242,10 @@ public class GenUrlLib {
                 errListener );
 
         mRequestQueue.add(myReq);
+        myReq.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 }
 

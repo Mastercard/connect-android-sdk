@@ -28,8 +28,6 @@ class ConnectJsInterface {
         JSONObject jsonMessage;
         String eventType;
 
-        Log.d("ConnectJsInterface",message);
-
         try {
             jsonMessage = new JSONObject(message);
             eventType = jsonMessage.getString("type");
