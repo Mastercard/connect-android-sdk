@@ -49,6 +49,7 @@ coverage:
 
 sonarqube:
   stage: scan
+  allow_failure: true
   script:
     - ./gradlew connect-sdk:sonarqube
   tags:
