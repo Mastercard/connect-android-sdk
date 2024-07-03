@@ -1,6 +1,12 @@
 # Changelog
 
-### 3.0.2 (February, 22, 2024)
+### 3.0.3 (July 3, 2024)
+
+Changes:
+- Added a fix to resolve an issue with App To App OAuth flow
+
+
+### 3.0.2 (February 22, 2024)
 
 Patch:
 - Improved developer experience for invalid redirectUrl passed.
@@ -8,7 +14,7 @@ Patch:
 - Fixed an issue with the OAuth FI pop-up launch.
 
 
-### 3.0.1 (December, 21, 2023)
+### 3.0.1 (December 21, 2023)
 
 Patch:
 - Added loader before connect session initialization for better user experience.
