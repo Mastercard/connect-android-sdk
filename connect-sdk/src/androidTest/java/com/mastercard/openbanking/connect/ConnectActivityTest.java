@@ -68,8 +68,8 @@ public class ConnectActivityTest {
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
         mIdlingResource.waitForEvent("error");
-        Thread.sleep(2000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+        Thread.sleep(3000);
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[4]/app-optional-anchored-content/div/div/app-button/button")).perform(webClick());
     }
 
     @Test
@@ -151,7 +151,6 @@ public class ConnectActivityTest {
 
     @Test
     public void test06ConnectWithGoodUrlThenAddBankAccount() throws InterruptedException {
-
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
         Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
