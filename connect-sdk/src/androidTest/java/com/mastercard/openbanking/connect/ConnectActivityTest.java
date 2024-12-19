@@ -68,7 +68,7 @@ public class ConnectActivityTest {
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
         mIdlingResource.waitForEvent("error");
-        Thread.sleep(3000);
+        Thread.sleep(5000);
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[4]/app-optional-anchored-content/div/div/app-button/button")).perform(webClick());
     }
 

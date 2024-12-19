@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = '0.8.6' //Use latest version
+    toolVersion = '0.8.12' //Use latest version
 }
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
@@ -35,7 +35,7 @@ task jacocoTestReport(type: JacocoReport) {
                       '**/android/**/*.*',
                       '**/me/**/*.*', '**/org/**/*.*', '**/org/**/*.*']
 
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes/", excludes: fileFilter)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/", excludes: fileFilter)
     def mainSrc = "${project.projectDir}/src/main/java/"
     sourceDirectories.from = files([mainSrc])
     classDirectories.from = files([debugTree])
