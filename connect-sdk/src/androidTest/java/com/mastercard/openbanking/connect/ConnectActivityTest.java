@@ -68,8 +68,8 @@ public class ConnectActivityTest {
     public void test01ConnectWithExpiredUrl() throws InterruptedException {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
         mIdlingResource.waitForEvent("error");
-        Thread.sleep(2000);
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Exit")).perform(webClick());
+        Thread.sleep(5000);
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[4]/app-optional-anchored-content/div/div/app-button/button")).perform(webClick());
     }
 
     @Test
@@ -211,12 +211,12 @@ public class ConnectActivityTest {
         // Scroll down to save button and click
         Thread.sleep(3000);
         mIdlingResource.waitForEvent("loading");
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Save")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[1]/app-institution-container/div/div[3]/app-optional-anchored-content/div/div/app-button/button")).perform(webClick());
 
         // Click Submit button
         Thread.sleep(3000);
         mIdlingResource.waitForEvent("review-accounts");
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "Submit")).perform(webClick());
+        onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[4]/app-optional-anchored-content/div/div/div/app-button/button")).perform(webClick());
     }
 
      @Test

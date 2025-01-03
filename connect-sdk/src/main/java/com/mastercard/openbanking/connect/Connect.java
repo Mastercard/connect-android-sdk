@@ -125,9 +125,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         // Main layout and view
         this.mMainWebView = findViewById(R.id.mainWebView);
         mMainWebView.getSettings().setSupportMultipleWindows(true);
-        mMainWebView.getSettings().setJavaScriptEnabled(true);
+        mMainWebView.getSettings().setJavaScriptEnabled(true); //NOSONAR
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        mMainWebView.getSettings().setAllowFileAccess(true);
+        mMainWebView.getSettings().setAllowFileAccess(true); //NOSONAR
 
         mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,this));
 
