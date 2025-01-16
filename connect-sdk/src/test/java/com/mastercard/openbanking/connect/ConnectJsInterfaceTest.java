@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
@@ -43,8 +43,8 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(junkMessage);
 
-        verifyZeroInteractions(eventHandler);
-        verifyZeroInteractions(activity);
+        verifyNoInteractions(eventHandler);
+        verifyNoInteractions(activity);
     }
 
     @Test
@@ -53,8 +53,8 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(junkMessage);
 
-        verifyZeroInteractions(eventHandler);
-        verifyZeroInteractions(activity);
+        verifyNoInteractions(eventHandler);
+        verifyNoInteractions(activity);
     }
 
     @Test
@@ -63,8 +63,8 @@ public class ConnectJsInterfaceTest {
 
         jsInterface.postMessage(invalidTypeMsg);
 
-        verifyZeroInteractions(eventHandler);
-        verifyZeroInteractions(activity);
+        verifyNoInteractions(eventHandler);
+        verifyNoInteractions(activity);
     }
 
     @Test

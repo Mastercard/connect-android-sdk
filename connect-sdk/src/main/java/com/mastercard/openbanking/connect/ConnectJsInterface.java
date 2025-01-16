@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONException;
@@ -34,30 +36,42 @@ class ConnectJsInterface {
         }
 
         // Invoke appropriate event listener method
-        if(eventType.equals("cancel")) {
-            eventHandler.onCancel(getEventData(jsonMessage));
-            this.finishActivity();
-        } else if(eventType.equals("done")) {
-            eventHandler.onDone(getEventData(jsonMessage));
-            this.finishActivity();
-        } else if(eventType.equals("error")) {
-            eventHandler.onError(getEventData(jsonMessage));
-            this.finishActivity();
-        } else if(eventType.equals("route")) {
-            eventHandler.onRoute(getEventData(jsonMessage));
-        } else if(eventType.equals("user")) {
-            eventHandler.onUser(getEventData(jsonMessage));
-        } else if(eventType.equals("ack")) {
-            mConnect.stopPingTimer();
-        } else if(eventType.equals("url")) {
-            try {
-                String url = jsonMessage.getString("url");
-                openLinkInCustomTab(url);
-            } catch (JSONException e) {
-            }
-        } else if(eventType.equals("closePopup")) {
-            closeCustomTab();
+        switch (eventType) {
+            case "cancel":
+                eventHandler.onCancel(getEventData(jsonMessage));
+                this.finishActivity();
+                break;
+            case "done":
+                eventHandler.onDone(getEventData(jsonMessage));
+                this.finishActivity();
+                break;
+            case "error":
+                eventHandler.onError(getEventData(jsonMessage));
+                this.finishActivity();
+                break;
+            case "route":
+                eventHandler.onRoute(getEventData(jsonMessage));
+                break;
+            case "user":
+                eventHandler.onUser(getEventData(jsonMessage));
+                break;
+            case "ack":
+                mConnect.stopPingTimer();
+                break;
+            case "url":
+                try {
+                    String url = jsonMessage.getString("url");
+                    openLinkInCustomTab(url);
+                } catch (JSONException e) {
+                }
+                break;
+            case "closePopup":
+                closeCustomTab();
+                break;
+            default:
+                break;
         }
+
     }
 
     private void finishActivity() {
