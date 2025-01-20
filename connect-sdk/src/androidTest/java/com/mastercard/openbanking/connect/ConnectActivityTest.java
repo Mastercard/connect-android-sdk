@@ -27,12 +27,20 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.web.assertion.WebViewAssertions.webContent;
+import static androidx.test.espresso.web.assertion.WebViewAssertions.webMatches;
+import static androidx.test.espresso.web.matcher.DomMatchers.containingTextInBody;
+import static androidx.test.espresso.web.matcher.DomMatchers.hasElementWithId;
+import static androidx.test.espresso.web.matcher.DomMatchers.hasElementWithXpath;
 import static androidx.test.espresso.web.sugar.Web.onWebView;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
+import static androidx.test.espresso.web.webdriver.DriverAtoms.getText;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.fail;
 
 import static java.sql.DriverManager.println;
+import static java.util.regex.Pattern.matches;
 
 import com.mastercard.openbanking.connect.generateurl.ConnectGenerateUrlCallbackHandler;
 import com.mastercard.openbanking.connect.generateurl.GenUrlLib;
@@ -110,7 +118,7 @@ public class ConnectActivityTest {
                 .perform(webClick());
 
         // Select FinBank from search list using XPATH
-        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
+        mIdlingResource.waitForEvent("GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
         // Try and simulate back button press to return to previous page
@@ -122,7 +130,7 @@ public class ConnectActivityTest {
     public void test04ConnectWithGoodUrlThenBackButtonAndCancel() throws InterruptedException {
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl, new TestEventHandler());
 
         Thread.sleep(5000);
         // Wait for Route search or let it timeout
@@ -154,7 +162,7 @@ public class ConnectActivityTest {
 
 
         String url = goodUrl.replace("localhost:", "10.0.2.2:");
-        Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl,  new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), url, redirectUrl, new TestEventHandler());
 
         // Wait for landing screen
         Thread.sleep(5000);
@@ -174,7 +182,7 @@ public class ConnectActivityTest {
         Thread.sleep(5000);
 
         // Select FinBank from search list using XPATH
-        mIdlingResource.waitForEvent( "GetInstitutionsSuccess");
+        mIdlingResource.waitForEvent("GetInstitutionsSuccess");
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"institution-search\"]/div/div/div[1]/div")).perform(webClick());
 
         Thread.sleep(3000);
@@ -219,9 +227,9 @@ public class ConnectActivityTest {
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[4]/app-optional-anchored-content/div/div/div/app-button/button")).perform(webClick());
     }
 
-     @Test
+    @Test
     public void test07ConnectWithExpiredUrlThenFinishActivity() throws InterruptedException {
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl,  new TestEventHandler());
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
         Thread.sleep(10000);
         Connect.finishCurrentActivity();
     }
@@ -232,7 +240,7 @@ public class ConnectActivityTest {
         try {
             Connect.finishCurrentActivity();
             fail("Should have thrown runtime exception");
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             //success
         }
     }
@@ -246,14 +254,14 @@ public class ConnectActivityTest {
         try {
             Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
             fail("Should have thrown runtime exception");
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             //success
         }
     }
 
     @Test
     public void test10NullEventHandler() throws InterruptedException {
-        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl,null);
+        Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, null);
         Thread.sleep(5000);
     }
 
@@ -270,6 +278,34 @@ public class ConnectActivityTest {
 
         onWebView().withElement(findElement(Locator.XPATH, "//*[@id=\"close-modal-confirm-button\"]")).perform(webClick());
 
+    }
+
+    @Test
+    public void test12TestMultipleLaunches() throws InterruptedException {
+
+        launchConnectMultipleTimes();
+        Thread.sleep(500);
+        launchConnectMultipleTimes();
+        Thread.sleep(500);
+        launchConnectMultipleTimes();
+        Thread.sleep(500);
+        launchConnectMultipleTimes();
+        Thread.sleep(500);
+        launchConnectMultipleTimes();
+        Thread.sleep(500);
+    }
+
+    public void launchConnectMultipleTimes() throws InterruptedException {
+        String url = goodUrl.replace("localhost:", "10.0.2.2:");
+        Connect.start(InstrumentationRegistry.getContext(), url, "", new TestEventHandler());
+        Thread.sleep(3000);
+        mIdlingResource.waitForEvent("landingScreen");
+
+        onWebView()
+                .withElement(findElement(Locator.XPATH, "//*[@id=\"container\"]/div[4]/app-optional-anchored-content/div/div/app-button/button"))
+                .check(webMatches(getText(), containsString("Next")));
+
+        Connect.finishCurrentActivity();
     }
 
     private void generateConnectUrl() {
@@ -320,7 +356,7 @@ public class ConnectActivityTest {
         public void onCancel(JSONObject cancelEvent) {
             Log.i(TAG, ">>> TestEventHandler: Received Cancel event\\n>>>>>> " + cancelEvent.toString());
             mIdlingResource.checkEvent("cancel");
-         }
+        }
 
         @Override
         public void onError(JSONObject errorEvent) {
