@@ -15,7 +15,7 @@ class ConnectJsInterface {
     private Activity activity;
     private Connect mConnect;
     private EventHandler eventHandler;
-    private Boolean mCustomTabStarted = false;
+    private boolean mCustomTabStarted = false;
 
     public ConnectJsInterface(Activity activity, EventHandler eventHandler) {
         this.activity = activity;
@@ -63,6 +63,7 @@ class ConnectJsInterface {
                     String url = jsonMessage.getString("url");
                     openLinkInCustomTab(url);
                 } catch (JSONException e) {
+                    Log.e("Connect Android SDK","Error parsing the URL");
                 }
                 break;
             case "closePopup":
@@ -88,7 +89,9 @@ class ConnectJsInterface {
         } catch(Exception e) {
             try {
                 eventData = rootEvent.getJSONObject("query");
-            } catch(Exception e2) { }
+            } catch(Exception e2) {
+                Log.e("Connect Android SDK","Error parsing the Event Data");
+            }
         }
 
         return eventData;
@@ -100,7 +103,7 @@ class ConnectJsInterface {
         Intent intent = customTabsIntent.intent;
         intent.setData(Uri.parse(url));
         mCustomTabStarted = true;
-        activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity)); // , customTabsIntent.startAnimationBundle);
+        activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity));
     }
 
     public void closeCustomTab() {
