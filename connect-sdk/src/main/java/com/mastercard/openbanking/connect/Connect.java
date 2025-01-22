@@ -213,8 +213,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
                 try {
                     // Send cancel event and finish
                     String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
-                    JSONObject jo = new JSONObject(message);
-                    Connect.EVENT_HANDLER.onCancel(jo);
+                    JSONObject cancelEventData = new JSONObject(message);
+                    Connect.EVENT_HANDLER.onCancel(cancelEventData);
                     finish();
                 } catch (Exception e) {
                     finish();

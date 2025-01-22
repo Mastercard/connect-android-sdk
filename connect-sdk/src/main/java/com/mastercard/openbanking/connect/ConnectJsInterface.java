@@ -83,17 +83,17 @@ class ConnectJsInterface {
         // Parse out data field, or query field if data does not exist
         // This is for backwards compatibility with future updates to Connect.
         JSONObject eventData = new JSONObject();
-
-        try {
-            eventData = rootEvent.getJSONObject("data");
-        } catch(Exception e) {
-            try {
+        try{
+            if (rootEvent.has("data")) {
+                eventData = rootEvent.getJSONObject("data");
+            } else if (rootEvent.has("query")) {
                 eventData = rootEvent.getJSONObject("query");
-            } catch(Exception e2) {
-                Log.e("Connect Android SDK","Error parsing the Event Data");
+            } else {
+                Log.e("Connect Android SDK", "Neither 'data' nor 'query' found in the event");
             }
+        } catch(JSONException e){
+            Log.e("Connect Android SDK", "Error parsing the Event Data", e);
         }
-
         return eventData;
     }
 
