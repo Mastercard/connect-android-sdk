@@ -35,10 +35,11 @@ task jacocoTestReport(type: JacocoReport) {
                       '**/android/**/*.*',
                       '**/me/**/*.*', '**/org/**/*.*', '**/org/**/*.*']
 
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java/"
-    sourceDirectories.from = files([mainSrc])
-    classDirectories.from = files([debugTree])
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
     executionData.from = fileTree(dir: project.projectDir, includes:
             ['**/**/*.exec', '**/**/*.ec'])
 }
@@ -46,32 +47,14 @@ task jacocoTestReport(type: JacocoReport) {
 apply from: "$project.rootDir/sonar.gradle"
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 34
     namespace "com.mastercard.openbanking.connect"
-    File secretPropsFile = project.rootProject.file('local.properties')
-    Properties properties = new Properties()
-    if (secretPropsFile.exists()) {
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-    }
-
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 108
-        versionName "3.0.3"
-
-        if (!properties.isEmpty()) {
-            resValue "string", "partnerId", properties.getProperty("PARTNER_ID", "")
-            resValue "string", "partnerSecret", properties.getProperty("PARTNER_SECRET", "")
-            resValue "string", "finicityAppKey", properties.getProperty("FINICITY_APP_KEY", "")
-        } else {
-            resValue "string", "partnerId", System.getenv("PARTNER_ID")
-            resValue "string", "partnerSecret", System.getenv("PARTNER_SECRET")
-            resValue "string", "finicityAppKey", System.getenv("FINICITY_APP_KEY")
-        }
-
+        targetSdkVersion 34
+        versionCode 109
+        versionName "3.0.4"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'consumer-rules.pro'
@@ -103,7 +86,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.browser:browser:1.0.0'
+    implementation 'androidx.browser:browser:1.5.0'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:5.2.0'
@@ -112,15 +95,15 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'com.google.code.gson:gson:2.10.1'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.6.1'
 }
 
 ext {
     PUBLISH_GROUP_ID = 'com.mastercard.openbanking.connect'
-    PUBLISH_VERSION = '3.0.3'
+    PUBLISH_VERSION = '3.0.4'
     PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 
