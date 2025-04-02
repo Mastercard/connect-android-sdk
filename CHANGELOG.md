@@ -3,7 +3,7 @@
 ### 3.0.4 (April 2, 2025)
 
 Changes:
-- General Enhancements and Bug Fixes
+- General enhancements and bug fixes
 
 
 ### 3.0.3 (July 3, 2024)
