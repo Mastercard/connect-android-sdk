@@ -155,6 +155,7 @@ public class ConnectActivityTest {
         // Try to dismiss Privacy Policy popup
         Thread.sleep(5000);
         Connect.finishCurrentActivity();
+        Thread.sleep(5000);
     }
 
     @Test
@@ -232,6 +233,7 @@ public class ConnectActivityTest {
         Connect.start(InstrumentationRegistry.getContext(), badExpiredUrl, redirectUrl, new TestEventHandler());
         Thread.sleep(10000);
         Connect.finishCurrentActivity();
+        Thread.sleep(5000);
     }
 
     @Test
