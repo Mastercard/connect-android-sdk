@@ -11,7 +11,7 @@ import android.widget.Toast;
 class ConnectWebChromeClient extends WebChromeClient {
 
     private Connect mConnect;
-    public static Boolean runningUnitTest = false;
+    public static boolean runningUnitTest = false;
     private EventHandler eventHandler;
     ConnectWebViewClientHandler connectWebViewClientHandler;
     protected boolean isWebViewLoaded = false;

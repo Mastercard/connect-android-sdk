@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = '0.8.6' //Use latest version
+    toolVersion = '0.8.12' //Use latest version
 }
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
@@ -13,9 +13,9 @@ task jacocoTestReport(type: JacocoReport) {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
     reports {
-        xml.enabled = true
-        html.enabled = true
-        csv.enabled = true
+        xml.required = true
+        html.required = true
+        csv.required = true
     }
     def fileFilter = ['**/R.class',
                       '**/R$*.class', '**/*$InjectAdapter.*',
@@ -35,10 +35,11 @@ task jacocoTestReport(type: JacocoReport) {
                       '**/android/**/*.*',
                       '**/me/**/*.*', '**/org/**/*.*', '**/org/**/*.*']
 
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes/", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java/"
-    sourceDirectories.from = files([mainSrc])
-    classDirectories.from = files([debugTree])
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
     executionData.from = fileTree(dir: project.projectDir, includes:
             ['**/**/*.exec', '**/**/*.ec'])
 }
@@ -46,32 +47,14 @@ task jacocoTestReport(type: JacocoReport) {
 apply from: "$project.rootDir/sonar.gradle"
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.2"
-
-    File secretPropsFile = project.rootProject.file('local.properties')
-    Properties properties = new Properties()
-    if (secretPropsFile.exists()) {
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-    }
-
+    compileSdkVersion 34
+    namespace "com.mastercard.openbanking.connect"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 108
-        versionName "3.0.3"
-
-        if (!properties.isEmpty()) {
-            resValue "string", "partnerId", properties.getProperty("PARTNER_ID", "")
-            resValue "string", "partnerSecret", properties.getProperty("PARTNER_SECRET", "")
-            resValue "string", "finicityAppKey", properties.getProperty("FINICITY_APP_KEY", "")
-        } else {
-            resValue "string", "partnerId", System.getenv("PARTNER_ID")
-            resValue "string", "partnerSecret", System.getenv("PARTNER_SECRET")
-            resValue "string", "finicityAppKey", System.getenv("FINICITY_APP_KEY")
-        }
-
+        targetSdkVersion 34
+        versionCode 109
+        versionName "3.0.4"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'consumer-rules.pro'
@@ -92,6 +75,9 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        unitTests.all {
+            jvmArgs '-noverify'
+        }
     }
 
 }
@@ -100,24 +86,24 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.browser:browser:1.0.0'
-    implementation 'androidx.test:monitor:1.5.0'
+    implementation 'androidx.browser:browser:1.5.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-inline:3.4.0'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
+    testImplementation 'org.robolectric:robolectric:4.12.2'
+
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'com.google.code.gson:gson:2.10.1'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.6.1'
 }
 
 ext {
     PUBLISH_GROUP_ID = 'com.mastercard.openbanking.connect'
-    PUBLISH_VERSION = '3.0.3'
+    PUBLISH_VERSION = '3.0.4'
     PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 
