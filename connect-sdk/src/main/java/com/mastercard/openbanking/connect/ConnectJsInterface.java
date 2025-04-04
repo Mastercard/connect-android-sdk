@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONException;
@@ -13,7 +15,7 @@ class ConnectJsInterface {
     private Activity activity;
     private Connect mConnect;
     private EventHandler eventHandler;
-    private Boolean mCustomTabStarted = false;
+    private boolean mCustomTabStarted = false;
 
     public ConnectJsInterface(Activity activity, EventHandler eventHandler) {
         this.activity = activity;
@@ -34,30 +36,43 @@ class ConnectJsInterface {
         }
 
         // Invoke appropriate event listener method
-        if(eventType.equals("cancel")) {
-            eventHandler.onCancel(getEventData(jsonMessage));
-            this.finishActivity();
-        } else if(eventType.equals("done")) {
-            eventHandler.onDone(getEventData(jsonMessage));
-            this.finishActivity();
-        } else if(eventType.equals("error")) {
-            eventHandler.onError(getEventData(jsonMessage));
-            this.finishActivity();
-        } else if(eventType.equals("route")) {
-            eventHandler.onRoute(getEventData(jsonMessage));
-        } else if(eventType.equals("user")) {
-            eventHandler.onUser(getEventData(jsonMessage));
-        } else if(eventType.equals("ack")) {
-            mConnect.stopPingTimer();
-        } else if(eventType.equals("url")) {
-            try {
-                String url = jsonMessage.getString("url");
-                openLinkInCustomTab(url);
-            } catch (JSONException e) {
-            }
-        } else if(eventType.equals("closePopup")) {
-            closeCustomTab();
+        switch (eventType) {
+            case "cancel":
+                eventHandler.onCancel(getEventData(jsonMessage));
+                this.finishActivity();
+                break;
+            case "done":
+                eventHandler.onDone(getEventData(jsonMessage));
+                this.finishActivity();
+                break;
+            case "error":
+                eventHandler.onError(getEventData(jsonMessage));
+                this.finishActivity();
+                break;
+            case "route":
+                eventHandler.onRoute(getEventData(jsonMessage));
+                break;
+            case "user":
+                eventHandler.onUser(getEventData(jsonMessage));
+                break;
+            case "ack":
+                mConnect.stopPingTimer();
+                break;
+            case "url":
+                try {
+                    String url = jsonMessage.getString("url");
+                    openLinkInCustomTab(url);
+                } catch (JSONException e) {
+                    Log.e("Connect Android SDK","Error parsing the URL");
+                }
+                break;
+            case "closePopup":
+                closeCustomTab();
+                break;
+            default:
+                break;
         }
+
     }
 
     private void finishActivity() {
@@ -68,15 +83,17 @@ class ConnectJsInterface {
         // Parse out data field, or query field if data does not exist
         // This is for backwards compatibility with future updates to Connect.
         JSONObject eventData = new JSONObject();
-
-        try {
-            eventData = rootEvent.getJSONObject("data");
-        } catch(Exception e) {
-            try {
+        try{
+            if (rootEvent.has("data")) {
+                eventData = rootEvent.getJSONObject("data");
+            } else if (rootEvent.has("query")) {
                 eventData = rootEvent.getJSONObject("query");
-            } catch(Exception e2) { }
+            } else {
+                Log.e("Connect Android SDK", "Neither 'data' nor 'query' found in the event");
+            }
+        } catch(JSONException e){
+            Log.e("Connect Android SDK", "Error parsing the Event Data", e);
         }
-
         return eventData;
     }
 
@@ -86,7 +103,7 @@ class ConnectJsInterface {
         Intent intent = customTabsIntent.intent;
         intent.setData(Uri.parse(url));
         mCustomTabStarted = true;
-        activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity)); // , customTabsIntent.startAnimationBundle);
+        activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity));
     }
 
     public void closeCustomTab() {

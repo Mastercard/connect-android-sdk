@@ -8,29 +8,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.ProgressBar;
 
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.3";
+    private static final String SDK_VERSION = "3.0.4";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -44,8 +38,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static EventHandler EVENT_HANDLER;
     private static Connect CONNECT_INSTANCE;
     private static ConnectJsInterface jsInterface;
-    public static Boolean runningUnitTest = false;
-    private final String REDIRECT_URL_REGEX = "[a-z]{1}://";
+    public static boolean runningUnitTest = false;
+    private final String REDIRECT_URL_REGEX = "[a-z]://";
     private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
@@ -125,9 +119,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         // Main layout and view
         this.mMainWebView = findViewById(R.id.mainWebView);
         mMainWebView.getSettings().setSupportMultipleWindows(true);
-        mMainWebView.getSettings().setJavaScriptEnabled(true);
+        mMainWebView.getSettings().setJavaScriptEnabled(true); //NOSONAR
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        mMainWebView.getSettings().setAllowFileAccess(true);
+        mMainWebView.getSettings().setAllowFileAccess(true); //NOSONAR
 
         mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,this));
 
@@ -214,19 +208,16 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     }
 
     private DialogInterface.OnClickListener getDialogClickListener() {
-        return new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == DialogInterface.BUTTON_POSITIVE) {
-                    try {
-                        // Send cancel event and finish
-                        String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
-                        JSONObject jo = new JSONObject(message);
-                        Connect.EVENT_HANDLER.onCancel(jo);
-                        finish();
-                    } catch (Exception e) {
-                        finish();
-                    }
+        return (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                try {
+                    // Send cancel event and finish
+                    String message = "{ \"code\": \"100\", \"reason\": \"exit\" }";
+                    JSONObject cancelEventData = new JSONObject(message);
+                    Connect.EVENT_HANDLER.onCancel(cancelEventData);
+                    finish();
+                } catch (Exception e) {
+                    finish();
                 }
             }
         };
@@ -244,12 +235,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         pingTimerTask = new TimerTask() {
             @Override
             public void run() {
-                CONNECT_INSTANCE.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pingConnect();
-                    }
-                });
+                CONNECT_INSTANCE.runOnUiThread(() -> pingConnect());
             }
         };
         pingTimer.schedule(pingTimerTask, 1000, 1000);
@@ -294,10 +280,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         try {
             Uri uri = Uri.parse(redirectUrl);
 
-            if (redirectUrl.startsWith("http")) {
-                if (uri.getAuthority() == null || uri.getAuthority().isEmpty()) {
-                    return false;
-                }
+            if (redirectUrl.startsWith("http") && (uri.getAuthority() == null || uri.getAuthority().isEmpty())) {
+                return false;
             }
 
             if (containsInvalidCharacters(uri.getScheme()) || containsInvalidCharacters(uri.getAuthority())) {

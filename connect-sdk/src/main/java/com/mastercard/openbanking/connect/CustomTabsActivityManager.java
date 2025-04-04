@@ -10,7 +10,7 @@ public class CustomTabsActivityManager extends Activity {
     static final String KEY_BROWSER_INTENT = "browserIntent";
 
     private boolean mOpened = false;
-    static private Activity connectActivity;
+    private static Activity connectActivity;
 
     public static Intent createStartIntent(Context context, Intent customTabsIntent, Activity activity) {
         Intent intent = createBaseIntent(context);
