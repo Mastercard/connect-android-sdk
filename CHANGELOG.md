@@ -1,5 +1,11 @@
 # Changelog
 
+### 3.0.5 (August 19, 2025)
+
+Enhancement:
+Fixed an issue where the keyboard caused the FI Login screen to shift upward.
+
+
 ### 3.0.4 (April 4, 2025)
 
 Changes:

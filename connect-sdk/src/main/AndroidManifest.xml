@@ -3,7 +3,9 @@
     package="com.mastercard.openbanking.connect">
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
-        <activity android:name="com.mastercard.openbanking.connect.Connect" />
+        <activity
+            android:windowSoftInputMode="adjustPan"
+            android:name="com.mastercard.openbanking.connect.Connect" />
         <activity android:name="com.mastercard.openbanking.connect.CustomTabsActivityManager" />
     </application>
 
