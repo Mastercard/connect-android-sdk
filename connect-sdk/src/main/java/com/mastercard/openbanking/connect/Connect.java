@@ -83,6 +83,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     // Upload
     protected static final int SELECT_FILE_RESULT_CODE = 100;
     protected ValueCallback<Uri[]> mFilePathCallback;
+    private final String DEFAULT_REDIRECT_URL = "connect://maob/redirect";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,7 +260,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         if (redirectUrl != null && !redirectUrl.isEmpty() && isValidUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
-            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',redirectUrl: '" + DEFAULT_REDIRECT_URL + "' }, '*')";
         }
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
