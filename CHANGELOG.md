@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.0.6 (September 30, 2025)
+### 3.0.6 (October 7, 2025)
 
 Changes:
 - Fixed an issue where the OAuth popup did not automatically dismiss after the user completed the OAuth journey on Android 15+ when `redirectUrl` was not passed to the SDK or `redirectUri` was not provided during Connect link generation.
