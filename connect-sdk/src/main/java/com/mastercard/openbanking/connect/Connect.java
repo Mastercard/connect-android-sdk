@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.5";
+    private static final String SDK_VERSION = "3.0.6";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +
@@ -83,6 +83,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     // Upload
     protected static final int SELECT_FILE_RESULT_CODE = 100;
     protected ValueCallback<Uri[]> mFilePathCallback;
+    private final String DEFAULT_REDIRECT_URL = "connect://maob/redirect";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,7 +260,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         if (redirectUrl != null && !redirectUrl.isEmpty() && isValidUrl(redirectUrl) ) {
             javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android', redirectUrl: '" + redirectUrl + "' }, '*')";
         } else {
-            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android' }, '*')";
+            javascript = "window.postMessage({ type: 'ping', sdkVersion: '" + SDK_VERSION + "', platform: 'Android',redirectUrl: '" + DEFAULT_REDIRECT_URL + "' }, '*')";
         }
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);

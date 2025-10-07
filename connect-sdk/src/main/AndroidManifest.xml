@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.mastercard.openbanking.connect">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
         <activity
-            android:windowSoftInputMode="adjustPan"
-            android:name="com.mastercard.openbanking.connect.Connect" />
+            android:name="com.mastercard.openbanking.connect.Connect"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter
+                android:autoVerify="true"
+                tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="connect" />
+                <data android:host="maob" />
+                <data android:path="/redirect" />
+
+            </intent-filter>
+        </activity>
+
         <activity android:name="com.mastercard.openbanking.connect.CustomTabsActivityManager" />
     </application>
 
