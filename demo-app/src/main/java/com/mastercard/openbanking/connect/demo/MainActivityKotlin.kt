@@ -11,7 +11,7 @@ import com.mastercard.openbanking.connect.EventHandler
 
 class MainActivityKotlin : AppCompatActivity() {
     companion object {
-        private const val TAG = "ConnectKotlin"
+        private const val TAG = "MainActivityKotlin"
     }
 
     private lateinit var editConnectUrl: EditText

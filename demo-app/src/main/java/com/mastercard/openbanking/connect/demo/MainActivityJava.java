@@ -11,7 +11,7 @@ import com.mastercard.openbanking.connect.Connect;
 import com.mastercard.openbanking.connect.EventHandler;
 
 public class MainActivityJava extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivityJava";
     private EditText mEditConnectUrl;
 
     @Override
