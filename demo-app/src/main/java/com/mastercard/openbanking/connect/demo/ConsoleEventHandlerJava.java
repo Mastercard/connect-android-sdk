@@ -6,7 +6,7 @@ import com.mastercard.openbanking.connect.EventHandler;
 
 import org.json.JSONObject;
 
-public class ConsoleEventHandler implements EventHandler {
+public class ConsoleEventHandlerJava implements EventHandler {
     private static final String TAG = "ConsoleEventHandler";
 
     @Override
