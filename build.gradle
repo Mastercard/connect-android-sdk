@@ -41,3 +41,20 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+
+
+// Force all io.netty transitive dependencies to a non-vulnerable version.
+// grpc-netty:1.57.2 (pulled by com.google.testing.platform:core) declares Netty 4.1.93.Final
+// which has known CVEs. This forces all configurations across all subprojects to 4.2.12.Final.
+subprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "io.netty") {
+                useVersion("4.2.12.Final")
+                because("Netty < 4.2.12.Final has known vulnerabilities (BlackDuck)")
+            }
+        }
+    }
+}
+
