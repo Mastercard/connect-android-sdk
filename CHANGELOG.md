@@ -2,7 +2,7 @@
 
 
 
-###3.0.7 (May 5, 2026)
+### 3.0.7 (May 7, 2026)
 
 Patch:
 - Resolved an issue that caused the app to crash when users changed the orientation in the SDK-integrated app.
