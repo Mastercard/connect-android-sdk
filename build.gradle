@@ -51,8 +51,8 @@ subprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "io.netty") {
-                useVersion("4.2.12.Final")
-                because("Netty < 4.2.12.Final has known vulnerabilities (BlackDuck)")
+                useVersion("4.2.13.Final")
+                because("Netty < 4.2.13.Final has known vulnerabilities (BlackDuck)")
             }
         }
     }
