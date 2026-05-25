@@ -171,11 +171,19 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         }
         Connect.CONNECT_INSTANCE = null;
         Connect.EVENT_HANDLER = null;
+        Connect.jsInterface.unbindCustomTabsService();
         Connect.jsInterface = null;
     }
 
     public void postWindowClosedMessage() {
         String javascript = "window.postMessage({ type: 'window', closed: true }, '*')";
+        if (mMainWebView != null) {
+            mMainWebView.evaluateJavascript(javascript, null);
+        }
+    }
+
+    public void postWindowBlockedMessage() {
+        String javascript = "window.postMessage({ type: 'window', closed: true, blocked: true }, '*')";
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
