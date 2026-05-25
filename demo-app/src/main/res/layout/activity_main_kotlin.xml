@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    tools:context="com.mastercard.openbanking.connect.demo.MainActivityJava">
+    tools:context="com.mastercard.openbanking.connect.demo.MainActivityKotlin">
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -59,6 +59,7 @@
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+
     <Button
         android:id="@+id/startButtonEventHandler"
         android:layout_width="0dp"
@@ -73,13 +74,13 @@
         app:layout_constraintTop_toBottomOf="@+id/editConnectUrl" />
 
     <Button
-        android:id="@+id/switchToKotlinButton"
+        android:id="@+id/switchToJavaButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_corner"
         android:padding="5dp"
-        android:text="@string/switch_to_kotlin"
+        android:text="@string/switch_to_java"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/startButtonEventHandler"
         app:layout_constraintStart_toStartOf="@+id/startButtonEventHandler"
@@ -92,7 +93,7 @@
         android:layout_marginBottom="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="@string/current_version_java"
+        android:text="@string/current_version_kotlin"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="16sp"
@@ -102,3 +103,4 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
