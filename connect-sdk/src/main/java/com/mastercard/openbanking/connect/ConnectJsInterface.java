@@ -75,7 +75,6 @@ class ConnectJsInterface {
                 break;
             case "ack":
                 mConnect.stopPingTimer();
-                this.bindCustomServiceAndAddCallback();
                 break;
             case "url":
                 try {
@@ -88,6 +87,11 @@ class ConnectJsInterface {
             case "closePopup":
                 closeCustomTab();
                 break;
+
+            case "trackPopupBlockedEvent":
+                this.bindCustomServiceAndAddCallback();
+                break;
+
             default:
                 break;
         }
