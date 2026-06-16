@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.lang.ref.WeakReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,14 +37,14 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static final String CONNECT_REDIRECT_LINK_URL_INTENT_KEY = "com.mastercard.openbanking.connect.CONNECT_REDIRECT_LINK_URL_INTENT_KEY";
 
     private static EventHandler EVENT_HANDLER;
-    private static Connect CONNECT_INSTANCE;
-    private static ConnectJsInterface jsInterface;
+    private static WeakReference<Connect> CONNECT_INSTANCE_REF;
+    private static WeakReference<ConnectJsInterface> jsInterfaceRef;
     public static boolean runningUnitTest = false;
-    private final String REDIRECT_URL_REGEX = "[a-z]://";
-    private final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
+    private static final String REDIRECT_URL_REGEX = "[a-z]://";
+    private static final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
 
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
-        if (Connect.CONNECT_INSTANCE != null) {
+        if (CONNECT_INSTANCE_REF != null && CONNECT_INSTANCE_REF.get() != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
@@ -61,7 +62,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
 
     public static void start(Context context, String connectUrl, String redirectUrl, EventHandler eventHandler) {
-        if (Connect.CONNECT_INSTANCE != null) {
+        if (CONNECT_INSTANCE_REF != null && CONNECT_INSTANCE_REF.get() != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
@@ -77,13 +78,15 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         context.startActivity(connectIntent);
     }
     private WebView mMainWebView;
+    // Keep a reference to the WebChromeClient so we can notify it when external tabs are closed
+    private ConnectWebChromeClient mWebChromeClient;
 
 
 
     // Upload
     protected static final int SELECT_FILE_RESULT_CODE = 100;
     protected ValueCallback<Uri[]> mFilePathCallback;
-    private final String DEFAULT_REDIRECT_URL = "connect://maob/redirect";
+    private static final String DEFAULT_REDIRECT_URL = "connect://maob/redirect";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +99,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
          * Connect.
          */
         if (Connect.EVENT_HANDLER == null) {
-            Connect.CONNECT_INSTANCE = null;
+            if (CONNECT_INSTANCE_REF != null) CONNECT_INSTANCE_REF.clear();
             this.finish();
             return;
         }
@@ -105,12 +108,14 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         // Prevent calls to start when Connect is already running
-        if (Connect.CONNECT_INSTANCE != null) {
+        if (CONNECT_INSTANCE_REF != null && CONNECT_INSTANCE_REF.get() != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
-        // Save reference to this activity as static singleton
-        Connect.CONNECT_INSTANCE = this;
+        // Save reference to this activity as static singleton (weak to avoid leaks)
+        CONNECT_INSTANCE_REF = new WeakReference<>(this);
+
+        // Previously registered lifecycle listener removed; CustomTabsActivityManager notifies Connect directly.
 
         // Disable title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -124,23 +129,85 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true); //NOSONAR
 
-        mMainWebView.setWebChromeClient(new ConnectWebChromeClient(this, Connect.EVENT_HANDLER,this));
+        // create and keep a reference to the WebChromeClient
+        mWebChromeClient = new ConnectWebChromeClient(this, Connect.EVENT_HANDLER, this);
+        mMainWebView.setWebChromeClient(mWebChromeClient);
 
 
         // JS Interface and event listener for main WebView
-        jsInterface = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
-        mMainWebView.addJavascriptInterface(jsInterface, "maOBAndroidConnect");
+        ConnectJsInterface js = new ConnectJsInterface(this, Connect.EVENT_HANDLER);
+        mMainWebView.addJavascriptInterface(js, "maOBAndroidConnect");
+        // Provide WebView and initial connect URL to the JS interface
+        js.setWebView(mMainWebView);
+        js.setConnectUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
+        // Keep a weak reference so other static callers can access it safely
+        jsInterfaceRef = new WeakReference<>(js);
+        // Inform WebChromeClient about JS interface so it can send messages to the page
+        if (mWebChromeClient != null) {
+            mWebChromeClient.setConnectJsInterface(js);
+        }
 
         // mMainWebView.setWebContentsDebuggingEnabled(true); // Enable Chrome Dev Tools
 
-        // Load configured URL
-        mMainWebView.loadUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
+        // Load configured URL (guard against null intent extra)
+        String initialUrl = getIntent().getStringExtra(CONNECT_URL_INTENT_KEY);
+        if (initialUrl != null && !initialUrl.isEmpty()) {
+            mMainWebView.loadUrl(initialUrl);
+        } else {
+            Log.w("Connect Android SDK", "No initial connect URL provided to load");
+        }
 
 
         String redirectUrl = getIntent().getStringExtra(CONNECT_REDIRECT_LINK_URL_INTENT_KEY);
 
         if(redirectUrl != null && !redirectUrl.isEmpty() && !isValidUrl(redirectUrl)){
             Log.w("Connect Android SDK", "RedirectUrl is invalid please verify URL");
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleDeepLinkIntent(intent);
+    }
+
+    /**
+     * Handle incoming deep-link intents (scheme "connect://...").
+     * This should be called from onCreate (initial intent) and onNewIntent (singleTask).
+     */
+    private void handleDeepLinkIntent(Intent intent) {
+        if (intent == null) return;
+
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri data = intent.getData();
+            if (data != null) {
+                String deepLink = data.toString();
+                Log.i("Connect Android SDK", "Received deep link: " + deepLink);
+
+                // Sanitize single quotes to avoid breaking the JS string literal
+                String safeLink = deepLink.replace("'", "\\'");
+
+                // Post message to the host page so it can handle the redirect
+               // String javascript = "window.postMessage({ type: 'deep_link', url: '" + safeLink + "' }, '*')";
+                String connectUrlStr = intent.getStringExtra(CONNECT_URL_INTENT_KEY);
+                if (connectUrlStr == null) {
+                    connectUrlStr = getIntent().getStringExtra(CONNECT_URL_INTENT_KEY);
+                }
+                if (connectUrlStr == null) {
+                    connectUrlStr = "*";
+                }
+
+                String javascript = String.format(
+                        "window.postMessage({ type: 'window', closed: true, closed_by: 'partner-redirection', action: 'none', url: '%s' }, '%s')",
+                        safeLink, connectUrlStr
+                );
+
+
+                if (mMainWebView != null) {
+                    mMainWebView.evaluateJavascript(javascript, null);
+                }
+            }
         }
     }
 
@@ -169,16 +236,61 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             mMainWebView.destroy();
             mMainWebView = null;
         }
-        Connect.CONNECT_INSTANCE = null;
+        if (CONNECT_INSTANCE_REF != null) CONNECT_INSTANCE_REF.clear();
         Connect.EVENT_HANDLER = null;
-        Connect.jsInterface.unbindCustomTabsService();
-        Connect.jsInterface = null;
+        ConnectJsInterface jsRef = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
+        if (jsRef != null) {
+            jsRef.unbindCustomTabsService();
+        }
+        jsInterfaceRef = null;
     }
 
     public void postWindowClosedMessage() {
         String javascript = "window.postMessage({ type: 'window', closed: true }, '*')";
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
+        }
+        // Notify WebChromeClient so it can handle OAuth child-webview cleanup
+        if (mWebChromeClient != null) {
+            mWebChromeClient.onOAuthWebViewClosed();
+        }
+    }
+
+    /**
+     * Notify the WebChromeClient that an OAuth flow was opened in an external FI app.
+     * This allows the WebChromeClient to track child webview state and oauth URL.
+     * @param url the OAuth URL that was opened in the external app
+     */
+    public void notifyOAuthOpenedInFiApp(String url) {
+        if (mWebChromeClient != null) {
+            mWebChromeClient.setOAuthURL(url);
+            mWebChromeClient.setChildWebViewLoaded(true);
+        }
+    }
+
+    /**
+     * Post an OAuth-opened message to the host WebView via the JS interface.
+     * This is used by external managers (e.g. CustomTabsActivityManager) to notify
+     * the page that an OAuth window was opened in a secure container.
+     * @param oauthOpenType the type of OAuth open event
+     */
+    public void postWindowOauthOpenMessage(ConnectOauthOpenType oauthOpenType) {
+        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
+        if (js != null) {
+            js.postWindowOauthOpenMessage(oauthOpenType);
+        }
+    }
+
+    /**
+     * Post an OAuth-closed message to the host WebView via the JS interface.
+     * This is used by external managers (e.g. CustomTabsActivityManager) to notify
+     * the page that an OAuth window was closed by the user.
+     * @param closeType the reason the OAuth window was closed
+     */
+    public void postWindowOauthCloseMessage(ConnectOauthCloseType closeType) {
+        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
+        if (js != null) {
+            js.postWindowOauthCloseMessage(closeType);
         }
     }
 
@@ -191,11 +303,13 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
 
     // static method to finish the current activity, if there is one
     public static void finishCurrentActivity() {
-        if (Connect.CONNECT_INSTANCE != null) {
-            if (jsInterface != null) {
-                jsInterface.closeCustomTab();
+        Connect current = CONNECT_INSTANCE_REF != null ? CONNECT_INSTANCE_REF.get() : null;
+        if (current != null) {
+            ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
+            if (js != null) {
+                js.closeCustomTab();
             }
-            Connect.CONNECT_INSTANCE.finish();
+            current.finish();
         } else {
             throw new RuntimeException("There is no Connect Activity currently running");
         }
@@ -244,7 +358,10 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         pingTimerTask = new TimerTask() {
             @Override
             public void run() {
-                CONNECT_INSTANCE.runOnUiThread(() -> pingConnect());
+                Connect current = CONNECT_INSTANCE_REF != null ? CONNECT_INSTANCE_REF.get() : null;
+                if (current != null) {
+                    current.runOnUiThread(() -> pingConnect());
+                }
             }
         };
         pingTimer.schedule(pingTimerTask, 1000, 1000);
@@ -281,6 +398,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     public void handleOnPageFinish() {
         // handleOnPageFinish called
     }
+
+    // CustomTabsLifecycleListener removed: lifecycle events are handled directly in CustomTabsActivityManager
+
     protected boolean isValidUrl(String redirectUrl) {
         if (redirectUrl == null || redirectUrl.isEmpty() || redirectUrl.contains(" ")) {
             return false;
