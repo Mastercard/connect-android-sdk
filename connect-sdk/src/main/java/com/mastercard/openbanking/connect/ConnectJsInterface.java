@@ -38,6 +38,8 @@ class ConnectJsInterface {
     private CustomTabsServiceConnection customTabsServiceConnection;
     CustomTabsCallback callback;
     private boolean mNavigationFailed = false;
+
+    private boolean mNavigationURLLoadComplete= false;
     private WebView webView;
     private boolean isTrackPopupBlockedEventActive = false;
     private String oauthURL;
@@ -108,6 +110,7 @@ class ConnectJsInterface {
                 break;
             case "url":
                 try {
+                    mNavigationURLLoadComplete = false;
                     String urlString = jsonMessage.getString("url");
                     Log.i("Connect Android SDK", "URL message received: " + urlString);
 
@@ -184,12 +187,14 @@ class ConnectJsInterface {
                         // so we use this flag to suppress the false "success" log.
                         mNavigationFailed = true;
                         Log.d("CustomTabs", "Page not loaded");
-                        mConnect.postWindowBlockedMessage();
+                        postWindowBlockedMessage();
                         break;
                     case NAVIGATION_FINISHED:
                         // Chrome fires NAVIGATION_FINISHED even after NAVIGATION_FAILED (blocked/error URLs).
                         // Only treat it as a real success if no failure was recorded.
-                        if (!mNavigationFailed) {
+                        if (!mNavigationFailed && !mNavigationURLLoadComplete) {
+                            mNavigationURLLoadComplete = true;
+                            postWindowOauthOpenMessage(ConnectOauthOpenType.SECURE_CONTAINER);
                             Log.d("CustomTabs", "Page loaded successfully");
                         }
                         break;
@@ -407,8 +412,8 @@ class ConnectJsInterface {
 
         String closeByValue = closeBy != null ? closeBy.getValue() : "";
         String javascript = String.format(
-            "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: '%s' }, '%s')",
-            closeByValue, action, connectUrl
+            "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: '%s' ,url: '%s' }, '%s')",
+            closeByValue, action,oauthURL, connectUrl
         );
 
 

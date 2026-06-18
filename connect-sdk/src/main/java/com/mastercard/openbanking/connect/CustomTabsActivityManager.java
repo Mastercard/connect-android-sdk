@@ -2,6 +2,7 @@ package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,8 @@ public class CustomTabsActivityManager extends Activity {
 
     static final String KEY_BROWSER_INTENT = "browserIntent";
     private static final String TAG = "CustomTabs";
+    private static String oauthURL;
+    private static boolean urlLoadedSuccessfully = false;
 
     private boolean mOpened = false;
     private static WeakReference<Activity> connectActivityRef;
@@ -47,10 +50,24 @@ public class CustomTabsActivityManager extends Activity {
             Intent browserIntent = getIntent().getParcelableExtra(KEY_BROWSER_INTENT);
             if (browserIntent != null) {
                 browserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                Log.d(TAG, "onCreate: Starting custom tabs browser intent");
-                startActivity(browserIntent);
+                // Extract and store the URL being opened so we can log/report failures
+                Uri intentData = browserIntent.getData();
+                if (intentData != null) {
+                    oauthURL = intentData.toString();
+                }
+                Log.d(TAG, "onCreate: Starting custom tabs browser intent for URL: " + (oauthURL != null ? oauthURL : "N/A"));
+                try {
+                    startActivity(browserIntent);
+                } catch (Exception e) {
+                    // Failed to start browser intent — log and notify Connect that the URL failed to load
+                    Log.e(TAG, "onCreate: Failed to start custom tab/browser intent for URL: " + (oauthURL != null ? oauthURL : "N/A") + ". Error: " + e.getMessage());
+                    onOAuthWebViewLoadComplete(false);
+                    finish();
+                    return;
+                }
             } else {
                 Log.w(TAG, "onCreate: Browser intent was null");
+                onOAuthWebViewLoadComplete(false);
                 finish();
             }
         } else {
@@ -77,7 +94,9 @@ public class CustomTabsActivityManager extends Activity {
                 Activity stored = connectActivityRef != null ? connectActivityRef.get() : null;
                 if (stored instanceof Connect) {
                     try {
-                        ((Connect) stored).postWindowOauthOpenMessage(ConnectOauthOpenType.SECURE_CONTAINER);
+                        // Track that the custom tab URL loaded successfully
+                        urlLoadedSuccessfully = true;
+                     //   onOAuthWebViewLoadComplete(true);
                     } catch (Exception e) {
                         Log.w(TAG, "Failed to post OAuth open message: " + e.getMessage());
                     }
@@ -105,9 +124,10 @@ public class CustomTabsActivityManager extends Activity {
         super.onDestroy();
         Log.d(TAG, "onDestroy: CustomTabsActivityManager destroyed");
         Activity stored = connectActivityRef != null ? connectActivityRef.get() : null;
-        if (stored instanceof Connect) {
+        if (stored instanceof Connect && oauthURL != null) {
             Log.d(TAG, "onDestroy: Calling postWindowClosedMessage on Connect");
-            ((Connect) stored).postWindowClosedMessage();
+       //     ((Connect) stored).postWindowClosedMessage(oauthURL);
+         //   oauthURL = null; // Clear the stored URL after notifying Connect
         }
     }
 
@@ -115,6 +135,52 @@ public class CustomTabsActivityManager extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+    }
+
+    /**
+     * Track if the OAuth URL provided to CustomTabsActivityManager loaded successfully.
+     * Called when the custom tab completes its initial load or encounters a load error.
+     *
+     * @param didLoadSuccessfully true if the custom tab URL loaded successfully, false if it failed
+     */
+    private void onOAuthWebViewLoadComplete(boolean didLoadSuccessfully) {
+        urlLoadedSuccessfully = didLoadSuccessfully;
+
+        Activity stored = connectActivityRef != null ? connectActivityRef.get() : null;
+        if (stored instanceof Connect) {
+            try {
+                Log.d(TAG, "onOAuthWebViewLoadComplete: didLoadSuccessfully = " + didLoadSuccessfully + ", oauthURL = " + oauthURL);
+
+                if (!didLoadSuccessfully) {
+                    // If custom tab URL load failed, notify Connect to post blocked message
+                    ((Connect) stored).postWindowBlockedMessage();
+                }
+//                else {
+//                    // If custom tab URL loaded successfully, post OAuth open message
+//                 //   ((Connect) stored).postWindowOauthOpenMessage(ConnectOauthOpenType.SECURE_CONTAINER);
+//                }
+            } catch (Exception e) {
+                Log.w(TAG, "onOAuthWebViewLoadComplete: Failed to notify Connect: " + e.getMessage());
+            }
+        } else {
+            Log.w(TAG, "onOAuthWebViewLoadComplete: Connect activity not available");
+        }
+    }
+
+    /**
+     * Set the OAuth URL being loaded by the custom tab
+     * @param url the OAuth URL
+     */
+    public static void setOAuthURL(String url) {
+        oauthURL = url;
+    }
+
+    /**
+     * Check if the OAuth URL loaded successfully in the custom tab
+     * @return true if the URL loaded successfully, false if it failed
+     */
+    public static boolean isURLLoadedSuccessfully() {
+        return urlLoadedSuccessfully;
     }
 
 }

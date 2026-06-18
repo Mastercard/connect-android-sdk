@@ -76,9 +76,9 @@ class ConnectWebChromeClient extends WebChromeClient {
     public void onOAuthWebViewClosed() {
         if (isChildWebViewLoaded) {
             // Post window closed message to parent WebView
-//            if (connectJsInterface != null) {
-//                connectJsInterface.postWindowOauthCloseMessage(ConnectOauthCloseType.USER_CLOSED);
-//            }
+            if (connectJsInterface != null) {
+                connectJsInterface.postWindowOauthCloseMessage(ConnectOauthCloseType.USER_CLOSED);
+            }
 
             // Clean up resources
             oauthURL = null;
@@ -87,25 +87,7 @@ class ConnectWebChromeClient extends WebChromeClient {
         }
     }
 
-    /**
-     * Called when the OAuth/child WebView completes its initial load.
-     * Equivalent to safariViewController:didCompleteInitialLoad: in Swift.
-     *
-     * @param didLoadSuccessfully true if the page loaded successfully, false if it failed
-     */
-    public void onOAuthWebViewLoadComplete(boolean didLoadSuccessfully) {
-        if (!didLoadSuccessfully) {
-            // If load failed, post blocked message to parent WebView
-            if (connectJsInterface != null) {
-                connectJsInterface.postWindowBlockedMessage();
-            }
-        } else {
-            // If load succeeded, post OAuth open message with secureContainer type
-            if (connectJsInterface != null) {
-                connectJsInterface.postWindowOauthOpenMessage(ConnectOauthOpenType.SECURE_CONTAINER);
-            }
-        }
-    }
+
 
     /**
      * Set the ConnectJsInterface instance for communication with the parent WebView

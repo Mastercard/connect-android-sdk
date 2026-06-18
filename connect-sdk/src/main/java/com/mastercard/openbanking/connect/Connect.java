@@ -43,10 +43,13 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     private static final String REDIRECT_URL_REGEX = "[a-z]://";
     private static final String INVALID_CHARACTERS_REGEX = "[!@#$%^&*]";
 
+    private static String connectUrl;
+
     public static void start(Context context, String connectUrl, EventHandler eventHandler) {
         if (CONNECT_INSTANCE_REF != null && CONNECT_INSTANCE_REF.get() != null) {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
+        Connect.connectUrl = connectUrl;
 
         Intent connectIntent = new Intent(context, Connect.class);
         if (runningUnitTest) {
@@ -188,19 +191,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
                 // Sanitize single quotes to avoid breaking the JS string literal
                 String safeLink = deepLink.replace("'", "\\'");
 
-                // Post message to the host page so it can handle the redirect
-               // String javascript = "window.postMessage({ type: 'deep_link', url: '" + safeLink + "' }, '*')";
-                String connectUrlStr = intent.getStringExtra(CONNECT_URL_INTENT_KEY);
-                if (connectUrlStr == null) {
-                    connectUrlStr = getIntent().getStringExtra(CONNECT_URL_INTENT_KEY);
-                }
-                if (connectUrlStr == null) {
-                    connectUrlStr = "*";
-                }
-
                 String javascript = String.format(
-                        "window.postMessage({ type: 'window', closed: true, closed_by: 'partner-redirection', action: 'none', url: '%s' }, '%s')",
-                        safeLink, connectUrlStr
+                        "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: 'closed', url: '%s' }, '%s')",
+                        ConnectOauthCloseType.PARTNER_REDIRECTION.getValue(), safeLink, connectUrl
                 );
 
 
@@ -245,14 +238,16 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         jsInterfaceRef = null;
     }
 
-    public void postWindowClosedMessage() {
-        String javascript = "window.postMessage({ type: 'window', closed: true }, '*')";
+    public void postWindowClosedMessage(String oAuthUrl) {
+        // Post message to the host page so it can handle the redirect
+
+        String javascript = String.format("window.postMessage({ type: 'window', closed: true, action:'closed',url: '%s' }, '%s')", oAuthUrl, connectUrl);
         if (mMainWebView != null) {
             mMainWebView.evaluateJavascript(javascript, null);
         }
         // Notify WebChromeClient so it can handle OAuth child-webview cleanup
         if (mWebChromeClient != null) {
-            mWebChromeClient.onOAuthWebViewClosed();
+         //   mWebChromeClient.onOAuthWebViewClosed();
         }
     }
 
@@ -274,12 +269,12 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
      * the page that an OAuth window was opened in a secure container.
      * @param oauthOpenType the type of OAuth open event
      */
-    public void postWindowOauthOpenMessage(ConnectOauthOpenType oauthOpenType) {
-        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
-        if (js != null) {
-            js.postWindowOauthOpenMessage(oauthOpenType);
-        }
-    }
+//    public void postWindowOauthOpenMessage(ConnectOauthOpenType oauthOpenType) {
+//        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
+//        if (js != null) {
+//            js.postWindowOauthOpenMessage(oauthOpenType);
+//        }
+//    }
 
     /**
      * Post an OAuth-closed message to the host WebView via the JS interface.
@@ -295,9 +290,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
     }
 
     public void postWindowBlockedMessage() {
-        String javascript = "window.postMessage({ type: 'window', closed: true, blocked: true }, '*')";
-        if (mMainWebView != null) {
-            mMainWebView.evaluateJavascript(javascript, null);
+        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
+        if (js != null) {
+            js.postWindowBlockedMessage();
         }
     }
 
