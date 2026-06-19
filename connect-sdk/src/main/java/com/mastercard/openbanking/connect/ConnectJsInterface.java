@@ -232,7 +232,7 @@ class ConnectJsInterface {
         // so we catch it and fall back to Custom Tabs.
         // On API < 30 we fall back to a manual PackageManager check.
         if (tryOpenInExternalApp(uri)) {
-            postWindowOauthOpenMessage(ConnectOauthOpenType.FI_APP);
+            postWindowOauthOpenMessage(ConnectOauthOpenType.FI_APP.);
             // Notify host activity so WebChromeClient can track the OAuth child flow
             if (mConnect != null) {
                 mConnect.notifyOAuthOpenedInFiApp(url);
@@ -362,11 +362,11 @@ class ConnectJsInterface {
         String url = oauthURL != null ? oauthURL : "";
         String connectUrlStr = connectUrl != null ? connectUrl : "";
         String javascript = String.format(
-            "window.postMessage({ type: 'window', blocked: true, url: '%s' }, '%s')",
-            url, connectUrlStr
+                "window.postMessage({ type: 'window', blocked: true, url: '%s' }, '%s')",
+                url, connectUrlStr
         );
 
-        webView.evaluateJavascript(javascript, null);
+        evaluateJavascriptOnUiThread(javascript);
     }
 
     /**
@@ -387,11 +387,11 @@ class ConnectJsInterface {
         String connectUrlStr = connectUrl != null ? connectUrl : "";
         String openTypeValue = oauthOpenType != null ? oauthOpenType.getValue() : "";
         String javascript = String.format(
-            "window.postMessage({ type: 'window', opened: true, open_type: '%s', url: '%s' }, '%s')",
-            openTypeValue, url, connectUrlStr
+                "window.postMessage({ type: 'window', opened: true, open_type: '%s', url: '%s' }, '%s')",
+                openTypeValue, url, connectUrlStr
         );
 
-        webView.evaluateJavascript(javascript, null);
+        evaluateJavascriptOnUiThread(javascript);
     }
 
     /**
@@ -412,12 +412,26 @@ class ConnectJsInterface {
 
         String closeByValue = closeBy != null ? closeBy.getValue() : "";
         String javascript = String.format(
-            "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: '%s' ,url: '%s' }, '%s')",
-            closeByValue, action,oauthURL, connectUrl
+                "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: '%s' ,url: '%s' }, '%s')",
+                closeByValue, action,oauthURL, connectUrl
         );
 
+        evaluateJavascriptOnUiThread(javascript);
+    }
 
-        webView.evaluateJavascript(javascript, null);
+    private void evaluateJavascriptOnUiThread(final String javascript) {
+        if (activity == null || webView == null) {
+            return;
+        }
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (webView != null) {
+                    webView.evaluateJavascript(javascript, null);
+                }
+            }
+        });
     }
 
 
