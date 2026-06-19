@@ -232,7 +232,7 @@ class ConnectJsInterface {
         // so we catch it and fall back to Custom Tabs.
         // On API < 30 we fall back to a manual PackageManager check.
         if (tryOpenInExternalApp(uri)) {
-            postWindowOauthOpenMessage(ConnectOauthOpenType.FI_APP.);
+            postWindowOauthOpenMessage(ConnectOauthOpenType.FI_APP);
             // Notify host activity so WebChromeClient can track the OAuth child flow
             if (mConnect != null) {
                 mConnect.notifyOAuthOpenedInFiApp(url);
