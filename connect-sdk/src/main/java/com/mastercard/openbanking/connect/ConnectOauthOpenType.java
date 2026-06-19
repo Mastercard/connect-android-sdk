@@ -2,7 +2,7 @@ package com.mastercard.openbanking.connect;
 
 public enum ConnectOauthOpenType {
     SECURE_CONTAINER("secure-container"),
-    FI_APP("xfi-app");
+    FI_APP("fi-app");
 
     private final String value;
 
