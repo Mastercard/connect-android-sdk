@@ -96,7 +96,6 @@ public class CustomTabsActivityManager extends Activity {
                     try {
                         // Track that the custom tab URL loaded successfully
                         urlLoadedSuccessfully = true;
-                     //   onOAuthWebViewLoadComplete(true);
                     } catch (Exception e) {
                         Log.w(TAG, "Failed to post OAuth open message: " + e.getMessage());
                     }
@@ -126,9 +125,7 @@ public class CustomTabsActivityManager extends Activity {
         Activity stored = connectActivityRef != null ? connectActivityRef.get() : null;
         if (stored instanceof Connect && oauthURL != null) {
             Log.d(TAG, "onDestroy: Calling postWindowClosedMessage on Connect");
-       //     ((Connect) stored).postWindowClosedMessage(oauthURL);
-         //   oauthURL = null; // Clear the stored URL after notifying Connect
-        }
+       }
     }
 
     @Override
@@ -155,32 +152,12 @@ public class CustomTabsActivityManager extends Activity {
                     // If custom tab URL load failed, notify Connect to post blocked message
                     ((Connect) stored).postWindowBlockedMessage();
                 }
-//                else {
-//                    // If custom tab URL loaded successfully, post OAuth open message
-//                 //   ((Connect) stored).postWindowOauthOpenMessage(ConnectOauthOpenType.SECURE_CONTAINER);
-//                }
             } catch (Exception e) {
                 Log.w(TAG, "onOAuthWebViewLoadComplete: Failed to notify Connect: " + e.getMessage());
             }
         } else {
             Log.w(TAG, "onOAuthWebViewLoadComplete: Connect activity not available");
         }
-    }
-
-    /**
-     * Set the OAuth URL being loaded by the custom tab
-     * @param url the OAuth URL
-     */
-    public static void setOAuthURL(String url) {
-        oauthURL = url;
-    }
-
-    /**
-     * Check if the OAuth URL loaded successfully in the custom tab
-     * @return true if the URL loaded successfully, false if it failed
-     */
-    public static boolean isURLLoadedSuccessfully() {
-        return urlLoadedSuccessfully;
     }
 
 }

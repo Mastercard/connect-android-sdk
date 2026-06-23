@@ -181,8 +181,9 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
      */
     private void handleDeepLinkIntent(Intent intent) {
         if (intent == null) return;
+        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
 
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (js != null && js.isTrackPopupBlockedEventActive() && Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri data = intent.getData();
             if (data != null) {
                 String deepLink = data.toString();
@@ -238,18 +239,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         jsInterfaceRef = null;
     }
 
-    public void postWindowClosedMessage(String oAuthUrl) {
-        // Post message to the host page so it can handle the redirect
-
-        String javascript = String.format("window.postMessage({ type: 'window', closed: true, action:'closed',url: '%s' }, '%s')", oAuthUrl, connectUrl);
-        if (mMainWebView != null) {
-            mMainWebView.evaluateJavascript(javascript, null);
-        }
-        // Notify WebChromeClient so it can handle OAuth child-webview cleanup
-        if (mWebChromeClient != null) {
-         //   mWebChromeClient.onOAuthWebViewClosed();
-        }
-    }
 
     /**
      * Notify the WebChromeClient that an OAuth flow was opened in an external FI app.
@@ -262,19 +251,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             mWebChromeClient.setChildWebViewLoaded(true);
         }
     }
-
-    /**
-     * Post an OAuth-opened message to the host WebView via the JS interface.
-     * This is used by external managers (e.g. CustomTabsActivityManager) to notify
-     * the page that an OAuth window was opened in a secure container.
-     * @param oauthOpenType the type of OAuth open event
-     */
-//    public void postWindowOauthOpenMessage(ConnectOauthOpenType oauthOpenType) {
-//        ConnectJsInterface js = jsInterfaceRef != null ? jsInterfaceRef.get() : null;
-//        if (js != null) {
-//            js.postWindowOauthOpenMessage(oauthOpenType);
-//        }
-//    }
 
     /**
      * Post an OAuth-closed message to the host WebView via the JS interface.
