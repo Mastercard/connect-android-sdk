@@ -16,7 +16,6 @@ class ConnectWebChromeClient extends WebChromeClient {
     ConnectWebViewClientHandler connectWebViewClientHandler;
     protected boolean isWebViewLoaded = false;
     private boolean isChildWebViewLoaded = false;
-    private WebView childWebView;
     private String oauthURL;
     private ConnectJsInterface connectJsInterface;
 

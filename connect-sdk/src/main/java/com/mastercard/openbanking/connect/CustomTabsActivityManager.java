@@ -93,12 +93,7 @@ public class CustomTabsActivityManager extends Activity {
                 // Also notify the Connect activity so it can post an OAuth-open message
                 Activity stored = connectActivityRef != null ? connectActivityRef.get() : null;
                 if (stored instanceof Connect) {
-                    try {
-                        // Track that the custom tab URL loaded successfully
-                        urlLoadedSuccessfully = true;
-                    } catch (Exception e) {
-                        Log.w(TAG, "Failed to post OAuth open message: " + e.getMessage());
-                    }
+                    urlLoadedSuccessfully = true;
                 }
         } else {
             Log.d(TAG, "onResume: Second call - Custom tab closed by user, finishing");
@@ -123,9 +118,6 @@ public class CustomTabsActivityManager extends Activity {
         super.onDestroy();
         Log.d(TAG, "onDestroy: CustomTabsActivityManager destroyed");
         Activity stored = connectActivityRef != null ? connectActivityRef.get() : null;
-        if (stored instanceof Connect && oauthURL != null) {
-            Log.d(TAG, "onDestroy: Calling postWindowClosedMessage on Connect");
-       }
     }
 
     @Override

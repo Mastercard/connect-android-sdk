@@ -69,6 +69,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
+        Connect.connectUrl = connectUrl;;
+
         Intent connectIntent = new Intent(context, Connect.class);
         if (runningUnitTest) {
             connectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -131,7 +133,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         mMainWebView.getSettings().setJavaScriptEnabled(true); //NOSONAR
         mMainWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mMainWebView.getSettings().setAllowFileAccess(true); //NOSONAR
-
+        mMainWebView.getSettings().setDomStorageEnabled(true);
         // create and keep a reference to the WebChromeClient
         mWebChromeClient = new ConnectWebChromeClient(this, Connect.EVENT_HANDLER, this);
         mMainWebView.setWebChromeClient(mWebChromeClient);
@@ -142,7 +144,8 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         mMainWebView.addJavascriptInterface(js, "maOBAndroidConnect");
         // Provide WebView and initial connect URL to the JS interface
         js.setWebView(mMainWebView);
-        js.setConnectUrl(getIntent().getStringExtra(CONNECT_URL_INTENT_KEY));
+        String initialUrl = getIntent().getStringExtra(CONNECT_URL_INTENT_KEY);
+        js.setConnectUrl(initialUrl);
         // Keep a weak reference so other static callers can access it safely
         jsInterfaceRef = new WeakReference<>(js);
         // Inform WebChromeClient about JS interface so it can send messages to the page
@@ -153,7 +156,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
         // mMainWebView.setWebContentsDebuggingEnabled(true); // Enable Chrome Dev Tools
 
         // Load configured URL (guard against null intent extra)
-        String initialUrl = getIntent().getStringExtra(CONNECT_URL_INTENT_KEY);
+
         if (initialUrl != null && !initialUrl.isEmpty()) {
             mMainWebView.loadUrl(initialUrl);
         } else {

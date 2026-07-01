@@ -41,6 +41,11 @@ class ConnectJsInterface {
 
     private boolean mNavigationURLLoadComplete= false;
     private WebView webView;
+
+    public boolean isTrackPopupBlockedEventActive() {
+        return isTrackPopupBlockedEventActive;
+    }
+
     private boolean isTrackPopupBlockedEventActive = false;
     private String oauthURL;
     private String connectUrl;
@@ -399,7 +404,6 @@ class ConnectJsInterface {
      * @param closeBy The reason for closing the OAuth window
      */
     public void postWindowOauthCloseMessage(ConnectOauthCloseType closeBy) {
-        String action = oauthURL == null ? "none" : "closed";
 
         if (!isTrackPopupBlockedEventActive) {
             return;
@@ -410,10 +414,13 @@ class ConnectJsInterface {
             return;
         }
 
+        String action = oauthURL == null ? "none" : "closed";
+
         String closeByValue = closeBy != null ? closeBy.getValue() : "";
         String javascript = String.format(
                 "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: '%s' ,url: '%s' }, '%s')",
-                closeByValue, action,oauthURL, connectUrl
+                closeByValue, action,oauthURL != null ? oauthURL : "",
+                connectUrl != null ? connectUrl : "*"
         );
 
         evaluateJavascriptOnUiThread(javascript);
