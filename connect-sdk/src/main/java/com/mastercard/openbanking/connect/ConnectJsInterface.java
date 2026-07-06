@@ -42,11 +42,12 @@ class ConnectJsInterface {
     private boolean mNavigationURLLoadComplete= false;
     private WebView webView;
 
+    private boolean isTrackPopupBlockedEventActive = false;
+
     public boolean isTrackPopupBlockedEventActive() {
         return isTrackPopupBlockedEventActive;
     }
 
-    private boolean isTrackPopupBlockedEventActive = false;
     private String oauthURL;
     private String connectUrl;
 

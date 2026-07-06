@@ -69,7 +69,7 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             throw new RuntimeException(ALREADY_RUNNING_ERROR_MSG);
         }
 
-        Connect.connectUrl = connectUrl;;
+        Connect.connectUrl = connectUrl;
 
         Intent connectIntent = new Intent(context, Connect.class);
         if (runningUnitTest) {
