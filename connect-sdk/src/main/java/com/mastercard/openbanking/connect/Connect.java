@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Connect extends Activity implements ConnectWebViewClientHandler {
-    private static final String SDK_VERSION = "3.0.7";
+    private static final String SDK_VERSION = "3.1.0";
 
     private static final String ALREADY_RUNNING_ERROR_MSG = "There is already another Connect Activity running. " +
             "Only 1 is allowed at a time. Please allow the current activity to finish " +

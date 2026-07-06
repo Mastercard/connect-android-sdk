@@ -55,7 +55,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 112
-        versionName "3.0.7"
+        versionName "3.1.0"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'consumer-rules.pro'
@@ -104,7 +104,7 @@ dependencies {
 
 ext {
     PUBLISH_GROUP_ID = 'com.mastercard.openbanking.connect'
-    PUBLISH_VERSION = '3.0.7'
+    PUBLISH_VERSION = '3.1.0'
     PUBLISH_ARTIFACT_ID = 'connect-sdk'
 }
 
