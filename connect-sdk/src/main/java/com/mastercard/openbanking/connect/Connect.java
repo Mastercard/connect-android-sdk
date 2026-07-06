@@ -15,6 +15,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -191,18 +192,24 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             if (data != null) {
                 String deepLink = data.toString();
                 Log.i("Connect Android SDK", "Received deep link: " + deepLink);
-
-                // Sanitize single quotes to avoid breaking the JS string literal
                 String safeLink = deepLink.replace("'", "\\'");
 
-                String javascript = String.format(
-                        "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: 'closed', url: '%s' }, '%s')",
-                        ConnectOauthCloseType.PARTNER_REDIRECTION.getValue(), safeLink, connectUrl
-                );
+                try {
+                    JSONObject payload = new JSONObject()
+                            .put("type", "window")
+                            .put("closed", true)
+                            .put("closed_by", ConnectOauthCloseType.PARTNER_REDIRECTION.getValue())
+                            .put("action", "closed")
+                            .put("url", safeLink);
 
+                    String targetOrigin = connectUrl != null ? connectUrl : "*";
+                    String javascript = "window.postMessage(" + payload.toString() + ", " + JSONObject.quote(targetOrigin) + ")";
 
-                if (mMainWebView != null) {
-                    mMainWebView.evaluateJavascript(javascript, null);
+                    if (mMainWebView != null) {
+                        mMainWebView.evaluateJavascript(javascript, null);
+                    }
+                } catch (JSONException e) {
+                    Log.e("Connect Android SDK", "Error serializing deep-link message", e);
                 }
             }
         }

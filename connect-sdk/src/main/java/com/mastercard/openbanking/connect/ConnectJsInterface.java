@@ -392,12 +392,17 @@ class ConnectJsInterface {
         String url = oauthURL != null ? oauthURL : "";
         String connectUrlStr = connectUrl != null ? connectUrl : "";
         String openTypeValue = oauthOpenType != null ? oauthOpenType.getValue() : "";
-        String javascript = String.format(
-                "window.postMessage({ type: 'window', opened: true, open_type: '%s', url: '%s' }, '%s')",
-                openTypeValue, url, connectUrlStr
-        );
-
-        evaluateJavascriptOnUiThread(javascript);
+        try {
+            JSONObject payload = new JSONObject()
+                    .put("type", "window")
+                    .put("opened", true)
+                    .put("open_type", openTypeValue)
+                    .put("url", url);
+            String javascript = "window.postMessage(" + payload.toString() + ", " + JSONObject.quote(connectUrlStr) + ")";
+            evaluateJavascriptOnUiThread(javascript);
+        } catch (JSONException e) {
+            Log.e("Connect Android SDK", "Error serializing OAuth open message", e);
+        }
     }
 
     /**
@@ -418,13 +423,20 @@ class ConnectJsInterface {
         String action = oauthURL == null ? "none" : "closed";
 
         String closeByValue = closeBy != null ? closeBy.getValue() : "";
-        String javascript = String.format(
-                "window.postMessage({ type: 'window', closed: true, closed_by: '%s', action: '%s' ,url: '%s' }, '%s')",
-                closeByValue, action,oauthURL != null ? oauthURL : "",
-                connectUrl != null ? connectUrl : "*"
-        );
+        try {
+            JSONObject payload = new JSONObject()
+                    .put("type", "window")
+                    .put("closed", true)
+                    .put("closed_by", closeByValue)
+                    .put("action", action)
+                    .put("url", oauthURL != null ? oauthURL : "");
 
-        evaluateJavascriptOnUiThread(javascript);
+            String targetOrigin = connectUrl != null ? connectUrl : "*";
+            String javascript = "window.postMessage(" + payload.toString() + ", " + JSONObject.quote(targetOrigin) + ")";
+            evaluateJavascriptOnUiThread(javascript);
+        } catch (JSONException e) {
+            Log.e("Connect Android SDK", "Error serializing OAuth close message", e);
+        }
     }
 
     private void evaluateJavascriptOnUiThread(final String javascript) {
