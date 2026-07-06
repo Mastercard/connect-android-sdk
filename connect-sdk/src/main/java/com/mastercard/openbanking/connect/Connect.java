@@ -191,7 +191,6 @@ public class Connect extends Activity implements ConnectWebViewClientHandler {
             Uri data = intent.getData();
             if (data != null) {
                 String deepLink = data.toString();
-                Log.i("Connect Android SDK", "Received deep link: " + deepLink);
                 String safeLink = deepLink.replace("'", "\\'");
 
                 try {
