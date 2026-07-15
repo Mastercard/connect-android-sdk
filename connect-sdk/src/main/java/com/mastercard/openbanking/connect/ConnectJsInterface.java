@@ -1,26 +1,82 @@
 package com.mastercard.openbanking.connect;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import androidx.browser.customtabs.CustomTabsIntent;
+import android.os.Build;
 
+import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsServiceConnection;
+import androidx.browser.customtabs.CustomTabsSession;
+
+import android.os.Bundle;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+// import java.io.Console; // removed unused import
+import java.util.List;
+import android.webkit.WebView;
+
+// Enums moved to their own public types: ConnectOauthOpenType and ConnectOauthCloseType
+
 class ConnectJsInterface {
     private Activity activity;
     private Connect mConnect;
     private EventHandler eventHandler;
     private boolean mCustomTabStarted = false;
+    private CustomTabsClient customTabsClient;
+    private CustomTabsSession customTabsSession;
+    private CustomTabsServiceConnection customTabsServiceConnection;
+    CustomTabsCallback callback;
+    private boolean mNavigationFailed = false;
+
+    private boolean mNavigationURLLoadComplete= false;
+    private WebView webView;
+
+    private boolean isTrackPopupBlockedEventActive = false;
+
+    public boolean isTrackPopupBlockedEventActive() {
+        return isTrackPopupBlockedEventActive;
+    }
+
+    private String oauthURL;
+    private String connectUrl;
 
     public ConnectJsInterface(Activity activity, EventHandler eventHandler) {
         this.activity = activity;
         this.mConnect = (Connect) activity;
         this.eventHandler = eventHandler;
+    }
+
+    /**
+     * Provide the host WebView reference so this JS interface can evaluate JavaScript
+     */
+    public void setWebView(WebView webView) {
+        this.webView = webView;
+    }
+
+    /**
+     * Set the connectUrl used as the target origin when posting messages to the page
+     */
+    public void setConnectUrl(String connectUrl) {
+        this.connectUrl = connectUrl;
+    }
+
+    /**
+     * Get the current OAuth URL
+     * @return the OAuth URL or null if not set
+     */
+    public String getOAuthURL() {
+        return oauthURL;
     }
 
     @JavascriptInterface
@@ -60,15 +116,38 @@ class ConnectJsInterface {
                 break;
             case "url":
                 try {
-                    String url = jsonMessage.getString("url");
-                    openLinkInCustomTab(url);
+                    mNavigationURLLoadComplete = false;
+                    String urlString = jsonMessage.getString("url");
+                    Log.i("Connect Android SDK", "URL message received: " + urlString);
+
+                    // Store the OAuth URL
+                    oauthURL = urlString;
+
+                    // Validate URL format
+                    Uri uri = Uri.parse(urlString);
+                    if (uri.getScheme() == null || uri.getHost() == null) {
+                        // Invalid URL format
+                        Log.e("Connect Android SDK", "Invalid URL format: " + urlString);
+                        postWindowBlockedMessage();
+                    } else {
+                        // Valid URL - open in custom tab
+                        Log.d("Connect Android SDK", "Opening valid URL in custom tab: " + urlString);
+                        openLinkInCustomTab(urlString);
+                    }
                 } catch (JSONException e) {
-                    Log.e("Connect Android SDK","Error parsing the URL");
+                    Log.e("Connect Android SDK", "Error parsing the URL", e);
+                    postWindowBlockedMessage();
                 }
                 break;
             case "closePopup":
                 closeCustomTab();
                 break;
+
+            case "trackPopupBlockedEvent":
+                isTrackPopupBlockedEventActive = true;
+                this.bindCustomServiceAndAddCallback();
+                break;
+
             default:
                 break;
         }
@@ -97,13 +176,157 @@ class ConnectJsInterface {
         return eventData;
     }
 
+    private void bindCustomServiceAndAddCallback() {
+        bindCustomTabsService();
+
+        callback = new CustomTabsCallback() {
+            @Override
+            public void onNavigationEvent(int navigationEvent, Bundle extras) {
+                switch (navigationEvent) {
+                    case NAVIGATION_STARTED:
+                        // Reset failure flag on each new navigation
+                        mNavigationFailed = false;
+                        Log.d("CustomTabs", "Page loading started");
+                        break;
+                    case NAVIGATION_FAILED:
+                        // Mark as failed — Chrome will still fire NAVIGATION_FINISHED after this,
+                        // so we use this flag to suppress the false "success" log.
+                        mNavigationFailed = true;
+                        Log.d("CustomTabs", "Page not loaded");
+                        postWindowBlockedMessage();
+                        break;
+                    case NAVIGATION_FINISHED:
+                        // Chrome fires NAVIGATION_FINISHED even after NAVIGATION_FAILED (blocked/error URLs).
+                        // Only treat it as a real success if no failure was recorded.
+                        if (!mNavigationFailed && !mNavigationURLLoadComplete) {
+                            mNavigationURLLoadComplete = true;
+                            postWindowOauthOpenMessage(ConnectOauthOpenType.SECURE_CONTAINER);
+                            Log.d("CustomTabs", "Page loaded successfully");
+                        }
+                        break;
+                }
+            }
+        };
+    }
+
+    private void bindCustomTabsService() {
+        String packageName = CustomTabsClient.getPackageName(activity, null);
+        if (packageName == null) {
+            Log.w("CustomTabs", "No Custom Tabs provider found");
+            return;
+        }
+        customTabsServiceConnection = new CustomTabsServiceConnection() {
+            @Override public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+                customTabsClient = client;
+                customTabsClient.warmup(0);
+            }
+
+            @Override public void onServiceDisconnected(ComponentName name) {
+                customTabsClient = null;
+                customTabsSession = null;
+            }
+        };
+        CustomTabsClient.bindCustomTabsService(activity, packageName, customTabsServiceConnection);
+    }
+
     public void openLinkInCustomTab(String url) {
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        Uri uri = Uri.parse(url); // Default to example.com if parsing fails
+
+        // Try to open in an external (non-browser) app first.
+        // FLAG_ACTIVITY_REQUIRE_NON_BROWSER (API 30+) is the most reliable way:
+        // Android throws ActivityNotFoundException if no non-browser app handles the URI,
+        // so we catch it and fall back to Custom Tabs.
+        // On API < 30 we fall back to a manual PackageManager check.
+        if (tryOpenInExternalApp(uri)) {
+            postWindowOauthOpenMessage(ConnectOauthOpenType.FI_APP);
+            // Notify host activity so WebChromeClient can track the OAuth child flow
+            if (mConnect != null) {
+                mConnect.notifyOAuthOpenedInFiApp(url);
+            }
+            mCustomTabStarted = true;
+            return;
+        }
+
+        // No external app — open in Custom Tabs with callback
+        if (customTabsClient != null) {
+            customTabsSession = customTabsClient.newSession(callback);
+        } else {
+            customTabsSession = null;
+        }
+
+        CustomTabsIntent.Builder builder = (customTabsSession != null)
+                ? new CustomTabsIntent.Builder(customTabsSession)
+                : new CustomTabsIntent.Builder();
+
         CustomTabsIntent customTabsIntent = builder.build();
         Intent intent = customTabsIntent.intent;
-        intent.setData(Uri.parse(url));
+        intent.setData(uri);
+
         mCustomTabStarted = true;
+        // Notify host activity so WebChromeClient can track the OAuth child flow for custom tabs
+        if (mConnect != null) {
+            mConnect.notifyOAuthOpenedInFiApp(url);
+        }
         activity.startActivity(CustomTabsActivityManager.createStartIntent(activity, intent, activity));
+    }
+
+    private boolean tryOpenInExternalApp(Uri uri) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // API 30+ — FLAG_ACTIVITY_REQUIRE_NON_BROWSER is the reliable path
+            try {
+                Intent appIntent = new Intent(Intent.ACTION_VIEW, uri);
+                appIntent.addFlags(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER);
+                activity.startActivity(appIntent);
+                Log.d("CustomTabs", "Opened in external app (API 30+): " + uri.getHost());
+                return true;
+            } catch (ActivityNotFoundException e) {
+                // No non-browser app handles this URL — fall through to Custom Tabs
+                Log.d("CustomTabs", "No external app found (API 30+), using CCT: " + uri.getHost());
+                return false;
+            }
+        } else {
+            // API < 30 — manually check PackageManager for non-browser handlers
+            if (hasNonBrowserHandler(uri)) {
+                Intent appIntent = new Intent(Intent.ACTION_VIEW, uri);
+                activity.startActivity(appIntent);
+                Log.d("CustomTabs", "Opened in external app (API<30): " + uri.getHost());
+                return true;
+            }
+            return false;
+        }
+    }
+
+    /**
+     * API < 30 fallback: returns true if at least one non-browser app handles this URI.
+     */
+    private boolean hasNonBrowserHandler(Uri uri) {
+        Intent probe = new Intent(Intent.ACTION_VIEW, uri);
+        PackageManager pm = activity.getPackageManager();
+        List<ResolveInfo> handlers = pm.queryIntentActivities(probe, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo info : handlers) {
+            if (!isBrowserPackage(info.activityInfo.packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Identifies well-known browser packages so they are excluded from the universal-link check.
+     */
+    private boolean isBrowserPackage(String packageName) {
+        switch (packageName) {
+            case "com.android.chrome":
+            case "org.mozilla.firefox":
+            case "com.opera.browser":
+            case "com.microsoft.edge":
+            case "com.brave.browser":
+            case "com.samsung.android.app.sbrowser":
+            case "com.google.android.apps.chrome":
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void closeCustomTab() {
@@ -113,5 +336,123 @@ class ConnectJsInterface {
         mCustomTabStarted = false;
         activity.startActivity(CustomTabsActivityManager.createDismissIntent(activity));
     }
+
+    public void unbindCustomTabsService() {
+        if (customTabsServiceConnection != null && activity != null) {
+            try {
+                activity.unbindService(customTabsServiceConnection);
+                Log.d("CustomTabs", "Custom Tabs service unbound");
+            } catch (IllegalArgumentException e) {
+                Log.w("CustomTabs", "Service was not bound, skipping unbind: " + e.getMessage());
+            }
+        }
+        // Always clear references regardless of activity state to prevent leaks
+        customTabsServiceConnection = null;
+        customTabsClient = null;
+        customTabsSession = null;
+    }
+
+    /**
+     * Posts a message to the WebView when a popup is blocked
+     */
+    public void postWindowBlockedMessage() {
+        if (!isTrackPopupBlockedEventActive) {
+            return;
+        }
+
+        if (webView == null) {
+            Log.w("Connect Android SDK", "WebView reference is null, cannot post blocked message");
+            return;
+        }
+
+        String url = oauthURL != null ? oauthURL : "";
+        String connectUrlStr = connectUrl != null ? connectUrl : "";
+        String javascript = String.format(
+                "window.postMessage({ type: 'window', blocked: true, url: '%s' }, '%s')",
+                url, connectUrlStr
+        );
+
+        evaluateJavascriptOnUiThread(javascript);
+    }
+
+    /**
+     * Posts a message to the WebView when an OAuth window is opened
+     * @param oauthOpenType The type of OAuth window being opened
+     */
+    public void postWindowOauthOpenMessage(ConnectOauthOpenType oauthOpenType) {
+        if (!isTrackPopupBlockedEventActive) {
+            return;
+        }
+
+        if (webView == null) {
+            Log.w("Connect Android SDK", "WebView reference is null, cannot post OAuth open message");
+            return;
+        }
+
+        String url = oauthURL != null ? oauthURL : "";
+        String connectUrlStr = connectUrl != null ? connectUrl : "";
+        String openTypeValue = oauthOpenType != null ? oauthOpenType.getValue() : "";
+        try {
+            JSONObject payload = new JSONObject()
+                    .put("type", "window")
+                    .put("opened", true)
+                    .put("open_type", openTypeValue)
+                    .put("url", url);
+            String javascript = "window.postMessage(" + payload.toString() + ", " + JSONObject.quote(connectUrlStr) + ")";
+            evaluateJavascriptOnUiThread(javascript);
+        } catch (JSONException e) {
+            Log.e("Connect Android SDK", "Error serializing OAuth open message", e);
+        }
+    }
+
+    /**
+     * Posts a message to the WebView when an OAuth window is closed
+     * @param closeBy The reason for closing the OAuth window
+     */
+    public void postWindowOauthCloseMessage(ConnectOauthCloseType closeBy) {
+
+        if (!isTrackPopupBlockedEventActive) {
+            return;
+        }
+
+        if (webView == null) {
+            Log.w("Connect Android SDK", "WebView reference is null, cannot post OAuth close message");
+            return;
+        }
+
+        String action = oauthURL == null ? "none" : "closed";
+
+        String closeByValue = closeBy != null ? closeBy.getValue() : "";
+        try {
+            JSONObject payload = new JSONObject()
+                    .put("type", "window")
+                    .put("closed", true)
+                    .put("closed_by", closeByValue)
+                    .put("action", action)
+                    .put("url", oauthURL != null ? oauthURL : "");
+
+            String targetOrigin = connectUrl != null ? connectUrl : "*";
+            String javascript = "window.postMessage(" + payload.toString() + ", " + JSONObject.quote(targetOrigin) + ")";
+            evaluateJavascriptOnUiThread(javascript);
+        } catch (JSONException e) {
+            Log.e("Connect Android SDK", "Error serializing OAuth close message", e);
+        }
+    }
+
+    private void evaluateJavascriptOnUiThread(final String javascript) {
+        if (activity == null || webView == null) {
+            return;
+        }
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (webView != null) {
+                    webView.evaluateJavascript(javascript, null);
+                }
+            }
+        });
+    }
+
 
 }
