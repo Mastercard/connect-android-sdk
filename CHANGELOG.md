@@ -1,9 +1,9 @@
 # Changelog
 
 
-### Version 3.1.0 - 2026-07-08
-Changes:
-- Added OAuth lifecycle events to enable tracking and monitoring throughout the OAuth journey.
+## Version 3.1.0 - 2026-07-15
+### Changes
+- Added OAuth lifecycle events for monitoring.
 
 ### 3.0.7 (May 25, 2026)
 
