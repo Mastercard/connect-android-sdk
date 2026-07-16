@@ -15,6 +15,9 @@ class ConnectWebChromeClient extends WebChromeClient {
     private EventHandler eventHandler;
     ConnectWebViewClientHandler connectWebViewClientHandler;
     protected boolean isWebViewLoaded = false;
+    private boolean isChildWebViewLoaded = false;
+    private String oauthURL;
+    private ConnectJsInterface connectJsInterface;
 
     public ConnectWebChromeClient(Connect connect,
                                   EventHandler eventHandler,ConnectWebViewClientHandler connectWebViewClientHandler) {
@@ -64,4 +67,30 @@ class ConnectWebChromeClient extends WebChromeClient {
         }
 
     }
+
+    /**
+     * Set the ConnectJsInterface instance for communication with the parent WebView
+     * @param jsInterface the ConnectJsInterface to use for posting messages
+     */
+    public void setConnectJsInterface(ConnectJsInterface jsInterface) {
+        this.connectJsInterface = jsInterface;
+    }
+
+    /**
+     * Track when a child/OAuth WebView has been loaded
+     * @param loaded true if a child WebView is loaded
+     */
+    public void setChildWebViewLoaded(boolean loaded) {
+        this.isChildWebViewLoaded = loaded;
+    }
+
+    /**
+     * Set the OAuth URL being opened
+     * @param url the OAuth URL
+     */
+    public void setOAuthURL(String url) {
+        this.oauthURL = url;
+    }
+
+
 }
